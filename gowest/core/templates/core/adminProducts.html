@@ -1,0 +1,49 @@
+<form class="mt-3 mb-3" onsubmit="searchProducts()">
+    <div class="input-group">
+		<input class="searchbar form-control" id="searchProducts" placeholder="Buscar en Productos"></input>
+      	<div class="input-group-append">
+        	<button class="btn btn-gowest"><span class="icon fa fa-search"></span></button>
+      	</div>
+    </div>
+</form>
+<div class="table-responsive">
+	<table class="table table-hover align-middle">
+		<thead>
+			<tr>
+			<th>Imagen</th>
+			<th>Nombre</th>
+			<th class="d-none d-sm-table-cell">Precio</th>
+			<th class="d-none d-sm-table-cell">Stock</th>
+			<th class="d-none d-sm-table-cell">Categoría</th>
+			<th></th>
+			</tr>
+		</thead>
+		<tbody id="tableProductsBody">
+			<script>
+				selectAllFrom("products").then(r=>{populateTable(r)});
+				function populateTable(data){
+					var tBody=get("tableProductsBody")
+					for(datum of data){
+						var row=document.createElement("tr");
+						tBody.appendChild(row)
+						row.outerHTML="<tr>"+
+						`<td><img class='tableImage' src='img/products/${datum["code"]}.png'></td>`+
+						`<td data-type="string">${datum["name"]}</td>`+
+						`<td class="d-none d-sm-table-cell" data-type="number">${datum["price"]}</td>`+
+						`<td class="d-none d-sm-table-cell" data-type="number">${datum["stock"]}</td>`+
+						`<td class="d-none d-sm-table-cell" data-type="foreign" data-reference="categories.code">${datum["category"]}</td>`+
+						`<td class="hidden">${datum["description"].reduce((res,line)=>res+=line,"")}</td>`+
+						`<td class="text-right"><button class="btn btn-success" data-toggle="modal" data-target="#productDataModal" onclick="prepareProductModal(this)"><span class="icon fa fa-pencil"></span></button>`+
+						`<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteProduct(this)"><span class="icon fa fa-trash"></span></button></td>`+
+						`</tr>`;
+					}
+				}
+			</script>
+		</tbody>
+	</table>
+</div>
+<div class="container p-3 fr text-right">
+	<button class="btn btn-success" data-toggle="modal" data-target="#productDataModal" onclick="prepareProductModal()">Añadir Producto</button>
+</div>
+<ihtml src="templates/productDataModal.html"></ihtml>
+<ihtml src="templates/deleteAlertModal.html"></ihtml>

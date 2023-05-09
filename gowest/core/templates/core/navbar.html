@@ -1,0 +1,93 @@
+<nav id="topNavbar" class="navbar navbar-expand navbar-dark bg-gowest-dark sticky-top">
+    <a id="navbar-brand" class="navbar-brand" href="#" onclick="moveTo('index.html')">
+		<img class="navbar-brand-image" src="img/logo.png">
+		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
+	</a>
+    <ul id="navbarVisit" class="navbar-nav navbar-nav-right hidden">
+        <li class="nav-item">
+			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="#" onclick="moveTo('cart.html')" data-units="0">
+				<span class="icon fa fa-shopping-cart"></span>
+				<span id="navbarCartUnits" class="badge badge-pill badge-danger hidden">0</span>
+			</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-gowest" href="signup.html" type="button">Registrarse</a>
+        </li>
+		<li class="nav-item">
+			<button class="btn btn-gowest" data-toggle="modal" data-target="#loginModal">Ingresar</button>
+		</li>
+    </ul>
+	<ul id="navbarClient" class="navbar-nav navbar-nav-right hidden">
+		<li class="nav-item">
+			<span class="userWelcome text-right"></span>
+		</li>
+        <li class="nav-item">
+			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="#" onclick="moveTo('cart.html')" data-units="0">
+				<span class="icon fa fa-shopping-cart"></span>
+				<span id="navbarCartUnits" class="badge badge-pill badge-danger hidden">0</span>
+			</a>
+        </li>
+        <li class="nav-item">
+          <a id="navLinkAccount" class="btn btn-gowest" href="#" onclick="moveTo('account.html')">Cuenta</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-gowest" href="index.html" type="button"><span class="icon fa fa-power-off"></span></a>
+        </li>
+    </ul>
+    <ul id="navbarAdmin" class="navbar-nav navbar-nav-right hidden">
+		<li class="nav-item">
+			<span class="userWelcome text-right"></span>
+		</li>
+		<li class="nav-item">
+			<a class="btn btn-gowest" href="index.html" type="button">
+				<span class="icon fa fa-power-off"></span>
+			</a>
+		</li>
+	</ul>
+</nav>
+<ul id="categoryTabsList" class="nav bg-gowest-dark">
+	<script>
+		selectAllFrom("categories").then(data=>{
+			if(!get("categoryTabsList"))return;
+			for(row of data){
+				get("categoryTabsList").innerHTML+=`<li id="catTab_${row["code"]}"`+
+					`class="nav-item bg-gowest-dark"><a class="btn btn-gowest" `+
+					`href="#" onclick="moveTo('category.html',[['c','${row["code"]}']])">${row["name"]}</a></li>`;
+			}
+			if(params["c"]){
+				get("catTab_"+params["c"]).classList.add("active");
+			}
+		})
+	</script>
+</ul>
+<ihtml src="templates/loginModal.html"></ihtml>
+<script>
+	//determine which navbar to show
+    var navToShow="";
+	var currPage = window.location.pathname.split("/")[window.location.pathname.split("/").length-1];
+    if(currPage=="adminIndex.html"){
+		navToShow="navbarAdmin";
+		get("navbar-brand").setAttribute("onclick","clearParamsKeep(['u']);moveTo('adminIndex.html')")
+		get("categoryTabsList").remove();
+    } else if(params["u"]){
+      navToShow="navbarClient";
+    } else navToShow="navbarVisit";
+    document.getElementById(navToShow).classList.remove("hidden");
+    //remove hidden navbar elements
+    var toRemove=[];
+    for(var nav of document.getElementsByClassName("navbar-nav hidden")){toRemove.push(nav)}
+    for(var nav of toRemove){nav.remove();}
+	//show user name if logged in
+	if(params["u"]){
+		selectAllWhere("users",(i)=>{return i["id"]==params["u"]}).then(data=>{
+			for(var welcome of document.getElementsByClassName("userWelcome")){
+				welcome.innerText=data[0]["name"]+" "+data[0]["surname"];
+			}
+		})
+	}
+	if(params["cart"]){
+		get("navbarCartBtn").dataset["units"]=params["cart"];
+		get("navbarCartUnits").innerText=params["cart"];
+		get("navbarCartUnits").classList.remove("hidden");
+	}
+</script>

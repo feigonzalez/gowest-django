@@ -1,0 +1,111 @@
+{
+	"products":[
+		{"id":0,"name":"Collar Azul","price":1100,"stock":100,"category":"collars",
+			"description":["<p>Los collares GoWest están hecho de poliéster súper suave ",
+			"y son de talla única. El collar tiene una hebilla separable ",
+			"que se abre automáticamente si tu mascota se atasca.</p>",
+			"<p>Las hebillas separables de nuestros collares se ",
+			"abrirán automáticamente si su mascota se atasca. Esta función de ",
+			"liberación rápida garantiza la seguridad de su animal, especialmente ",
+			"cuando está afuera.</p>",
+			"<p class='disclaimer'>Descripción extraída de Pet Happy, y posteriormente alterada. ",
+			"Producto original: Zee.Cat Pink LED Collar</p>"],"code":"collarBlue"},
+		{"id":1,"name":"Collar Rojo","price":1200,"stock":100,"category":"collars",
+			"description":["<p>Collar de color rojo.</p>"],"code":"collarRed"},
+		{"id":2,"name":"Collar Verde","price":1300,"stock":100,"category":"collars",
+			"description":["<p>Collar de color verde.</p>"],"code":"collarGreen"},
+		{"id":3,"name":"Collar Negro","price":1400,"stock":100,"category":"collars",
+			"description":["<p>Collar de color negro.</p>"],"code":"collarBlack"},
+		{"id":4,"name":"Collar Rosa","price":1500,"stock":100,"category":"collars",
+			"description":["<p>Collar de color rosa.</p>"],"code":"collarPink"},
+		{"id":5,"name":"Alimento Perro Adulto","price":2100,"stock":100,"category":"food",
+			"description":["<p>Comida para perros adultos.</p>"],"code":"foodDogAdult"},
+		{"id":6,"name":"Alimento Perro Cachorro","price":2200,"stock":100,"category":"food",
+			"description":["<p>Comida para perros cachorros.</p>"],"code":"foodDogYoung"},
+		{"id":7,"name":"Alimento Gato Adulto","price":2300,"stock":100,"category":"food",
+			"description":["<p>Comida para gatos adultos.</p>"],"code":"foodCatAdult"},
+		{"id":8,"name":"Alimento Gato Cachorro","price":2400,"stock":100,"category":"food",
+			"description":["<p>Comida para gatos cachorros.</p>"],"code":"foodCatYoung"},
+		{"id":9,"name":"Alimento Mapache","price":2500,"stock":100,"category":"food",
+			"description":["<p>Comida para mapaches.</p>"],"code":"foodRaccoon"},
+		{"id":10,"name":"Pelota Tenis","price":3100,"stock":100,"category":"toys",
+			"description":["<p>Pelota de Tenis.</p>"],"code":"toyTennisBall"},
+		{"id":11,"name":"Platillo Volador","price":3200,"stock":100,"category":"toys",
+			"description":["<p>Platillo volador plástico.</p>"],"code":"toyFlyingDisk"},
+		{"id":12,"name":"Cuerda Anudada","price":3300,"stock":100,"category":"toys",
+			"description":["<p>Trozo de cuerda con un nudo.</p>"],"code":"toyKnotRope"}
+	],
+	"categories":[
+		{"id":0,"name":"Collares","code":"collars"},
+		{"id":1,"name":"Alimentos","code":"food"},
+		{"id":2,"name":"Juguetes","code":"toys"}
+	],
+	"roles":[
+		{"id":0,"name":"Administrador"},
+		{"id":1,"name":"Cliente"}
+	],
+	"secQuestions":[
+		{"id":0,"value":"¿Ciudad de nacimiento?"},
+		{"id":1,"value":"¿Nombre de su primera mascota?"},
+		{"id":2,"value":"¿Segundo apellido de su madre?"},
+		{"id":3,"value":"¿Número de hermanos/as mayores?"}
+	],
+	"districts":[
+		{"id":0,"name":"La Florida"},
+		{"id":1,"name":"La Pintana"},
+		{"id":2,"name":"Huechuraba"},
+		{"id":3,"name":"Quilicura"},
+		{"id":4,"name":"Providencia"},
+		{"id":5,"name":"La Granja"},
+		{"id":6,"name":"Renca"},
+		{"id":7,"name":"San Joaquín"}
+	],
+	"users":[
+		{"id":0,"rut":"10.000.000-0","name":"William","surname":"Hartnell",
+			"mail":"whartnell@mail.com","phone":"+123456789","pass":"pass",
+			"roleID":1,"secQuestionID":3,"secAnswer":"13"},
+		{"id":1,"rut":"20.220.000-0","name":"Patrick","surname":"Troughton",
+			"mail":"ptroughton@mail.com","phone":"+234567891","pass":"pass",
+			"roleID":1,"secQuestionID":3,"secAnswer":"12"},
+		{"id":2,"rut":"33.033.000-0","name":"Jon","surname":"Pertwee",
+			"mail":"jpertwee@mail.com","phone":"+345678921","pass":"pass",
+			"roleID":1,"secQuestionID":3,"secAnswer":"11"},
+		{"id":3,"rut":"4.000.000-0","name":"Tom","surname":"Baker",
+			"mail":"tbaker@mail.com","phone":"+456789123","pass":"pass",
+			"roleID":1,"secQuestionID":3,"secAnswer":"10"},
+		{"id":4,"rut":"5.500.055-0","name":"Peter","surname":"Davidson",
+			"mail":"pdavidson@mail.com","phone":"+567891234","pass":"pass",
+			"roleID":1,"secQuestionID":3,"secAnswer":"9"},
+		{"id":10,"rut":"7.707.707-7","name":"Alvis","surname":"Dickson",
+			"mail":"adickson@mail.com","phone":"+987654321","pass":"pass",
+			"roleID":0,"secQuestionID":1,"secAnswer":"La Linde"}
+	],
+	"addresses":[
+		{"id":0,"street":"Av. Enida","number":"123","postalCode":"600345","userID":0,"districtID":0},
+		{"id":1,"street":"Av. Siempreviva.","number":"644","postalCode":"530345","userID":0,"districtID":1},
+		{"id":2,"street":"Los Aromos","number":"413-B","postalCode":"332345","userID":1,"districtID":2},
+		{"id":3,"street":"Los Naranjos","number":"166","postalCode":"600123","userID":2,"districtID":0},
+		{"id":4,"street":"Los Manzanos","number":"35-B","postalCode":"2536452","userID":2,"districtID":3},
+		{"id":5,"street":"Los Plátanos","number":"13","postalCode":"112234","userID":3,"districtID":5},
+		{"id":6,"street":"Av. Italia","number":"61","postalCode":"868464","userID":4,"districtID":4}
+	],
+	"sales":[
+		{"id":0,"saleDate":"01-01-2023","deliveryDate":"10-01-2023","status":"Completada",
+			"total":7200,"userID":0,"addressID":0},
+		{"id":1,"saleDate":"02-02-2023","deliveryDate":"","status":"Carrito",
+			"total":5800,"userID":0,"addressID":0},
+		{"id":2,"saleDate":"03-03-2023","deliveryDate":"","status":"Despachada",
+			"total":4200,"userID":0,"addressID":1},
+		{"id":3,"saleDate":"03-03-2023","deliveryDate":"","status":"Pagada",
+			"total":4200,"userID":1,"addressID":2}
+	],
+	"saleDetails":[
+		{"id":0,"saleID":0,"productID":0,"units":2,"subtotal":2200},
+		{"id":1,"saleID":0,"productID":1,"units":2,"subtotal":2400},
+		{"id":2,"saleID":0,"productID":2,"units":2,"subtotal":2600},
+		{"id":3,"saleID":1,"productID":3,"units":2,"subtotal":2800},
+		{"id":4,"saleID":1,"productID":4,"units":2,"subtotal":3000},
+		{"id":5,"saleID":2,"productID":5,"units":2,"subtotal":4200},
+		{"id":6,"saleID":3,"productID":5,"units":2,"subtotal":4200}
+	]
+}

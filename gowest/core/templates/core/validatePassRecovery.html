@@ -1,0 +1,19 @@
+<script src="js/urlParams.js"></script>
+<script src="js/db.js"></script>
+<script>
+	if(params["rut"]&&params["secAnswer"]){
+		selectAllWhere("users",(i)=>{return i["rut"]==params["rut"]}).then(data=>{
+			var user=data[0];
+			if(user["secAnswer"]==params["secAnswer"]){
+				clearParams();
+				params["u"]=user["id"];
+				moveTo("index.html");
+			} else {
+				clearParamsKeep("rut");
+				params["valid"]="false";
+				moveToReplace("recoverPass.html");
+			}
+		})
+	}
+	else history.back();
+</script>

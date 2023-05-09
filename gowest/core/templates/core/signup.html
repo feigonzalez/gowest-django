@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoWest</title>
+	<link rel="icon" href="img/logo.png"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/gowest.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/gowest.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/urlParams.js"></script>
+    <script src="js/formValidation.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/ihtml.js" defer></script>
+</head>
+<body>
+	<nav id="topNavbar" class="navbar navbar-expand-sm navbar-dark bg-gowest-dark sticky-top">
+		<a id="navbar-brand" class="navbar-brand" href="index.html">
+			<img class="navbar-brand-image" src="img/logo.png">
+			<span class="navbar-brand-name">GoWest</span>
+		</a>
+	</nav>
+	<div class="container mt-3 mb-3">
+		 <form id="signupForm" action="processSignup.html" onsubmit="validateSignup(event)">
+			<div class="row">
+				<div class="col-sm-6">
+					<label for="f_name">Nombre</label>
+					<input class="form-control" id="f_name" name="name">
+				</div><div class="col-sm-6">
+					<label for="f_surname">Apellido</label>
+					<input class="form-control" id="f_surname" name="surname">
+				</div>
+			</div>
+			<div><label for="f_rut">RUT</label><input class="form-control" id="f_rut" name="rut"></div>
+			<div><label for="f_user">Correo</label><input type="email" class="form-control" id="f_user" name="user"></div>
+			<div><label for="f_phone">Teléfono</label><input class="form-control" id="f_phone" name="phone"></div>
+			<div class="row">
+				<div class="col-sm-6">
+					<label for="f_pass">Contraseña</label><input type="password" class="form-control" id="f_pass" name="pass">
+				</div>
+				<div class="col-sm-6">
+					<label for="f_passConfirm">Repetir Contraseña</label><input type="password" class="form-control" id="f_passConfirm" name="passConfirm">
+				</div>
+				<div id="passGuides">
+					Su contraseña debe tener lo siguiente:
+					<ul>
+						<li>Longitud mínima de 8</li>
+						<li>Longitud máxima de 40</li>
+						<li>Incluír dígitos numéricos</li>
+						<li>Incluir al menos uno de los siguientes caractreres: ! # @ $ % &</li>
+						<li>Incluír al menos una letra mayúscula</li>
+					</ul>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-8 col-sm-6">
+					<label for="f_addressStreet">Dirección</label><input class="form-control" id="f_addressStreet" name="addressStreet">
+				</div>
+				<div class="col-4 col-sm-2">
+					<label for="f_addressNumber">Número</label><input class="form-control" id="f_addressNumber" name="addressNumber">
+				</div>
+				<div class="col-sm-4">
+					<label for="f_district">Comuna</label>
+					<select class="form-control" id="f_district" name="district">
+						<script> //gets districts from db and sets them as options
+							selectAllFrom("districts").then(data=>{
+								for(row of data)
+									get("f_district").innerHTML+=`<option value="${row["id"]}">${row["name"]}</option>`;
+							})
+						</script>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="f_question">Seleccione una pregunta de seguridad</label>
+				<select class="form-control" id="f_question" name="question">
+					<script> //gets sec questions from db and sets them as options
+						selectAllFrom("secQuestions").then(data=>{
+							for(row of data)
+								get("f_question").innerHTML+=`<option value="${row["id"]}">${row["value"]}</option>`;
+						})
+					</script>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="f_answer">Responda la pregunta de seguridad</label>
+				<input class="form-control" id="f_answer" name="answer">
+			</div>
+			<a href="index.html" class="btn btn-light">Cancelar</a>
+			<button type="submit" class="btn btn-success">Registrarse</button>
+		</form> 
+	</div>
+</body>
+</html>
