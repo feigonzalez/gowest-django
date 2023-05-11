@@ -1,17 +1,17 @@
 <nav id="topNavbar" class="navbar navbar-expand navbar-dark bg-gowest-dark sticky-top">
-    <a id="navbar-brand" class="navbar-brand" href="#" onclick="moveTo('index.html')">
-		<img class="navbar-brand-image" src="img/logo.png">
+    <a id="navbar-brand" class="navbar-brand" href="{% static 'core/#" onclick="moveTo('index.html')' %}">
+		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
 	</a>
     <ul id="navbarVisit" class="navbar-nav navbar-nav-right hidden">
         <li class="nav-item">
-			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="#" onclick="moveTo('cart.html')" data-units="0">
+			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="{% static 'core/#" onclick="moveTo('cart.html')" data-units="0' %}">
 				<span class="icon fa fa-shopping-cart"></span>
 				<span id="navbarCartUnits" class="badge badge-pill badge-danger hidden">0</span>
 			</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-gowest" href="signup.html" type="button">Registrarse</a>
+          <a class="btn btn-gowest" href="{% static 'core/signup.html" type="button' %}">Registrarse</a>
         </li>
 		<li class="nav-item">
 			<button class="btn btn-gowest" data-toggle="modal" data-target="#loginModal">Ingresar</button>
@@ -22,16 +22,16 @@
 			<span class="userWelcome text-right"></span>
 		</li>
         <li class="nav-item">
-			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="#" onclick="moveTo('cart.html')" data-units="0">
+			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="{% static 'core/#" onclick="moveTo('cart.html')" data-units="0' %}">
 				<span class="icon fa fa-shopping-cart"></span>
 				<span id="navbarCartUnits" class="badge badge-pill badge-danger hidden">0</span>
 			</a>
         </li>
         <li class="nav-item">
-          <a id="navLinkAccount" class="btn btn-gowest" href="#" onclick="moveTo('account.html')">Cuenta</a>
+          <a id="navLinkAccount" class="btn btn-gowest" href="{% static 'core/#" onclick="moveTo('account.html')' %}">Cuenta</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-gowest" href="index.html" type="button"><span class="icon fa fa-power-off"></span></a>
+          <a class="btn btn-gowest" href="{% static 'core/index.html" type="button"><span class="icon fa fa-power-off' %}"></span></a>
         </li>
     </ul>
     <ul id="navbarAdmin" class="navbar-nav navbar-nav-right hidden">
@@ -39,7 +39,7 @@
 			<span class="userWelcome text-right"></span>
 		</li>
 		<li class="nav-item">
-			<a class="btn btn-gowest" href="index.html" type="button">
+			<a class="btn btn-gowest" href="{% static 'core/index.html" type="button' %}">
 				<span class="icon fa fa-power-off"></span>
 			</a>
 		</li>
@@ -52,7 +52,7 @@
 			for(row of data){
 				get("categoryTabsList").innerHTML+=`<li id="catTab_${row["code"]}"`+
 					`class="nav-item bg-gowest-dark"><a class="btn btn-gowest" `+
-					`href="#" onclick="moveTo('category.html',[['c','${row["code"]}']])">${row["name"]}</a></li>`;
+					`href="{% static 'core/#" onclick="moveTo('category.html',[['c','${row["code"]}']])">${row["name' %}"]}</a></li>`;
 			}
 			if(params["c"]){
 				get("catTab_"+params["c"]).classList.add("active");
@@ -60,7 +60,7 @@
 		})
 	</script>
 </ul>
-<ihtml src="templates/loginModal.html"></ihtml>
+<ihtml src="{% static 'core/templates/loginModal.html' %}"></ihtml>
 <script>
 	//determine which navbar to show
     var navToShow="";
