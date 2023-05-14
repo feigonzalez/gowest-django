@@ -1,0 +1,26 @@
+[..\gowest\core\templates\core\processLogin.html]
+[ ] @3	var url = new URL(window.location.href);
+
+[..\gowest\core\templates\core\processSignup.html]
+[ ] @2	var url = new URL(window.location.href);
+
+[..\gowest\core\templates\core\templates\adminProducts.html]
+[ ] @29	`<td><img class='tableImage' src='img/products/${datum["code"]}.png'></td>`+
+
+[..\gowest\core\templates\core\templates\deleteAlertModal.html]
+[ ] @7	<a href="#" id="deleteAlertConfirm" class="btn btn-danger">Eliminar</a>
+
+[..\gowest\core\templates\core\templates\saleAlertModal.html]
+[ ] @7	<a href="#" class="btn btn-success">Confirmar</a>
+
+[..\gowest\core\static\core\js\formValidation.js]
+[ ] @255	if(imagePreview.getAttribute("src")==""){
+
+[..\gowest\core\static\core\js\gowest.js]
+[ ] @27	(link?"<a href='#' onclick='moveTo(\"category.html\",[[\"c\",\""+cat+"\"]])'>":"")+
+[ ] @32	"<a class='galleryItemLink' href='#' onclick='moveTo(\"product.html\",[[\"p\",\"{ID}\"]])'>"+
+[ ] @33	"<img class='galleryItemImage mx-auto d-block' src='img/products/{ID}.png'>"+
+
+[..\gowest\core\static\core\js\modals.js]
+[ ] @24	get("productFormImagePreview").setAttribute("src",parent.children[0].children[0].getAttribute("src"));
+[ ] @32	get("productFormImagePreview").setAttribute("src","");

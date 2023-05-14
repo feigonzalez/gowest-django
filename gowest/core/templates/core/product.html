@@ -21,12 +21,12 @@
 		<script src="{% static 'core/js/ihtml.js' %}" defer></script>
 	</head>
 <body>
-    <ihtml src="templates/navbar.html"></ihtml>
+	{% #Include navbar.html template %}
 	<div class="container-fluid bg-gowest" id="bradcrumbsHolder">
 		<div class="breadcrumbs">
-			<a id="breadcrumbCategory" href="#"></a>
+			<a id="breadcrumbCategory" href="{% #url depends on current product's category %}"></a>
 			/
-			<a id="breadcrumbProduct" href="#"></a>
+			<a id="breadcrumbProduct" href="{% #url depends on current product %"></a>
 		</div>
 	</div>
 	<div class="container">
@@ -50,27 +50,5 @@
 			</div>
 		</div>
 	</div>
-	<script>
-		clearParamsKeep(["u","p","cart"])
-		if(params["p"]){
-			selectAllWhere("products",(i)=>{return i["code"]==params["p"]}).then(d=>{
-				var data=d[0];
-				selectAllWhere("categories",(i)=>{return i["code"]==data["category"]}).then(c=>{
-					var cat=c[0]["name"]
-					get("breadcrumbCategory").innerText=cat;
-					get("breadcrumbCategory").setAttribute("onclick","moveTo('category.html',[['c','"+data["category"]+"']])");
-					get("breadcrumbProduct").innerText=data["name"];
-					get("breadcrumbProduct").setAttribute("onclick","moveTo('product.html',[['c','"+data["code"]+"']])")
-					get("productImage").setAttribute("src","img/products/"+data["code"]+".png");
-					get("productName").innerText=data["name"];
-					get("productPrice").innerText="$"+data["price"];
-					var desc=""
-					for(l of data["description"]) desc+=l;
-					get("productDescription").innerHTML=desc;
-					get("addToCartProductReturn").value=params["p"];
-				})
-			})
-		}
-	</script>
 </body>
 </html>

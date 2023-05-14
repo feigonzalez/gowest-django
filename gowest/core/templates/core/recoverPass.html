@@ -22,8 +22,8 @@
 	</head>
 <body>
 	<nav id="topNavbar" class="navbar navbar-expand-sm navbar-dark bg-gowest-dark">
-		<a id="navbar-brand" class="navbar-brand" href="index.html">
-			<img class="navbar-brand-image" src="img/logo.png">
+		<a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
+			<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 			<span class="navbar-brand-name">GoWest</span>
 		</a>
 	</nav>
@@ -57,7 +57,7 @@
 						</script>
 					</div>
 					<input type="hidden" id="f_rut" name="rut">
-					<a href="index.html" class="btn">Cancelar</a>
+					<a href="{% url 'index' %}" class="btn">Cancelar</a>
 					<input type="submit" class="btn btn-success" value="Recuperar contraseña">
 				</form>
 			</div>

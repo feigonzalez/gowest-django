@@ -35,5 +35,5 @@
 <div class="container p-3 fr text-right">
 	<button class="btn btn-success" data-toggle="modal" data-target="#categoryDataModal" onclick="prepareCategoryModal()">Añadir Categoría</button>
 </div>
-<ihtml src="{% static 'core/templates/categoryDataModal.html' %}"></ihtml>
-<ihtml src="{% static 'core/templates/deleteAlertModal.html' %}"></ihtml>
+{% #Include categoryDataModal.html template %}
+{% #Include deleteAlertModal.html template %}

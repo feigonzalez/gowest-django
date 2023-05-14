@@ -21,14 +21,7 @@
         <script src="{% static 'core/js/ihtml.js' %}" defer></script>
     </head>
 <body>
-    <script>
-        //if user is "admin@admin", redirect to adminindex
-		clearParamsKeep(["u","cart"])
-        if(params["u"] && params["u"]=="admin@admin"){
-            moveTo("adminIndex.html");
-        }
-    </script>
-    <ihtml src="templates/navbar.html"></ihtml>
-    <ihtml src="templates/gallery.html"></ihtml>
+	{% #Include navbar.html template %}
+	{% #Include gallery.html template %}
 </body>
 </html>

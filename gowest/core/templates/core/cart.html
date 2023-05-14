@@ -21,7 +21,7 @@
 		<script src="{% static 'core/js/ihtml.js' %}" defer></script>
 	</head>
 <body>
-    <ihtml src="templates/navbar.html"></ihtml>
+	{% #Include navbar.html template %}
 	<div class="container mt-3">
 		<div class="row">
 			<div class="col-lg-6 table-responsive" id="checkoutDetails">
@@ -58,7 +58,7 @@
 	get("cartFormUser").value=params["u"];
 	selectAllWhere("addresses",(i)=>{return i["userID"]==params["u"]}).then(rows=>{
 		for(row of rows){
-			get("cartFormAddress").innerHTML+=`<option value="${row["id"]}">${row["street"]} ${row["number"]}</option>`;
+			get("cartFormAddress").innerHTML += `<option value="${row['id']}">${row['street']} ${row['number']}</option>`;
 		}
 	})
 	if(params["u"]==null){
@@ -67,7 +67,7 @@
 		})
 		get("checkoutPayment").classList.add("text-center");
 		get("checkoutPayment").innerHTML="<p>Ingrese con su cuenta para poder terminar la compra</p>"+
-			"<p>Si no tiene una cuenta, puede <a href='signup.html'>registrarse</a>.</p>";
+			"<p>Si no tiene una cuenta, puede <a href={% url 'signup' %}>registrarse</a>.</p>";
 	} else {
 		selectAllWhere("sales",(i)=>{return i["userID"]==params["u"]&&i["status"]=="Carrito"}).then(sales=>{
 			if(sales.length==0)console.log("no sales found");

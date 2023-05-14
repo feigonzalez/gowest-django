@@ -72,7 +72,7 @@
 						<script> //gets districts from db and sets them as options
 							selectAllFrom("districts").then(data=>{
 								for(row of data)
-									get("f_district").innerHTML+=`<option value="${row["id"]}">${row["name"]}</option>`;
+									get("f_district").innerHTML+=`<option value="${row['id']}">${row['name']}</option>`;
 							})
 						</script>
 					</select>
@@ -84,7 +84,7 @@
 					<script> //gets sec questions from db and sets them as options
 						selectAllFrom("secQuestions").then(data=>{
 							for(row of data)
-								get("f_question").innerHTML+=`<option value="${row["id"]}">${row["value"]}</option>`;
+								get("f_question").innerHTML+=`<option value="${row['id']}">${row['value']}</option>`;
 						})
 					</script>
 				</select>
