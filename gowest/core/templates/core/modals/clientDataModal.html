@@ -4,6 +4,7 @@
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
 				<form action="adminIndex.html?t=clients">
+				{% csrf_token %}
 					<div class="row">
 						<div class="col-4"><label class="f-b">Nombre</label></div>
 						<div class="col-8"><span id="clientFormName" class="form-value"></span></div>

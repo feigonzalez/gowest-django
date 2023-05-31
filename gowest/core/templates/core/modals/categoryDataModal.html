@@ -3,23 +3,19 @@
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form action="adminIndex.html" onsubmit="validateCategoryForm(event)">
+				<form action="{% url 'createCategory' %}" method="POST" onsubmit="validateCategoryForm(event)">
+					{% csrf_token %}
 					<div class="form-group">
 						<label for="name">Nombre</label>
-						<input type="text" name="name" class="form-control" id="categoryFormName">
+						<input type="text" name="categoryName" class="form-control" id="categoryFormName">
 					</div>
 					<div class="form-group float-right">
 						<button type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
 						<button type="submit" class="btn btn-success">Ingresar</button>
 					</div>
 					<input type="hidden" name="update" value="false" id="categoryFormUpdate">
-					<input type="hidden" name="t" value="categories">
-					<input id="categoryFormUser"type="hidden" name="u">
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
-<script>
-	get("categoryFormUser").value=params["u"];
-</script>

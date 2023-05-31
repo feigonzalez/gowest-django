@@ -108,5 +108,18 @@ function formatSaleStatus(status){
 	}
 }
 
+function updateCartTotals(e){
+	validateCheckoutItemCount(e)
+	var price=parseInt(e.parentElement.parentElement.children[1].innerText.substring(1));
+	var se=e.parentElement.parentElement.children[3];
+	se.innerText="$"+price*e.value;
+	var newTotal=0;
+	for(row of e.parentElement.parentElement.parentElement.children){
+		if(row.children[3].id=="cartTotal")break;
+		newTotal+=parseInt(row.children[3].innerText.substring(1));
+	}
+	get("cartTotal").innerText="$"+newTotal;
+}
+
 window.addEventListener("load",()=>{
 })

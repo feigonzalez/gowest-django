@@ -14,31 +14,27 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
         <script src="{% static 'core/js/gowest.js' %}"></script>
-        <script src="{% static 'core/js/db.js' %}"></script>
-        <script src="{% static 'core/js/urlParams.js' %}"></script>
         <script src="{% static 'core/js/formValidation.js' %}"></script>
         <script src="{% static 'core/js/modals.js' %}"></script>
-        <script src="{% static 'core/js/ihtml.js' %}" defer></script>
     </head>
 <body>
-    {% # Include navbar.html template %}
+    {% include 'core/templates/navbar.html' %}
     <div class="container-fluid">
         <div class="row">
-            <div id="adminSidebar" class="sidebar col-md-3 sticky-top">
+            <div id="clientSidebar" class="sidebar col-md-3 sticky-top">
 				<button id="sidebarCollapseBtn" class="btn btn-gowest d-md-none collapsed"
-					data-toggle="collapse" data-target="#adminSidebarGroup"><span class="icon fa fa-angle-up"></span></button>
-                <div id="adminSidebarGroup" class="list-group collapse dont-collapse-sm">
-                    <a href="{% #Change to adminAccount view %}" class="list-group-item list-group-item-gowest">Cuenta</a>
-                    <a href="{% #Change to adminProducts view%}" class="list-group-item list-group-item-gowest">Productos</a>
-                    <a href="{% #Change to adminCategories view%}" class="list-group-item list-group-item-gowest">Categorías</a>
-                    <a href="{% #Change to adminClients view%}" class="list-group-item list-group-item-gowest">Clientes</a>
-                    <a href="{% #Change to adminSales view%}" class="list-group-item list-group-item-gowest">Ventas</a>
-                    <a href="{% #Change to adminAdministators view%}" class="list-group-item list-group-item-gowest">Adminstradores</a>
+					data-toggle="collapse" data-target="#clientSidebarGroup"><span class="icon fa fa-angle-up"></span></button>
+                <div id="clientSidebarGroup" class="list-group collapse dont-collapse-sm">
+                    <a href="{% url 'clientAccount' %}" class="list-group-item list-group-item-gowest">Cuenta</a>
+                    <a href="{% url 'clientSales' %}" class="list-group-item list-group-item-gowest">Compras</a>
+                    <a href="{% url 'cart' %}" class="list-group-item list-group-item-gowest">Carrito</a>
+                    <a href="{% url 'clientFoundation' %}" class="list-group-item list-group-item-gowest">Fundación Ayuda a un Peludo</a>
                     <div class="list-group-item list-group-item-last d-none d-md-block"></div>
                 </div>
             </div>
-            <div id="adminContent" class="col-md-9">
-				{% # Include an adminX.html template depending on the view %}
+            <div id="clientContent" class="col-md-9 pt-3">
+                {% block 'clientContent' %}
+                {% endblock 'clientContent' %}
             </div>
         </div>
     </div>

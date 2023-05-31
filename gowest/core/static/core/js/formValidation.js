@@ -341,3 +341,13 @@ function validateCategoryForm(ev){
 	
 	if(!valid) ev.preventDefault();
 }
+
+function validateLogin(ev){
+	let valid = true;
+	//get user from provided mail
+	//compare provided pass with db pass
+	//if they dont match{
+	//	makeInvalid("","Usuario y/o contraseña incorrectos.")
+	//	valid=false;}
+	if(!valid) ev.preventDefault();
+}

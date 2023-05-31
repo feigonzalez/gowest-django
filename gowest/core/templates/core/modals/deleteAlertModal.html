@@ -1,0 +1,16 @@
+<div class="modal fade" id="deleteAlertModal">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<button type="button" class="form-close" data-dismiss="modal"></button>
+			<div class="modal-body text-center">
+				<div id="deleteAlertMessage"></div>
+				<form action="{% url 'confirmDeletion' %}" method="POST">
+					<input type="hidden" id="deleteAlertTarget" name="target">
+					<input type="hidden" id="deleteAlertOrigin" name="origin">
+					<button id="deleteAlertCancel" type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
+					<input type="submit" id="deleteAlertConfirm" class="btn btn-danger" value="Eliminar">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

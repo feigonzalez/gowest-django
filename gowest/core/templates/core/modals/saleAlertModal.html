@@ -1,0 +1,16 @@
+<div class="modal fade" id="saleAlertModal">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<button type="button" class="form-close" data-dismiss="modal"></button>
+			<div class="modal-body text-center">
+				<div id="saleAlertMessage"></div>
+				<form action="{% url 'confirmSaleAction' %}" method="POST">
+					<input id="saleAlertAction" type="hidden" name="action" value="">
+					<input id="saleAlertTarget" type="hidden" name="target" value="">
+					<button id="saleAlertCancel" type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
+					<input type="submit" id="saleAlertConfirm" class="btn btn-success" value="Confirmar">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

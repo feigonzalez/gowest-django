@@ -14,27 +14,41 @@
 		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="{% static 'core/js/gowest.js' %}"></script>
-		<script src="{% static 'core/js/db.js' %}"></script>
-		<script src="{% static 'core/js/urlParams.js' %}"></script>
 		<script src="{% static 'core/js/formValidation.js' %}"></script>
 		<script src="{% static 'core/js/modals.js' %}"></script>
-		<script src="{% static 'core/js/ihtml.js' %}" defer></script>
 	</head>
 <body>
-	{% #Include navbar.html template %}
+	{% include 'core/templates/navbar.html'  %}
 	<div class="container mt-3">
 		<div class="row">
 			<div class="col-lg-6 table-responsive" id="checkoutDetails">
 				<table class="table">
 					<thead><tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th><th></th></tr></thead>
-					<tbody id="checkoutDetailsTableBody"></tbody>
+					<tbody id="checkoutDetailsTableBody">
+						{% for detail in details %}
+						<tr>
+							<td>{{ detail.product.name }}</td>
+							<td>{{ detail.product.price }}</td>
+							<td><input id="f_cartItem{{ detail.id }}"class="form-control cartItemQtty" onchange="updateCartTotals(this)" type="number" value="{{ detail.units }}"></input></td>
+							<td>{{ detail.product.subtotal }}</td>
+							<td><button class="btn btn-danger"><span class="icon fa fa-trash"></span></button></td>
+						</tr>
+						{% endfor %}
+						<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'></td><td></td></tr>
+					</tbody>
 				</table>
 			</div>
 			<div class="col-lg-6" id="checkoutPayment">
+				{# % if SESSION.user set % #}
 				<form id="cartCheckoutForm" action="checkout.html" onsubmit="validateCheckout(event)">
+				{% csrf_token %}
 					<div class="form-group">
 						<label for="cartAddess">Dirección de envío</label>
-						<select id="cartFormAddress" class="form-control" name="cartAddress"></select>
+						<select id="cartFormAddress" class="form-control" name="cartAddress">
+							{% for address in addresses %}
+								<option value="{{ address.id }}">{{ address.street }} {{ address.number }}, {{ address.district.name }}</option>
+							{% endfor %}
+						</select>
 					</div>
 					<div class="form-group">
 						<label for="paymentMethod">Seleccione medio de pago</label>
@@ -50,62 +64,11 @@
 					</div>
 					<input id="cartFormUser" type="hidden" name="u">
 				</form>
+				{# else #}
+				<p>Ingrese con su cuenta para poder terminar la compra</p>
+				<p>Si no tiene una cuenta, puede <a href="{% url 'signup' %}">registrarse</a>.</p>
+				{# % endif % #}
 			</div>
 		</div>
 	</div>
 </body>
-<script>
-	get("cartFormUser").value=params["u"];
-	selectAllWhere("addresses",(i)=>{return i["userID"]==params["u"]}).then(rows=>{
-		for(row of rows){
-			get("cartFormAddress").innerHTML += `<option value="${row['id']}">${row['street']} ${row['number']}</option>`;
-		}
-	})
-	if(params["u"]==null){
-		selectAllWhere("saleDetails",(i)=>{return Math.random()>=0.5}).then(data=>{
-			populateItemList(data);
-		})
-		get("checkoutPayment").classList.add("text-center");
-		get("checkoutPayment").innerHTML="<p>Ingrese con su cuenta para poder terminar la compra</p>"+
-			"<p>Si no tiene una cuenta, puede <a href={% url 'signup' %}>registrarse</a>.</p>";
-	} else {
-		selectAllWhere("sales",(i)=>{return i["userID"]==params["u"]&&i["status"]=="Carrito"}).then(sales=>{
-			if(sales.length==0)console.log("no sales found");
-			else selectAllWhere("saleDetails",(i)=>{return i["saleID"]==sales[0]["id"]}).then(details=>{
-				if(details.length==0) console.log("sale empty")
-				else populateItemList(details);
-			})
-		});
-	}
-	
-	function updateCartTotals(e){
-		validateCheckoutItemCount(e)
-		var price=parseInt(e.parentElement.parentElement.children[1].innerText.substring(1));
-		var se=e.parentElement.parentElement.children[3];
-		se.innerText="$"+price*e.value;
-		var newTotal=0;
-		for(row of e.parentElement.parentElement.parentElement.children){
-			if(row.children[3].id=="cartTotal")break;
-			newTotal+=parseInt(row.children[3].innerText.substring(1));
-		}
-		get("cartTotal").innerText="$"+newTotal;
-	}
-	
-	async function populateItemList(data){
-		params["cart"]=data.length
-		var total=0;
-		var count=0;
-		for(var row of data){
-			var product = (await selectAllWhere("products",(i)=>{return i["id"]==row["productID"]}))[0];
-			get("checkoutDetailsTableBody").innerHTML+=`<tr>`+
-				`<td>${product["name"]}</td>`+
-				`<td>$${product["price"]}</td>`+
-				`<td><input id="f_cartItem${count}"class="form-control cartItemQtty" onchange="updateCartTotals(this)" type="number" value=${row["units"]}></input></td>`+
-				`<td>$${row["subtotal"]}</td>`+
-				`<td><button class="btn btn-danger"><span class="icon fa fa-trash"></span></button></td></tr>`;
-			total+=row["subtotal"]
-			count+=1;
-		}
-		get("checkoutDetailsTableBody").innerHTML+="<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'>$"+total+"</td><td></td></tr>";
-	}
-</script>

@@ -1,0 +1,48 @@
+<div class="modal fade" id="productDataModal">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<button type="button" class="form-close" data-dismiss="modal"></button>
+			<div class="modal-body">
+				<form action="{% url 'createProduct' %}" method="POST" onsubmit="validateProductModal(event)" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="productImage">Imagen</label>
+						<div class="form-image-input">
+							<img id="productFormImagePreview">
+							<input type="file" name="productImage" class="form-control" id="productFormImage">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="productName">Nombre</label>
+						<input type="text" name="productName" class="form-control" id="productFormName">
+					</div>
+					<div class="form-group">
+						<label for="productPrice">Precio</label>
+						<input type="number" name="productPrice" class="form-control" id="productFormPrice">
+					</div>
+					<div class="form-group">
+						<label for="productStock">Stock</label>
+						<input type="number" name="productStock" class="form-control" id="productFormStock">
+					</div>
+					<div class="form-group">
+						<label for="producrCategory">Categoría</label>
+						<select name="productCategory" class="form-control" id="productFormCategory">
+							{% for category in categories %}
+								<option value="{{ category.id }}">{{ category.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="productDescription">Descripción</label>
+						<textarea name="productDescription" class="form-control" id="productFormDescription"></textarea>
+					</div>
+					<div class="form-group float-right">
+						<button type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
+						<button type="submit" class="btn btn-success">Ingresar</button>
+					</div>
+					<input type="hidden" name="update" value="false" id="productFormUpdate">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

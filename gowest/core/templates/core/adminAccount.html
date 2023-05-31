@@ -1,34 +1,39 @@
+{% extends 'core/templates/adminViewTemplate.html' %}
+{% block 'adminContent' %}
 <div class="container mt-3">
-	<form action="processAdminAccountChanges.html" onsubmit="validateAdminAccountForm(event)">
+	<h4>Datos</h4>
+	<form action="{% url 'processAdminAccountChanges' type='data' %}" method="POST" onsubmit="validateAdminAccountForm(event)">
+		{% csrf_token %}
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="name">Nombre</label>
-				<input id="adminName" name="name" class="form-control">
+				<input id="adminName" name="adminName" class="form-control" value="{# SESSION['user'].name #}">
 			</div>
 			<div class="col-sm-6">
 				<label for="surname">Apellido</label>
-				<input id="adminSurname" name="surname" class="form-control">
+				<input id="adminSurname" name="adminSurname" class="form-control" value="{# SESSION['user'].surname #}">
 			</div>
 		</div>
 		<div class="form-group">
 			<label for="phone">Teléfono</label>
-			<input id="adminPhone" name="phone" class="form-control">
+			<input id="adminPhone" name="adminPhone" class="form-control" value="{# SESSION['user'].phone #}">
 		</div>
 		<div class="form-group">
 			<input id="adminSaveData" type="submit" value="Guardar" class="btn btn-success">
 		</div>
-		<input id="adminDataFormUser" type="hidden" name="u">
 	</form>
 	<hr>
-	<form action="processAdminAccountChanges.html" onsubmit="validateAdminPasswordForm(event)">
+	<h4>Seguridad</h4>
+	<form action="{% url 'processAdminAccountChanges' type='password' %}" method="POST" onsubmit="validateAdminPasswordForm(event)">
+	{% csrf_token %}
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="pass">Nueva Contraseña</label>
-				<input id="adminPass" type=password name="pass" class="form-control">
+				<input id="adminPass" type=password name="adminPassword" class="form-control">
 			</div>
 			<div class="col-sm-6">
 				<label for="newPassConfirm">Repetir Nueva Contraseña</label>
-				<input id="adminPassConfirm" type=password name="passConfirm" class="form-control">
+				<input id="adminPassConfirm" type=password name="adminPasswordConfirm" class="form-control">
 			</div>
 			<div id="passGuides">
 				Su contraseña debe tener lo siguiente:
@@ -44,37 +49,26 @@
 		<div class="form-group">
 			<input id="adminSaveSecurity" type="submit" value="Guardar Nueva Contraseña" class="btn btn-success">
 		</div>
-		<input id="adminSecFormUser" type="hidden" name="u">
 	</form>
-	<form action="processAdminAccountChanges.html" onsubmit="validateAdminSecQuestionForm(event)">
+	<form action="{% url 'processAdminAccountChanges' type='secQuestion' %}" method="POST" onsubmit="validateAdminSecQuestionForm(event)">
+	{% csrf_token %}
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="secQuestion">Cambiar Pregunta de Seguridad</label>
-				<select id="adminSecQuestion" name="secQuestion" class="form-control"></select>
+				<select id="adminSecQuestion" name="adminSecQuestion" class="form-control" value="{# SESSION['user'].secQuestion.id #}">
+					{% for secQuestion in secQuestions %}
+						<option value="{{ secQuestion.id }}">{{ secQuestion.question }}</option>
+					{% endfor %}
+				</select>
 			</div>
 			<div class="col-sm-6">
 				<label for="secAnswer">Cambiar Respuesta de Seguridad</label>
-				<input id="adminSecAnswer" name="secAnswer" class="form-control">
+				<input id="adminSecAnswer" name="adminSecAnswer" class="form-control">
 			</div>
 		</div>
 		<div class="form-group">
 			<input id="adminSaveSecurity" type="submit" value="Guardar Datos de Recuperación" class="btn btn-success">
 		</div>
-		<input id="adminSecFormUser" type="hidden" name="u">
 	</form>
-	<script>
-		get("adminDataFormUser").value=params["u"];
-		get("adminSecFormUser").value=params["u"];
-		selectAllWhere("users",(i)=>{return i["id"]==params["u"]}).then(data=>{
-			var row=data[0];
-			get("adminName").value=row["name"];
-			get("adminSurname").value=row["surname"];
-			get("adminPhone").value=row["phone"];
-		})
-		selectAllFrom("secQuestions").then(data=>{
-			for(row of data){
-				get("adminSecQuestion").innerHTML+=`<option value="${row["id"]}">${row["value"]}</option>`
-			}
-		})
-	</script>
 </div>
+{% endblock 'adminContent' %}

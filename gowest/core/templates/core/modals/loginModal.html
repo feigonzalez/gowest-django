@@ -3,14 +3,15 @@
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form action="processLogin.html">
+				<form action="{% url 'processLogin' %}" method="POST" onsubmit="validateLogin()">
+				{% csrf_token %}
 					<div class="form-group">
 						<label for="mail">Correo:</label>
 						<input type="email" name="mail" class="form-control" placeholder="Ingrese Correo" id="loginMail" required>
 					</div>
 					<div class="form-group">
 						<label for="pass">Contraseña:</label>
-						<input type="password" class="form-control" placeholder="Ingrese contraseña" id="loginPass" required>
+						<input type="password" class="form-control" placeholder="Ingrese contraseña" id="loginPassword" required>
 					</div>
 					<div class="row">
 						<div class="col-6">

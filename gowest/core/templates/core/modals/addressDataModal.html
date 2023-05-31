@@ -4,6 +4,7 @@
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
 				<form action="account.html" onsubmit="validateAddressModalForm(event)">
+				{% csrf_token %}
 					<div class="form-group">
 						<label for="name">Calle</label>
 						<input type="text" name="name" class="form-control" id="addressFormStreet">

@@ -1,0 +1,50 @@
+{% extends 'core/templates/adminViewTemplate.html' %}
+{% block 'adminContent' %}
+<form class="mb-3" action="{% url 'adminSales' %}" method="GET">
+{% csrf_token %}
+    <div class="input-group">
+		<input class="searchbar form-control" name "adminSalesSearchQuery "id="searchSales" placeholder="Buscar en Ventas"></input>
+      	<div class="input-group-append">
+        	<button class="btn btn-gowest"><span class="icon fa fa-search"></span></button>
+      	</div>
+    </div>
+</form>
+<div class="table-responsive">
+	<table class="table table-hover align-middle">
+		<thead>
+			<tr>
+			<th>Código</th>
+			<th class="d-none d-sm-table-cell">ID Cliente</th>
+			<th>Fecha Venta</th>
+			<th class="d-none d-sm-table-cell">Fecha Entrega</th>
+			<th>Estado</th>
+			<th></th>
+			</tr>
+		</thead>
+		<tbody id="tableSalesBody">
+			{% for sale in sales %}
+			<tr>
+				<td data-type="string">{{ sale.id }}</td>
+				<td class="d-none d-sm-table-cell" data-type="string">{{ sale.user.id }}</td>
+				<td data-type="date">{{ sale.saleDate}}</td>
+				<td class="d-none d-sm-table-cell" data-type="date">{{ sale.deliveryDate }}</td>
+				<td class="saleStatus" data-type="string">{{ sale.status }}</td>
+				<td class="text-right">
+				{% if sale.status == "Pagada" %}
+					<button class="btn btn-danger" data-toggle="modal" data-target="#saleAlertModal"
+					onclick="confirmSaleShipment(this)" data-id="{{ sale.id }}">
+						<span class="icon fa fa-truck"></span>
+					</button>
+				{% endif %}
+				<button class="btn btn-success"data-toggle="modal" data-target="#saleDataModal"
+					onclick="prepareSaleModal(this)" data-id="{{ sale.id }}">
+					<span class="icon fa fa-search"></span>
+				</button>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% include 'core/modals/saleDataModal.html' %}
+{% include 'core/modals/saleAlertModal.html' %}
+{% endblock 'adminContent' %}

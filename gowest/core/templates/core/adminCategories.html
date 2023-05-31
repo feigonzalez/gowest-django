@@ -1,0 +1,40 @@
+{% extends 'core/templates/adminViewTemplate.html' %}
+{% block 'adminContent' %}
+<form class="mb-3" action="{% url 'adminCategories' %}" method="GET">
+{% csrf_token %}
+    <div class="input-group">
+		<input class="searchbar form-control" name="adminCategoriesSearchQuery" id="searchCategories" placeholder="Buscar en Categorías"></input>
+      	<div class="input-group-append">
+        	<button class="btn btn-gowest"><span class="icon fa fa-search"></span></button>
+      	</div>
+    </div>
+</form>
+<div class="table-responsive">
+	<table class="table table-hover align-middle">
+		<thead>
+			<tr>
+			<th>Nombre</th>
+			<th></th>
+			</tr>
+		</thead>
+		<tbody id="tableCategoriesBody">
+			{% for category in categories %}
+				<tr>
+					<td data-type="string">{{ category.name }}</td>
+					<td class="text-right">
+						<button class="btn btn-success" data-toggle="modal" data-target="#categoryDataModal" onclick="prepareCategoryModal(this)">
+							<span class="icon fa fa-pencil"></span></button>
+						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteCategory(this)">
+							<span class="icon fa fa-trash"></span></button>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<div class="container p-3 fr text-right">
+	<button class="btn btn-success" data-toggle="modal" data-target="#categoryDataModal" onclick="prepareCategoryModal()">Añadir Categoría</button>
+</div>
+{% include 'core/modals/categoryDataModal.html' %}
+{% include 'core/modals/deleteAlertModal.html' %}
+{% endblock 'adminContent' %}

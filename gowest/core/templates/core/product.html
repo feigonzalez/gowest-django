@@ -14,33 +14,30 @@
 		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="{% static 'core/js/gowest.js' %}"></script>
-		<script src="{% static 'core/js/db.js' %}"></script>
-		<script src="{% static 'core/js/urlParams.js' %}"></script>
 		<script src="{% static 'core/js/formValidation.js' %}"></script>
 		<script src="{% static 'core/js/modals.js' %}"></script>
-		<script src="{% static 'core/js/ihtml.js' %}" defer></script>
 	</head>
 <body>
-	{% #Include navbar.html template %}
+	{% include 'core/templates/navbar.html' %}
 	<div class="container-fluid bg-gowest" id="bradcrumbsHolder">
 		<div class="breadcrumbs">
-			<a id="breadcrumbCategory" href="{% #url depends on current product's category %}"></a>
+			<a id="breadcrumbCategory" href="{% url 'category' id=product.category.id %}"></a>
 			/
-			<a id="breadcrumbProduct" href="{% #url depends on current product %"></a>
+			<a id="breadcrumbProduct" href="{% url 'product' id=product.id %}"></a>
 		</div>
 	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-5">
 				<div id="productImageHolder">
-					<img id="productImage"></img>
+					<img id="productImage" src="{{ product.image.url }}"></img>
 				</div>
 			</div>
 			<div class="col-sm-7">
 				<div id="productDataHolder">
-					<div id="productName"></div>
-					<div id="productPrice"></div>
-					<div id="productDescription"></div>
+					<div id="productName">{{ product.name }}</div>
+					<div id="productPrice">{{ product.price }}</div>
+					<div id="productDescription">{{ product.description }}</div>
 					<div id="saleControls" class="row">
 						<input id="addToCartUnits" name="units" class="form-control mr-2 col-3" type="number" value=1 onchange="validateAddToCart(this)">
 						<input id="addToCartProductReturn" type="hidden" name="p">

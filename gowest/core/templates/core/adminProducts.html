@@ -1,0 +1,47 @@
+{% extends 'core/templates/adminViewTemplate.html' %}
+{% block 'adminContent' %}
+<form class="mb-3" action="{% url 'adminProducts' %}" method="GET">
+{% csrf_token %}
+    <div class="input-group">
+		<input class="searchbar form-control" name="adminProductsSearchQuery" id="searchProducts" placeholder="Buscar en Productos"></input>
+      	<div class="input-group-append">
+        	<button class="btn btn-gowest"><span class="icon fa fa-search"></span></button>
+      	</div>
+    </div>
+</form>
+<div class="table-responsive">
+	<table class="table table-hover align-middle">
+		<thead>
+			<tr>
+			<th>Imagen</th>
+			<th>Nombre</th>
+			<th class="d-none d-sm-table-cell">Precio</th>
+			<th class="d-none d-sm-table-cell">Stock</th>
+			<th class="d-none d-sm-table-cell">Categoría</th>
+			<th></th>
+			</tr>
+		</thead>
+		<tbody id="tableProductsBody">
+			{% for product in products %}
+				<tr>
+					<td><img class='tableImage' src='{{ product.image.url }}'></td>
+					<td data-type="string">{{ product.name }}</td>
+					<td class="d-none d-sm-table-cell" data-type="number">{{ product.price }}</td>
+					<td class="d-none d-sm-table-cell" data-type="number">{{ product.stock }}</td>
+					<td class="d-none d-sm-table-cell" data-type="foreign" data-reference="categories.code">{{ product.category.name }}</td>
+					<td class="hidden">{{ product.description }}</td>
+					<td class="text-right"><button class="btn btn-success" data-toggle="modal" data-target="#productDataModal" onclick="prepareProductModal(this)">
+						<span class="icon fa fa-pencil"></span></button>
+					<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteProduct(this)">
+						<span class="icon fa fa-trash"></span></button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<div class="container p-3 fr text-right">
+	<button class="btn btn-success" data-toggle="modal" data-target="#productDataModal" onclick="prepareProductModal()">Añadir Producto</button>
+</div>
+{% include 'core/modal/productDataModal.html' %}
+{% include 'core/modal/deleteAlertModal.html' %}
+{% endblock 'adminContent' %}

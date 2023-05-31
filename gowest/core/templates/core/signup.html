@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>GoWest</title>
+		<title>GoWest - Registro</title>
 		<link rel="icon" href="{% static 'core/img/logo.png' %}"/>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -14,39 +14,32 @@
 		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="{% static 'core/js/gowest.js' %}"></script>
-		<script src="{% static 'core/js/db.js' %}"></script>
-		<script src="{% static 'core/js/urlParams.js' %}"></script>
 		<script src="{% static 'core/js/formValidation.js' %}"></script>
 		<script src="{% static 'core/js/modals.js' %}"></script>
-		<script src="{% static 'core/js/ihtml.js' %}" defer></script>
 	</head>
 <body>
-	<nav id="topNavbar" class="navbar navbar-expand-sm navbar-dark bg-gowest-dark sticky-top">
-		<a id="navbar-brand" class="navbar-brand" href="{% url 'adminIndex' %}">
-			<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
-			<span class="navbar-brand-name">GoWest</span>
-		</a>
-	</nav>
+	{% include 'core/templates/navbar.html' %}
 	<div class="container mt-3 mb-3">
-		 <form id="signupForm" action="processSignup.html" onsubmit="validateSignup(event)">
+		<form id="signupForm" action="{% url 'processSignup' %}" method="POST" onsubmit="validateSignup(event)">
+		{% csrf_token %}
 			<div class="row">
 				<div class="col-sm-6">
 					<label for="f_name">Nombre</label>
-					<input class="form-control" id="f_name" name="name">
+					<input class="form-control" id="f_name" name="clientName">
 				</div><div class="col-sm-6">
 					<label for="f_surname">Apellido</label>
-					<input class="form-control" id="f_surname" name="surname">
+					<input class="form-control" id="f_surname" name="clientSurname">
 				</div>
 			</div>
-			<div><label for="f_rut">RUT</label><input class="form-control" id="f_rut" name="rut"></div>
-			<div><label for="f_user">Correo</label><input type="email" class="form-control" id="f_user" name="user"></div>
-			<div><label for="f_phone">Teléfono</label><input class="form-control" id="f_phone" name="phone"></div>
+			<div><label for="f_rut">RUT</label><input class="form-control" id="f_rut" name="clientRut"></div>
+			<div><label for="f_user">Correo</label><input type="email" class="form-control" id="f_user" name="clientMail"></div>
+			<div><label for="f_phone">Teléfono</label><input class="form-control" id="f_phone" name="clientPhone"></div>
 			<div class="row">
 				<div class="col-sm-6">
-					<label for="f_pass">Contraseña</label><input type="password" class="form-control" id="f_pass" name="pass">
+					<label for="f_pass">Contraseña</label><input type="password" class="form-control" id="f_pass" name="clientPassword">
 				</div>
 				<div class="col-sm-6">
-					<label for="f_passConfirm">Repetir Contraseña</label><input type="password" class="form-control" id="f_passConfirm" name="passConfirm">
+					<label for="f_passConfirm">Repetir Contraseña</label><input type="password" class="form-control" id="f_passConfirm" name="clientPasswordConfirm">
 				</div>
 				<div id="passGuides">
 					Su contraseña debe tener lo siguiente:
@@ -60,38 +53,38 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-8 col-sm-6">
-					<label for="f_addressStreet">Dirección</label><input class="form-control" id="f_addressStreet" name="addressStreet">
+				<div class="col-8">
+					<label for="f_addressStreet">Dirección</label><input class="form-control" id="f_addressStreet" name="clientAddressStreet">
 				</div>
-				<div class="col-4 col-sm-2">
-					<label for="f_addressNumber">Número</label><input class="form-control" id="f_addressNumber" name="addressNumber">
+				<div class="col-4">
+					<label for="f_addressNumber">Número</label><input class="form-control" id="f_addressNumber" name="clientAddressNumber">
 				</div>
-				<div class="col-sm-4">
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="f_postalCode">Código Postal</label>
+					<input class="form-control" id="f_postalCode" name="clientAddressPostalCode">
+				</div>
+				<div class="col-6">
 					<label for="f_district">Comuna</label>
-					<select class="form-control" id="f_district" name="district">
-						<script> //gets districts from db and sets them as options
-							selectAllFrom("districts").then(data=>{
-								for(row of data)
-									get("f_district").innerHTML+=`<option value="${row['id']}">${row['name']}</option>`;
-							})
-						</script>
+					<select class="form-control" id="f_district" name="clientAddressDistrict">
+						{% for district in districts %}
+						<option value="{{ district.id }}">{{ district.name }}</option>
+						{% endfor %}
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="f_question">Seleccione una pregunta de seguridad</label>
-				<select class="form-control" id="f_question" name="question">
-					<script> //gets sec questions from db and sets them as options
-						selectAllFrom("secQuestions").then(data=>{
-							for(row of data)
-								get("f_question").innerHTML+=`<option value="${row['id']}">${row['value']}</option>`;
-						})
-					</script>
+				<select class="form-control" id="f_question" name="clientQuestion">
+					{% for secQuestion in secQuestions %}
+					<option value="{{ secQuestion.id }}">{{ secQuestion.question }}</option>
+					{% endfor %}
 				</select>
 			</div>
 			<div class="form-group">
 				<label for="f_answer">Responda la pregunta de seguridad</label>
-				<input class="form-control" id="f_answer" name="answer">
+				<input class="form-control" id="f_answer" name="clientAnswer">
 			</div>
 			<a href="{% url 'index' %}" class="btn btn-light">Cancelar</a>
 			<button type="submit" class="btn btn-success">Registrarse</button>

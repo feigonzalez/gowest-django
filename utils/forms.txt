@@ -1,0 +1,58 @@
+[..\gowest\core\templates\core\adminAccount.html]
+[X] @3	<form action="processAdminAccountChanges.html" onsubmit="validateAdminAccountForm(event)">
+[X] @24	<form action="processAdminAccountChanges.html" onsubmit="validateAdminPasswordForm(event)">
+[X] @50	<form action="processAdminAccountChanges.html" onsubmit="validateAdminSecQuestionForm(event)">
+
+[..\gowest\core\templates\core\adminAdministrators.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchAdmins()">
+
+[..\gowest\core\templates\core\adminCategories.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchCategories()">
+
+[..\gowest\core\templates\core\adminClients.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchClients()" >
+
+[..\gowest\core\templates\core\adminProducts.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchProducts()">
+
+[..\gowest\core\templates\core\adminSales.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchSales()">
+
+[..\gowest\core\templates\core\cart.html]
+[X] @33	<form id="cartCheckoutForm" action="checkout.html" onsubmit="validateCheckout(event)">
+
+[..\gowest\core\templates\core\clientAccount.html]
+[X] @4	<form action="processClientAccountChanges.html" onsubmit="validateClientAccountForm(event)">
+[X] @30	<form action="processClientAccountChanges.html" onsubmit="validateClientPasswordForm(event)">
+[X] @56	<form action="processClientAccountChanges.html" onsubmit="validateClientSecQuestionForm(event)">
+
+[..\gowest\core\templates\core\clientSales.html]
+[X] @2	<form class="mt-3 mb-3" onsubmit="searchPurchases()">
+
+[..\gowest\core\templates\core\recoverPass.html]
+[X] @48	<form action="validatePassRecovery.html">
+
+[..\gowest\core\templates\core\signup.html]
+[X] @30	<form id="signupForm" action="processSignup.html" onsubmit="validateSignup(event)">
+
+[..\gowest\core\templates\core\templates\addressDataModal.html]
+[X] @5	<form action="account.html" onsubmit="validateAddressModalForm(event)">
+
+[..\gowest\core\templates\core\templates\administratorDataModal.html]
+[X] @5	<form id="adminFormShow" action="adminIndex.html">
+[X] @30	<form id="adminFormNew" action="adminIndex.html" onsubmit="validateAdminDataForm(event)">
+
+[..\gowest\core\templates\core\templates\categoryDataModal.html]
+[X] @5	<form action="adminIndex.html" onsubmit="validateCategoryForm(event)">
+
+[..\gowest\core\templates\core\templates\clientDataModal.html]
+[X] @5	<form action="adminIndex.html?t=clients">
+
+[..\gowest\core\templates\core\templates\loginModal.html]
+[X] @5	<form action="processLogin.html">
+
+[..\gowest\core\templates\core\templates\productDataModal.html]
+[X] @5	<form action="adminIndex.html" onsubmit="validateProductModal(event)">
+
+[..\gowest\core\templates\core\templates\saleDataModal.html]
+[X] @5	<form action="adminIndex.html?t=sales">

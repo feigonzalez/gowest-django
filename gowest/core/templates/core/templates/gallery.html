@@ -1,13 +1,25 @@
+{% load static %}
 <div id="gallery" class="container-fluid">
-    <script>
-        selectAllFrom("categories").then(cs=>populateGallery(cs));
-        function populateGallery(cs){
-            var g=get("gallery");
-            for(c of cs){
-                var d=document.createElement("div");
-                g.appendChild(d);
-                loadCategoryGalleryInto(c["code"],d,true);
-            }
-        }
-    </script>
+    {% for category in galleries %}
+        <div>
+            {% if galleries.length > 1 %}
+                <div class="row bg-gowest categoryTitle" href="{% url 'category' id=category[0].category.id %}">{{ category[0].category.name }}</div>
+            {% endif %}
+            <div class="row galleryRow">
+                <div class="col-sm-3">
+                    {% for product in category %}
+                        <div class="galleryItem">
+                            <a class="galleryItemLink" href="{% url 'product' id=item.id %}">
+                                <img class="galleryItemImage mx-auto d-block" src="{{ item.image.url }}">
+                                <div class='galleryItemLabel'>{{ item.name }}</div>
+                                <div class='galleryItemPrice'>{{ item.price }}</div>
+                            </a>
+                            <button class='btn btn-success galleryCartBtn' onclick='addToCart(1)'>Añadir al carrito</button></div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col-sm-9"></div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
