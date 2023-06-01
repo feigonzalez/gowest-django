@@ -27,9 +27,13 @@ urlpatterns = [
     path('processSignup/', processSignup, name='processSignup'),
     path('processLogin/', processLogin, name='processLogin'),
     path('processClientAccountChanges/<str:type>', processClientAccountChanges, name='processClientAccountChanges'),
+    path('processAdminAccountChanges/<str:type>', processAdminAccountChanges, name='processAdminAccountChanges'),
     path('validatePassRecovery/', validatePassRecovery, name='validatePassRecovery'),
     path('logOff/', logOff, name='logOff'),
     path('checkout/', checkout, name='checkout'),
     path('confirmSaleAction/', confirmSaleAction, name='confirmsSaleAction'),
-    path('confirmDeletion/', confirmDeletion, name='confirmDeletion')
+    path('confirmDeletion/', confirmDeletion, name='confirmDeletion'),
+    path('confirmSaleAction/', confirmSaleAction, name='confirmSaleAction'),
+    path('searchClientSales/', searchClientSales, name='searchClientSales'),
+    path('subscribeToFoundation/', subscribeToFoundation, name='subscribeToFoundation'),
 ]

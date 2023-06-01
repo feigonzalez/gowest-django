@@ -40,7 +40,7 @@
 			</div>
 			<div class="col-lg-6" id="checkoutPayment">
 				{# % if SESSION.user set % #}
-				<form id="cartCheckoutForm" action="checkout.html" onsubmit="validateCheckout(event)">
+				<form id="cartCheckoutForm" action="{% url 'checkout' %}" onsubmit="validateCheckout(event)">
 				{% csrf_token %}
 					<div class="form-group">
 						<label for="cartAddess">Dirección de envío</label>

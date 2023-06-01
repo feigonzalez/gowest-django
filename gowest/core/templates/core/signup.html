@@ -76,7 +76,7 @@
 			</div>
 			<div class="form-group">
 				<label for="f_question">Seleccione una pregunta de seguridad</label>
-				<select class="form-control" id="f_question" name="clientQuestion">
+				<select class="form-control" id="f_question" name="clientSecQuestion">
 					{% for secQuestion in secQuestions %}
 					<option value="{{ secQuestion.id }}">{{ secQuestion.question }}</option>
 					{% endfor %}
@@ -84,7 +84,7 @@
 			</div>
 			<div class="form-group">
 				<label for="f_answer">Responda la pregunta de seguridad</label>
-				<input class="form-control" id="f_answer" name="clientAnswer">
+				<input class="form-control" id="f_answer" name="clientSecAnswer">
 			</div>
 			<a href="{% url 'index' %}" class="btn btn-light">Cancelar</a>
 			<button type="submit" class="btn btn-success">Registrarse</button>

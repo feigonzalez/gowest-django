@@ -1,6 +1,6 @@
 {% load static %}
 <nav id="topNavbar" class="navbar navbar-expand navbar-dark bg-gowest-dark sticky-top">
-	{# % if navbarType == "visit" % #}
+	{% if request.session.navbarType != "client" and request.session.navbarType != "admin" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
@@ -23,19 +23,19 @@
 		{% for category in categories %}
 		<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
 			{# give the a tag the active class if in the correct category view #}
-			<a class="btn btn-gowest" href="{% url 'category' %}"></a>
+			<a class="btn btn-gowest" href="{% url 'category' id=category.id%}"></a>
 		</li>
 		{% endfor %}
 	</ul>
-	{# % endif % #}
-	{# % if navbarType == "client" % #}
+	{% endif %}
+	{% if request.session.navbarType == "client" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
 	</a>
 	<ul id="navbarClient" class="navbar-nav navbar-nav-right">
 		<li class="nav-item">
-			<span class="userWelcome text-right"></span>
+			<span class="userWelcome text-right">{{ request.session.uName }} {{ request.session.uSurname }}</span>
 		</li>
         <li class="nav-item">
 			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="{% url 'cart' %}" data-units="0">
@@ -54,12 +54,12 @@
 		{% for category in categories %}
 		<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
 			{# give the a tag the active class if in the correct category view #}
-			<a class="btn btn-gowest" href="{% url 'category' %}"></a>
+			<a class="btn btn-gowest" href="{% url 'category' id=category.id%}"></a>
 		</li>
 		{% endfor %}
 	</ul>
-	{# % endif % #}
-	{# % if navbarType == "admin" % #}
+	{% endif %}
+	{% if request.session.navbarType == "admin" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'adminIndex' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
@@ -74,7 +74,7 @@
 			</a>
 		</li>
 	</ul>
-	{# % endif % #}
+	{% endif %}
 </nav>
 {% include 'core/modals/loginModal.html' %}
 {# js code to update the cart button badge value #}

@@ -3,7 +3,7 @@
     {% for category in galleries %}
         <div>
             {% if galleries.length > 1 %}
-                <div class="row bg-gowest categoryTitle" href="{% url 'category' id=category[0].category.id %}">{{ category[0].category.name }}</div>
+                <div class="row bg-gowest categoryTitle" href="{% url 'category' category.id %}">{{ category.name }}</div>
             {% endif %}
             <div class="row galleryRow">
                 <div class="col-sm-3">

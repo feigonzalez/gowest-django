@@ -5,6 +5,7 @@
 			<div class="modal-body text-center">
 				<div id="saleAlertMessage"></div>
 				<form action="{% url 'confirmSaleAction' %}" method="POST">
+					{% csrf_token %}
 					<input id="saleAlertAction" type="hidden" name="action" value="">
 					<input id="saleAlertTarget" type="hidden" name="target" value="">
 					<button id="saleAlertCancel" type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>

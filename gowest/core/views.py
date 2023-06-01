@@ -1,4 +1,9 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User as DjUser
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth import authenticate,login, logout
+from django.http import JsonResponse
 from .models import *
 
 # Create your views here.
@@ -55,8 +60,8 @@ def adminAdministrators(request):
     return render(request, 'core/adminAdministrators.html')
 
 def signup(request):
-    context={"districts":,Districts.objects.all(),
-        "secQuestions":SecQuestions.objects.all()}
+    context={"districts":District.objects.all(),
+        "secQuestions":SecQuestion.objects.all()}
     return render(request, 'core/signup.html', context)
 
 def clientAccount(request):
@@ -104,11 +109,39 @@ def recoverPass(request):
 #Input and user actions processing
 
 def processLogin(request):
+    #TODO
     #get data from user, depending on provided mail
-    #compare provided pass with retrieved password
-    #if passes match
-    #   set SESSION["user"] to corresponding user
-    #else
+    name=request.POST["mail"]
+    rawPass=request.POST["password"]
+    #try: get user from djUser table
+    try:
+        djUser=DjUser.objects.get(username=name)
+    #except UserDoesNotExist: alert, redirect
+    except DjUser.DoesNotExist:
+        #TODO alert
+        return redirect('index')
+    valid = check_password(rawPass, djUser.password)
+    if not valid:
+        #TODO alert
+        return redirect('index')
+    user = User.objects.get(mail=name)
+    authUser = authenticate(username=name,password=rawPass)
+    if authUser is not None:
+        print("logged")
+        login(request, authUser)
+        request.session["uID"]=user.id
+        request.session["uName"]=user.name
+        request.session["uSurname"]=user.surname
+        if user.role.id == 2:
+            request.session["navbarType"]="admin"
+            return redirect('adminIndex')
+        else:
+            request.session["navbarType"]="client"
+            return redirect('index')
+    #return redirect('index')
+
+def logOff(request):
+    logout(request)
     return redirect('index')
 
 def processSignup(request):
@@ -118,33 +151,41 @@ def processSignup(request):
     mail = request.POST["clientMail"]
     phone = request.POST["clientPhone"]
     password = request.POST["clientPassword"]
-    question = SecQuestion.objects.get(id=request.POST["clientSecQuestion"])
-    answer = request.POST["clientSecAnswer"]
+    secQuestion = SecQuestion.objects.get(id=request.POST["clientSecQuestion"])
+    secAnswer = request.POST["clientSecAnswer"]
     street = request.POST["clientAddressStreet"]
     number = request.POST["clientAddressNumber"]
     postalCode = request.POST["clientAddressPostalCode"]
-    district = Districts.objects.get(id = request.POST["clientAddressDistrict"])
+    district = District.objects.get(id = request.POST["clientAddressDistrict"])
     #insert new client-type user into db
     user = User.objects.create(rut=rut,name=name,surname=surname,mail=mail,phone=phone,
-        password=password,role=Role.objects.get(role=1),secQuestion=secQuestion,
+        password=password,role=Role.objects.get(id=1),secQuestion=secQuestion,
         secAnswer=secAnswer)
     #insert client's new address into db
     Address.objects.create(street=street, number=number, postalCode=postalCode,
         user=user, district=district)
+    
+    djUser = DjUser.objects.create_user(username=mail, email=mail, password=password)
+    djUser.is_staff=False
+    djUser.save()
+
     return redirect('index')
 
-def validatePassRecovery(request):
-    rut = request.POST["recoverRut"]
-    secAnswer = request.POST["recoverSecAnswer"]
-    if User.objects.get(rut = rut).secAnswer = secAnswer:
-        #user is valid. log in and redirect to index
-        return redirect('index')
-    else
-        #wrong secanswer. stay in recoverPass and give feedback
-        context={"wrongAnswer":True}
-        return render(request,'core/recoverPass.html',context)
+def processAdminAccountChanges(request, type):
+    #TODO
+    if type == "data":
+        #update the user's name, surname, phone, and mail
+        pass
+    if type == "password":
+        #update the user's password
+        pass
+    if type == "secQuestion":
+        #update the user's security question and answer
+        pass
+    return redirect('adminAccount')
 
-def processClientUpdateChanges(request, type):
+def processClientAccountChanges(request, type):
+    #TODO
     if type == "data":
         #update the user's name, surname, phone, and mail
         pass
@@ -156,7 +197,24 @@ def processClientUpdateChanges(request, type):
         pass
     return redirect('clientAccount')
 
+def checkout(request):
+    #TODO
+    return redirect('index')
+
+def validatePassRecovery(request):
+    #TODO
+    rut = request.POST["recoverRut"]
+    secAnswer = request.POST["recoverSecAnswer"]
+    if User.objects.get(rut = rut).secAnswer == secAnswer:
+        #user is valid. log in and redirect to index
+        return redirect('index')
+    else:
+        #wrong secanswer. stay in recoverPass and give feedback
+        context={"wrongAnswer":True}
+        return render(request,'core/recoverPass.html',context)
+
 def confirmSaleAction(request):
+    #TODO
     action=request.POST["action"]
     target=request.POST["target"]
     #if SESSION["user"].role == 2: #if admin
@@ -165,9 +223,26 @@ def confirmSaleAction(request):
     return redirect('clientSales')
 
 def confirmDeletion(request):
+    #TODO
     target=request.POST["target"]
     origin=request.POST["origin"]
     return redirect(origin)
+
+def subscribeToFoundation(request):
+    #TODO
+    return redirect('clientFoundation')
+
+#User-side searches
+
+def searchClientSales(request):
+    return render('clientSales')
+
+#database manipulation
+
+def getProductData(request, id):
+    p = Product.objects.get(id=id)
+    return JsonResponse({"id":p.id,"name":p.name,"image":p.image.url,"description":p.description,
+        "stock":p.stock,"price":p.price,"category":p.category.id})
 
 def createProduct(request):
     name = request.POST["productName"]
@@ -183,3 +258,9 @@ def createCategory(request):
     name = request.POST['categoryName']
     Category.objects.create(name=name)
     return redirect('adminCategories')
+
+def createAddress(request):
+    return redirect('clientAccount')
+
+def createAdministrator(request):
+    return redirect('adminAdministrators')

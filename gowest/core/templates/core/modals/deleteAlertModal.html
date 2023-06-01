@@ -5,6 +5,7 @@
 			<div class="modal-body text-center">
 				<div id="deleteAlertMessage"></div>
 				<form action="{% url 'confirmDeletion' %}" method="POST">
+					{% csrf_token %}
 					<input type="hidden" id="deleteAlertTarget" name="target">
 					<input type="hidden" id="deleteAlertOrigin" name="origin">
 					<button id="deleteAlertCancel" type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
