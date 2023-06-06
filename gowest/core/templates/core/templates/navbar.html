@@ -19,14 +19,6 @@
 			<button class="btn btn-gowest" data-toggle="modal" data-target="#loginModal">Ingresar</button>
 		</li>
     </ul>
-	<ul id="categoryTabsList" class="nav bg-gowest-dark">
-		{% for category in categories %}
-		<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
-			{# give the a tag the active class if in the correct category view #}
-			<a class="btn btn-gowest" href="{% url 'category' id=category.id%}"></a>
-		</li>
-		{% endfor %}
-	</ul>
 	{% endif %}
 	{% if request.session.navbarType == "client" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
@@ -50,14 +42,6 @@
           <a class="btn btn-gowest" href="{% url 'logOff' %}" type="button"><span class="icon fa fa-power-off"></span></a>
         </li>
     </ul>
-	<ul id="categoryTabsList" class="nav bg-gowest-dark">
-		{% for category in categories %}
-		<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
-			{# give the a tag the active class if in the correct category view #}
-			<a class="btn btn-gowest" href="{% url 'category' id=category.id%}"></a>
-		</li>
-		{% endfor %}
-	</ul>
 	{% endif %}
 	{% if request.session.navbarType == "admin" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'adminIndex' %}">
@@ -76,6 +60,16 @@
 	</ul>
 	{% endif %}
 </nav>
+{% if request.session.navbarType != "admin" %}
+<ul id="categoryTabsList" class="nav bg-gowest-dark">
+	{% for category in categories %}
+	<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
+		{# give the a tag the active class if in the correct category view #}
+		<a class="btn btn-gowest" href="{% url 'category' id=category.id%}">{{ category.name }}</a>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
 {% include 'core/modals/loginModal.html' %}
 {# js code to update the cart button badge value #}
 <!-- script>

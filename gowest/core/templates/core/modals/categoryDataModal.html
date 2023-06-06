@@ -3,7 +3,7 @@
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form action="{% url 'createCategory' %}" method="POST" onsubmit="validateCategoryForm(event)">
+				<form action="{% url 'createCategory' %}" method="POST" data-id="" onsubmit="validateCategoryForm(event)">
 					{% csrf_token %}
 					<div class="form-group">
 						<label for="name">Nombre</label>

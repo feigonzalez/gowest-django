@@ -41,8 +41,10 @@ async function prepareCategoryModal(e){
 	if(e){
 		var parent=e.parentElement.parentElement;
 		get("categoryFormName").value=parent.children[0].innerText;
+		get("categoryFormUpdate").value="true";
 	} else {
 		get("categoryFormName").value="";
+		get("categoryFormUpdate").value="false";
 	}
 }
 
@@ -169,7 +171,7 @@ function confirmDeleteCategory(e){
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="adminCategories";
 	get("deleteAlertMessage").innerText=`¿Eliminar categoría ${name} y todos los productos relacionados?`;
-	get("deleteAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','categories']])");
+	//get("deleteAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','categories']])");
 }
 
 //	Prepares the deleteAddress delete modal from the clientAccount page.

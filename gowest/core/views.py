@@ -111,11 +111,11 @@ def recoverPass(request):
 def processLogin(request):
     #TODO
     #get data from user, depending on provided mail
-    name=request.POST["mail"]
+    mail=request.POST["mail"]
     rawPass=request.POST["password"]
     #try: get user from djUser table
     try:
-        djUser=DjUser.objects.get(username=name)
+        djUser=DjUser.objects.get(username=mail)
     #except UserDoesNotExist: alert, redirect
     except DjUser.DoesNotExist:
         #TODO alert
@@ -124,15 +124,22 @@ def processLogin(request):
     if not valid:
         #TODO alert
         return redirect('index')
-    user = User.objects.get(mail=name)
-    authUser = authenticate(username=name,password=rawPass)
-    if authUser is not None:
-        print("logged")
+    try:
+        user = User.objects.get(mail=mail)
+    #except UserDoesNotExist: alert, redirect
+    except User.DoesNotExist:
+        #TODO alert
+        #message user doesnt exist: show login modal with "invalid" text
+        return redirect('index')
+    authUser = authenticate(username=mail,password=rawPass)
+    if authUser is not None and user is not None:
+        print("logged as "+user.name)
+        print("with role "+str(user.role.name))
         login(request, authUser)
         request.session["uID"]=user.id
         request.session["uName"]=user.name
         request.session["uSurname"]=user.surname
-        if user.role.id == 2:
+        if user.role.name == "administrator":
             request.session["navbarType"]="admin"
             return redirect('adminIndex')
         else:
@@ -153,8 +160,8 @@ def processSignup(request):
     password = request.POST["clientPassword"]
     secQuestion = SecQuestion.objects.get(id=request.POST["clientSecQuestion"])
     secAnswer = request.POST["clientSecAnswer"]
-    street = request.POST["clientAddressStreet"]
-    number = request.POST["clientAddressNumber"]
+    streetName = request.POST["clientAddressStreet"]
+    streetNumber = request.POST["clientAddressNumber"]
     postalCode = request.POST["clientAddressPostalCode"]
     district = District.objects.get(id = request.POST["clientAddressDistrict"])
     #insert new client-type user into db
@@ -162,7 +169,7 @@ def processSignup(request):
         password=password,role=Role.objects.get(id=1),secQuestion=secQuestion,
         secAnswer=secAnswer)
     #insert client's new address into db
-    Address.objects.create(street=street, number=number, postalCode=postalCode,
+    Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
         user=user, district=district)
     
     djUser = DjUser.objects.create_user(username=mail, email=mail, password=password)
@@ -226,6 +233,9 @@ def confirmDeletion(request):
     #TODO
     target=request.POST["target"]
     origin=request.POST["origin"]
+    if origin == "adminCategories":
+        item = Category.objects.get(id=int(target))
+        item.delete()
     return redirect(origin)
 
 def subscribeToFoundation(request):
@@ -256,6 +266,8 @@ def createProduct(request):
 
 def createCategory(request):
     name = request.POST['categoryName']
+    if request.POST['update']=="true":
+        category=Category.objects.get(id)
     Category.objects.create(name=name)
     return redirect('adminCategories')
 

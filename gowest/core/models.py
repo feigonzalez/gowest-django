@@ -35,7 +35,7 @@ class User(models.Model):
     name = models.CharField(max_length=64)
     surname = models.CharField(max_length=64)
     mail = models.CharField(max_length=128)
-    phone = models.CharField(max_length=16)
+    phone = models.CharField(max_length=16,blank=True,null=True)
     password = models.CharField(max_length=128) #stores the hashed pass? length of hashed pass?
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     secQuestion = models.ForeignKey(SecQuestion, on_delete=models.CASCADE)
@@ -46,8 +46,8 @@ class User(models.Model):
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
-    street = models.CharField(max_length=64)
-    number = models.CharField(max_length=16)
+    streetName = models.CharField(max_length=64)
+    streetNumber = models.CharField(max_length=16)
     postalCode = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     district = models.ForeignKey(District,on_delete=models.CASCADE)
@@ -58,12 +58,12 @@ class Address(models.Model):
 class Sale(models.Model):
     id = models.AutoField(primary_key=True)
     saleDate = models.DateField()
-    deliveryDate = models.DateField()
+    deliveryDate = models.DateField(blank=True,null=True)
     status = models.CharField(max_length=16)
     total = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    subscribed = models.BooleanField()
+    subscribed = models.IntegerField()
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)

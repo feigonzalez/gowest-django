@@ -24,7 +24,7 @@
 					<td class="text-right">
 						<button class="btn btn-success" data-toggle="modal" data-target="#categoryDataModal" onclick="prepareCategoryModal(this)">
 							<span class="icon fa fa-pencil"></span></button>
-						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteCategory(this)">
+						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" data-id="{{ category.id }}" onclick="confirmDeleteCategory(this)">
 							<span class="icon fa fa-trash"></span></button>
 					</td>
 				</tr>
