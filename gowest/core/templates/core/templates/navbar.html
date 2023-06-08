@@ -1,6 +1,6 @@
 {% load static %}
 <nav id="topNavbar" class="navbar navbar-expand navbar-dark bg-gowest-dark sticky-top">
-	{% if request.session.navbarType != "client" and request.session.navbarType != "admin" %}
+	{% if request.session.uRole != "client" and request.session.uRole != "admin" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
@@ -20,7 +20,7 @@
 		</li>
     </ul>
 	{% endif %}
-	{% if request.session.navbarType == "client" %}
+	{% if request.session.uRole == "client" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
@@ -43,7 +43,7 @@
         </li>
     </ul>
 	{% endif %}
-	{% if request.session.navbarType == "admin" %}
+	{% if request.session.uRole == "admin" %}
     <a id="navbar-brand" class="navbar-brand" href="{% url 'adminIndex' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
@@ -60,12 +60,12 @@
 	</ul>
 	{% endif %}
 </nav>
-{% if request.session.navbarType != "admin" %}
+{% if request.session.uRole != "admin" %}
 <ul id="categoryTabsList" class="nav bg-gowest-dark">
 	{% for category in categories %}
 	<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
 		{# give the a tag the active class if in the correct category view #}
-		<a class="btn btn-gowest" href="{% url 'category' id=category.id%}">{{ category.name }}</a>
+		<a class="btn btn-gowest" href="{% url 'category' id=category.id %}">{{ category.name }}</a>
 	</li>
 	{% endfor %}
 </ul>

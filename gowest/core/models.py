@@ -53,7 +53,7 @@ class Address(models.Model):
     district = models.ForeignKey(District,on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return self.street+" "+self.number
+        return self.streetName+" "+self.streetNumber
 
 class Sale(models.Model):
     id = models.AutoField(primary_key=True)

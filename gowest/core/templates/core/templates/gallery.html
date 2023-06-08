@@ -2,21 +2,24 @@
 <div id="gallery" class="container-fluid">
     {% for category in galleries %}
         <div>
-            {% if galleries.length > 1 %}
-                <div class="row bg-gowest categoryTitle" href="{% url 'category' category.id %}">{{ category.name }}</div>
+            {% if galleries|length > 1 %}
+                <div class="row bg-gowest categoryTitle"><a href="{% url 'category' category.id %}">{{ category.name }}</a></div>
             {% endif %}
             <div class="row galleryRow">
-                <div class="col-sm-3">
-                    {% for product in category %}
+                    {% for product in category.products %}
+                    <div class="col-sm-3">
                         <div class="galleryItem">
-                            <a class="galleryItemLink" href="{% url 'product' id=item.id %}">
-                                <img class="galleryItemImage mx-auto d-block" src="{{ item.image.url }}">
-                                <div class='galleryItemLabel'>{{ item.name }}</div>
-                                <div class='galleryItemPrice'>{{ item.price }}</div>
+                            <a class="galleryItemLink" href="{% url 'product' product.id %}">
+                                <img class="galleryItemImage mx-auto d-block" src="{{ product.image.url }}">
+                                <div class='galleryItemLabel'>{{ product.name }}</div>
+                                <div class='galleryItemPrice'>{{ product.price }}</div>
                             </a>
                             <button class='btn btn-success galleryCartBtn' onclick='addToCart(1)'>Añadir al carrito</button></div>
                         </div>
                     {% endfor %}
+                    {% if category|length == 0 %}
+                    <div>Esta categoría está vacía</div>
+                    {% endif %}
                 </div>
                 <div class="col-sm-9"></div>
             </div>

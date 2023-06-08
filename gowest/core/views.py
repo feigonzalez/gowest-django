@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User as DjUser
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate,login, logout
 from django.http import JsonResponse
 from .models import *
@@ -11,7 +11,10 @@ def index(request):
     context={"categories":Category.objects.all(),
         "galleries":[]}
     for category in context["categories"]:
-        context["galleries"].append(Product.objects.filter(category=category))
+        context["galleries"].append({})
+        context["galleries"][-1]["id"]=category.id
+        context["galleries"][-1]["name"]=category.name
+        context["galleries"][-1]["products"]=Product.objects.filter(category=category)
     return render(request, 'core/index.html',context)
 
 def adminIndex(request):
@@ -65,9 +68,14 @@ def signup(request):
     return render(request, 'core/signup.html', context)
 
 def clientAccount(request):
-    #if user.role != client:
-    #   return redirect('index')
-    context={"categories":Category.objects.all()}
+    print("["+str(request.session["uID"])+"]")
+    if request.session["uRole"] != "client":
+       return redirect('index')
+    user=User.objects.get(id=request.session["uID"])
+    context={"categories":Category.objects.all(),
+        "secQuestions":SecQuestion.objects.all(),
+        "user":user,
+        "addresses":Address.objects.filter(user=user)}
     return render(request, 'core/clientAccount.html',context)
 
 def clientSales(request):
@@ -94,8 +102,9 @@ def cart(request):
     return render(request, 'core/cart.html',context)
 
 def category(request, id):
+    thisCategory = Category.objects.get(id=id)
     context={"categories":Category.objects.all(),
-        "galleries":[Product.objects.filter(category=Category.objects.get(id=id))]}
+        "galleries":[{"id":id, "name":thisCategory.name, "products":Product.objects.filter(category=thisCategory)}]}
     return render(request, 'core/category.html',context)
 
 def product(request, id):
@@ -140,10 +149,10 @@ def processLogin(request):
         request.session["uName"]=user.name
         request.session["uSurname"]=user.surname
         if user.role.name == "administrator":
-            request.session["navbarType"]="admin"
+            request.session["uRole"]="admin"
             return redirect('adminIndex')
         else:
-            request.session["navbarType"]="client"
+            request.session["uRole"]="client"
             return redirect('index')
     #return redirect('index')
 
@@ -157,7 +166,8 @@ def processSignup(request):
     rut = request.POST["clientRut"]
     mail = request.POST["clientMail"]
     phone = request.POST["clientPhone"]
-    password = request.POST["clientPassword"]
+    rawPass = request.POST["clientPassword"]
+    password=make_password(rawPass)
     secQuestion = SecQuestion.objects.get(id=request.POST["clientSecQuestion"])
     secAnswer = request.POST["clientSecAnswer"]
     streetName = request.POST["clientAddressStreet"]
@@ -172,7 +182,7 @@ def processSignup(request):
     Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
         user=user, district=district)
     
-    djUser = DjUser.objects.create_user(username=mail, email=mail, password=password)
+    djUser = DjUser.objects.create_user(username=mail, email=mail, password=rawPass)
     djUser.is_staff=False
     djUser.save()
 

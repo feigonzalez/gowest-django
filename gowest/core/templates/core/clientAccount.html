@@ -7,20 +7,20 @@
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="name">Nombre</label>
-				<input id="clientName" name="updateClientName" class="form-control" value="{# SESSION.user.name #}">
+				<input id="clientName" name="updateClientName" class="form-control" value="{{ user.name }}">
 			</div>
 			<div class="col-sm-6">
 				<label for="surname">Apellido</label>
-				<input id="clientSurname" name="updateClientSurname" class="form-control" value="{# SESSION.user.surname #}">
+				<input id="clientSurname" name="updateClientSurname" class="form-control" value="{{ user.surname }}">
 			</div>
 		</div>
 		<div class="form-group">
 			<label for="mail">Correo</label>
-			<input id="clientMail" name="updateClientMail" class="form-control" value="{# SESSION.user.mail #}">
+			<input id="clientMail" name="updateClientMail" class="form-control" value="{{ user.mail }}">
 		</div>
 		<div class="form-group">
 			<label for="phone">Teléfono</label>
-			<input id="clientPhone" name="updateClientPhone" class="form-control" value="{# SESSION.user.phone #}">
+			<input id="clientPhone" name="updateClientPhone" class="form-control" value="{{ user.phone }}">
 		</div>
 		<div class="form-group text-right">
 			<input id="clientSaveData" type="submit" value="Guardar" class="btn btn-success">
@@ -61,7 +61,7 @@
 				<label for="secQuestion">Cambiar Pregunta de Seguridad</label>
 				<select id="clientSecQuestion" name="updateClientSecQuestion" class="form-control" value="{# SESSION['user'].secQuestion.id #}">
 					{% for secQuestion in secQuestions %}
-						<option value="{{ secQuestion.id }}">{{ secQuestion.question }}</option>
+						<option value="{{ secQuestion.id }}" {% if secQuestion.id == user.secQuestion.id %}selected{% endif %}>{{ secQuestion.question }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -79,9 +79,9 @@
 	<div class="table-responsive">
 		<table class="table table-hover align-middle">
 			<tbody id="tableAddressesBody">
-				{% for address in adresses %}
+				{% for address in addresses %}
 					<tr>
-						<td data-type="string">{{ address.street }} {{ address.number }}, {{ address.district.name }}</td>
+						<td data-type="string">{{ address.streetName }} {{ address.streetNumber }}, {{ address.district.name }}</td>
 						<td class="text-right"><button class="btn btn-success" data-id="{{ address.id }}" data-toggle="modal" data-target="#addressDataModal" onclick="prepareAddressModal(this)"><span class="icon fa fa-pencil"></span></button>
 						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteAddress(this)"><span class="icon fa fa-trash"></span></button></td>
 					</tr>

@@ -21,9 +21,9 @@
 	{% include 'core/templates/navbar.html' %}
 	<div class="container-fluid bg-gowest" id="bradcrumbsHolder">
 		<div class="breadcrumbs">
-			<a id="breadcrumbCategory" href="{% url 'category' id=product.category.id %}"></a>
+			<a id="breadcrumbCategory" href="{% url 'category' id=product.category.id %}">{{ product.category.name }}</a>
 			/
-			<a id="breadcrumbProduct" href="{% url 'product' id=product.id %}"></a>
+			<a id="breadcrumbProduct" href="{% url 'product' id=product.id %}">{{ product.name }}</a>
 		</div>
 	</div>
 	<div class="container">
