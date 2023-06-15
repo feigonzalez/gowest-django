@@ -95,9 +95,10 @@ def clientFoundation(request):
     return render(request, 'core/clientFoundation.html',context)
 
 def cart(request):
-    context={"categories":Category.objects.all()
-        #"addresses":Address.objects.filter(user=SESSION["user"])},
-        #"details":SaleDetail.objects.filter(user=SESSION["user"])
+    sale = Sale.objects.get(user=User.objects.get(id=request.session["uID"]), status="Carrito")
+    context={"categories":Category.objects.all(),
+        "addresses":Address.objects.filter(user=User.objects.get(id=request.session["uID"])),
+        "details":SaleDetail.objects.filter(sale=sale)
         }
     return render(request, 'core/cart.html',context)
 
@@ -286,3 +287,40 @@ def createAddress(request):
 
 def createAdministrator(request):
     return redirect('adminAdministrators')
+
+#DB data preparation
+
+def prepareUsers(request):
+    User.objects.create(rut='10.000.000-0',name='William',surname='Hartnell',mail='whart@mail.com',phone='+123456789',
+        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
+        secAnswer='13')
+    djUser = DjUser.objects.create_user(username='whart@mail.com', email='whart@mail.com', password='pass')
+    djUser.is_staff=False
+    djUser.save()
+    User.objects.create(rut='11.000.000-0',name='Patrick',surname='Troughton',mail='ptrou@mail.com',phone='+234567891',
+        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
+        secAnswer='12')
+    djUser = DjUser.objects.create_user(username='ptrou@mail.com', email='ptrou@mail.com', password='pass')
+    djUser.is_staff=False
+    djUser.save()
+    User.objects.create(rut='12.000.000-0',name='Jon',surname='Pertwee',mail='jpert@mail.com',phone='+345678912',
+        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
+        secAnswer='11')
+    djUser = DjUser.objects.create_user(username='jpert@mail.com', email='jpert@mail.com', password='pass')
+    djUser.is_staff=False
+    djUser.save()
+    User.objects.create(rut='13.000.000-0',name='Tom',surname='Baker',mail='tbake@mail.com',phone='+456789123',
+        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
+        secAnswer='10')
+    djUser = DjUser.objects.create_user(username='tbake@mail.com', email='tbake@mail.com', password='pass')
+    djUser.is_staff=False
+    djUser.save()
+
+    User.objects.create(rut='20.000.000-0',name='Alvis',surname='Claus',mail='aclau@mail.com',phone='+987654321',
+        password=make_password('pass'),role=Role.objects.get(id=2),secQuestion=SecQuestion.objects.get(id=2),
+        secAnswer='Kermit')
+    djUser = DjUser.objects.create_user(username='aclau@mail.com', email='aclau@mail.com', password='pass')
+    djUser.is_staff=True
+    djUser.save()
+
+    return redirect('index')

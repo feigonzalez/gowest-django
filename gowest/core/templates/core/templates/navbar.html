@@ -48,9 +48,9 @@
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
 	</a>
-    <ul id="navbarAdmin" class="navbar-nav navbar-nav-right hidden">
+    <ul id="navbarAdmin" class="navbar-nav navbar-nav-right">
 		<li class="nav-item">
-			<span class="userWelcome text-right"></span>
+			<span class="userWelcome text-right">{{ request.session.uName }} {{ request.session.uSurname }}</span>
 		</li>
 		<li class="nav-item">
 			<a class="btn btn-gowest" href="{% url 'logOff' %}" type="button">
