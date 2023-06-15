@@ -20,6 +20,7 @@
 <body>
 	{% include 'core/templates/navbar.html'  %}
 	<div class="container mt-3">
+		{% if 'uID' in request.session %}
 		<div class="row">
 			<div class="col-lg-6 table-responsive" id="checkoutDetails">
 				<table class="table">
@@ -28,25 +29,24 @@
 						{% for detail in details %}
 						<tr>
 							<td>{{ detail.product.name }}</td>
-							<td>{{ detail.product.price }}</td>
+							<td>${{ detail.product.price }}</td>
 							<td><input id="f_cartItem{{ detail.id }}"class="form-control cartItemQtty" onchange="updateCartTotals(this)" type="number" value="{{ detail.units }}"></input></td>
-							<td>{{ detail.product.subtotal }}</td>
+							<td>${{ detail.subtotal }}</td>
 							<td><button class="btn btn-danger"><span class="icon fa fa-trash"></span></button></td>
 						</tr>
 						{% endfor %}
-						<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'></td><td></td></tr>
+						<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'>${{ cartTotal }}</td><td></td></tr>
 					</tbody>
 				</table>
 			</div>
 			<div class="col-lg-6" id="checkoutPayment">
-				{# % if SESSION.user set % #}
 				<form id="cartCheckoutForm" action="{% url 'checkout' %}" onsubmit="validateCheckout(event)">
 				{% csrf_token %}
 					<div class="form-group">
 						<label for="cartAddess">Dirección de envío</label>
 						<select id="cartFormAddress" class="form-control" name="cartAddress">
 							{% for address in addresses %}
-								<option value="{{ address.id }}">{{ address.street }} {{ address.number }}, {{ address.district.name }}</option>
+								<option value="{{ address.id }}">{{ address.streetName }} {{ address.streetNumber }}, {{ address.district.name }}</option>
 							{% endfor %}
 						</select>
 					</div>
@@ -64,11 +64,13 @@
 					</div>
 					<input id="cartFormUser" type="hidden" name="u">
 				</form>
-				{# else #}
-				<p>Ingrese con su cuenta para poder terminar la compra</p>
-				<p>Si no tiene una cuenta, puede <a href="{% url 'signup' %}">registrarse</a>.</p>
-				{# % endif % #}
 			</div>
 		</div>
+		{% else %}
+		<div class="text-center">
+			<p>Ingrese con su cuenta para poder terminar la compra</p>
+			<p>Si no tiene una cuenta, puede <a href="{% url 'signup' %}">registrarse</a>.</p>
+		</div>
+		{% endif %}
 	</div>
 </body>

@@ -22,13 +22,13 @@
 			</tr>
 		</thead>
 		<tbody id="tableClientsBody">
-			{% for user in users %}
+			{% for client in clients %}
 			<tr>
-				<td data-type="string">{{ user.name }} {{ user.surname }}</td>
-				<td class="d-none d-sm-table-cell" data-type="string">{{ user.rut }}</td>
-				<td data-type="string">{{ user.mail }}</td>
-				<td class="d-none d-sm-table-cell" data-type="string">{{ user.phone }}</td>
-				<td class="d-none d-sm-table-cell" data-type="string">{# show if subscribed. requires API call #}</td>
+				<td data-type="string">{{ client.name }} {{ client.surname }}</td>
+				<td class="d-none d-sm-table-cell" data-type="string">{{ client.rut }}</td>
+				<td data-type="string">{{ client.mail }}</td>
+				<td class="d-none d-sm-table-cell" data-type="string">{{ client.phone }}</td>
+				<td class="d-none d-sm-table-cell" data-type="string">No</td>
 				<td class="text-right"><button class="btn btn-success"
 					data-toggle="modal" data-target="#clientDataModal"
 					onclick="prepareClientModal(this)" data-id="{{ user.rut }}">
