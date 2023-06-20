@@ -18,7 +18,7 @@
 		<script src="{% static 'core/js/modals.js' %}"></script>
 	</head>
 <body>
-	{% include 'core/templates/navbar.html %}
+	{% include 'core/templates/navbar.html' %}
 	<div class="container">
 		<div class="row mt-3">
 			<div class="col-sm-3"></div>
@@ -43,9 +43,9 @@
 					<div class="form-group">
 						<label for="secAnswer">Responda la pregunta de seguridad</label>
 						<input class="form-control" id="f_secAnswer" name="recoverSecAnswer" required>
-						{{ if wrongAnswer }}
+						{% if wrongAnswer %}
 							<script> makeInvalid(get("f_secAnswer"),"Respuesta incorrecta") </script>
-						{{ endif }}
+						{% endif %}
 					</div>
 					<a href="{% url 'index' %}" class="btn">Cancelar</a>
 					<input type="submit" class="btn btn-success" value="Recuperar contraseña">

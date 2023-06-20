@@ -42,3 +42,30 @@ def getSales(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['GET', 'POST'])
+def getProducts(request):
+    if request.method == "GET":
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+    if request.method == "POST":
+        data = JSONParser().parse(request)
+        serializer = ProductSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+@csrf_exempt
+@api_view(['GET'])
+def getProduct(request, id):
+    return Response(ProductSerializer(Product.objects.get(id=id)).data)            
+
+@csrf_exempt
+@api_view(['GET'])
+def getCategory(request, id):
+    return Response(CategorySerializer(Category.objects.get(id=id)).data)

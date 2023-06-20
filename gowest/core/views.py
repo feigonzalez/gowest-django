@@ -18,38 +18,38 @@ def index(request):
     return render(request, 'core/index.html',context)
 
 def adminIndex(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     return render(request, 'core/adminWelcome.html')
 
 def adminAccount(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     context={"user":User.objects.get(id=request.session["uID"]),
         "secQuestions":SecQuestion.objects.all()}
     return render(request, 'core/adminAccount.html',context)
 
 def adminProducts(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     context={"products":Product.objects.all(),
         "categories":Category.objects.all()}
     return render(request, 'core/adminProducts.html',context)
 
 def adminCategories(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     context={"categories":Category.objects.all()}
     return render(request, 'core/adminCategories.html',context)
 
 def adminClients(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     context={"clients":User.objects.filter(role=1)}
     return render(request, 'core/adminclients.html',context)
 
 def adminSales(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     #if request.GET["adminSalesSearchQuery"]:
     #    sales=Sale.objects.filter()
@@ -60,7 +60,7 @@ def adminSales(request):
     return render(request, 'core/adminSales.html',context)
 
 def adminAdministrators(request):
-    if request.session["uRole"] != 'admin':
+    if 'uRole' in request.session and request.session["uRole"] != 'admin':
        return redirect('index')
     context={"admins":User.objects.filter(role=Role.objects.get(id=2))}
     return render(request, 'core/adminAdministrators.html',context)
@@ -71,8 +71,7 @@ def signup(request):
     return render(request, 'core/signup.html', context)
 
 def clientAccount(request):
-    print("["+str(request.session["uID"])+"]")
-    if request.session["uRole"] != "client":
+    if 'uRole' in request.session and request.session["uRole"] != "client":
        return redirect('index')
     user=User.objects.get(id=request.session["uID"])
     context={"categories":Category.objects.all(),
@@ -82,22 +81,22 @@ def clientAccount(request):
     return render(request, 'core/clientAccount.html',context)
 
 def clientSales(request):
-    if request.session["uRole"] != 'client':
+    if 'uRole' in request.session and request.session["uRole"] != 'client':
        return redirect('index')
     context={"categories":Category.objects.all(),
         "sales":Sale.objects.filter(user=User.objects.get(id=request.session["uID"]))}
     return render(request, 'core/clientSales.html',context)
 
 def clientFoundation(request):
-    #if user.role != client:
-    #   return redirect('index')
+    if 'uRole' in request.session and request.session["uRole"] != 'client':
+       return redirect('index')
     context={"categories":Category.objects.all()}
     #determine, with an API call, whether the client is already subscribed
     #if so, add its details to the context
     return render(request, 'core/clientFoundation.html',context)
 
 def cart(request):
-    if "uID" in request.session:
+    if 'uRole' in request.session and request.session["uRole"] == 'client':
         sale = Sale.objects.get(user=User.objects.get(id=request.session["uID"]), status='Carrito')
         context={"categories":Category.objects.all(),
             "addresses":Address.objects.filter(user=User.objects.get(id=request.session["uID"])),

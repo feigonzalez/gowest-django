@@ -1,0 +1,8 @@
+not allow duplicate users
+implement cart
+recover password
+url protection
+modify product (and other tables)
+delete product (and other tables)
+modify account data
+modify account password
