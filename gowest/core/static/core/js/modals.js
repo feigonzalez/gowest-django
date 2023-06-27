@@ -40,9 +40,11 @@ async function prepareCategoryModal(e){
 	makeValid(get("categoryFormName"));
 	if(e){
 		var parent=e.parentElement.parentElement;
-		get("categoryFormName").value=parent.children[0].innerText;
+		get("categoryFormName").value=e.dataset["name"];
+		get("categoryFormId").value=e.dataset["id"];
 		get("categoryFormUpdate").value="true";
 	} else {
+		get("categoryFormId").value="";
 		get("categoryFormName").value="";
 		get("categoryFormUpdate").value="false";
 	}
@@ -167,7 +169,7 @@ function confirmDeleteProduct(e){
 
 //	Prepares the deleteCategory delete modal from the adminCategories page.
 function confirmDeleteCategory(e){
-	var name=e.parentElement.parentElement.children[0].innerText;
+	var name=e.dataset["name"];//e.parentElement.parentElement.children[0].innerText;
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="adminCategories";
 	get("deleteAlertMessage").innerText=`¿Eliminar categoría ${name} y todos los productos relacionados?`;

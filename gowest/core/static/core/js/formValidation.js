@@ -81,6 +81,14 @@ function makeInvalid(e,msg){
 	fElem.innerHTML+="<div class='validationFeedback'>"+msg+"</div>";
 }
 
+function isValid(e){
+	return !e.classList.contains('is-invalid');
+}
+
+function getInvalidMessage(e){
+	return get(e.id+"_validationFeedback").innerText;
+}
+
 function validateSignup(ev){
 	let valid=true;
 	
@@ -340,6 +348,21 @@ function validateCategoryForm(ev){
 	else if(!isValidName(name.value)){makeInvalid(name,"Nombre inválido (Use letras y caracteres latinos).");valid=false;}
 	
 	if(!valid) ev.preventDefault();
+}
+
+function validatePassRecoveryForm(ev){
+	let valid = true;
+
+	let inputRut = get("f_inputRut");
+	if(!isValid(inputRut) && getInvalidMessage(inputRut).trim()=="RUT no encontrado"){
+		valid=false;
+	}
+	if(inputRut.value.trim()==""){makeInvalid(inputRut,"RUT requerido.");valid=false;}
+
+	let secAnswer = get("f_secAnswer"); makeValid(secAnswer);
+	if(secAnswer.value.trim()==""){makeInvalid(secAnswer,"Respuesta de Seguridad requerida.");valid=false}
+
+	if (!valid) ev.preventDefault();
 }
 
 function validateLogin(ev){

@@ -69,3 +69,16 @@ def getProduct(request, id):
 @api_view(['GET'])
 def getCategory(request, id):
     return Response(CategorySerializer(Category.objects.get(id=id)).data)
+
+@csrf_exempt
+@api_view(['GET'])
+def getUser(request, id):
+    return Response(UserSerializer(User.objects.get(id=id)).data)
+
+@csrf_exempt
+@api_view(['GET'])
+def getUserSQ(request, rut):
+    if User.objects.filter(rut=rut).count()==0:
+        return Response(False)
+    else:
+        return Response(User.objects.get(rut=rut).secQuestion.question)

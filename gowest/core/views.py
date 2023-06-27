@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User as DjUser
@@ -18,38 +19,38 @@ def index(request):
     return render(request, 'core/index.html',context)
 
 def adminIndex(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     return render(request, 'core/adminWelcome.html')
 
 def adminAccount(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     context={"user":User.objects.get(id=request.session["uID"]),
         "secQuestions":SecQuestion.objects.all()}
     return render(request, 'core/adminAccount.html',context)
 
 def adminProducts(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     context={"products":Product.objects.all(),
         "categories":Category.objects.all()}
     return render(request, 'core/adminProducts.html',context)
 
 def adminCategories(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     context={"categories":Category.objects.all()}
     return render(request, 'core/adminCategories.html',context)
 
 def adminClients(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     context={"clients":User.objects.filter(role=1)}
     return render(request, 'core/adminclients.html',context)
 
 def adminSales(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     #if request.GET["adminSalesSearchQuery"]:
     #    sales=Sale.objects.filter()
@@ -60,7 +61,7 @@ def adminSales(request):
     return render(request, 'core/adminSales.html',context)
 
 def adminAdministrators(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'admin':
+    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
     context={"admins":User.objects.filter(role=Role.objects.get(id=2))}
     return render(request, 'core/adminAdministrators.html',context)
@@ -71,7 +72,7 @@ def signup(request):
     return render(request, 'core/signup.html', context)
 
 def clientAccount(request):
-    if 'uRole' in request.session and request.session["uRole"] != "client":
+    if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
     user=User.objects.get(id=request.session["uID"])
     context={"categories":Category.objects.all(),
@@ -81,14 +82,14 @@ def clientAccount(request):
     return render(request, 'core/clientAccount.html',context)
 
 def clientSales(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'client':
+    if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
     context={"categories":Category.objects.all(),
         "sales":Sale.objects.filter(user=User.objects.get(id=request.session["uID"]))}
     return render(request, 'core/clientSales.html',context)
 
 def clientFoundation(request):
-    if 'uRole' in request.session and request.session["uRole"] != 'client':
+    if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
     context={"categories":Category.objects.all()}
     #determine, with an API call, whether the client is already subscribed
@@ -166,6 +167,7 @@ def logOff(request):
     return redirect('index')
 
 def processSignup(request):
+    context={}
     name = request.POST["clientName"]
     surname = request.POST["clientSurname"]
     rut = request.POST["clientRut"]
@@ -179,6 +181,14 @@ def processSignup(request):
     streetNumber = request.POST["clientAddressNumber"]
     postalCode = request.POST["clientAddressPostalCode"]
     district = District.objects.get(id = request.POST["clientAddressDistrict"])
+    if User.objects.filter(rut=rut).count()>0:
+        context["message"]="user with rut exists"
+        #TODO: change to use messages instead
+        return render(request,'core/signup.html',context)
+    if User.objects.filter(mail=mail).count()>0:
+        context["message"]="user with email exists"
+        #TODO: change to use messages instead
+        return render(request,'core/signup.html',context)
     #insert new client-type user into db
     user = User.objects.create(rut=rut,name=name,surname=surname,mail=mail,phone=phone,
         password=password,role=Role.objects.get(id=1),secQuestion=secQuestion,
@@ -228,11 +238,35 @@ def validatePassRecovery(request):
     rut = request.POST["recoverRut"]
     secAnswer = request.POST["recoverSecAnswer"]
     if User.objects.get(rut = rut).secAnswer == secAnswer:
-        #user is valid. log in and redirect to index
-        return redirect('index')
+        #TODO
+        try:
+            user = User.objects.get(rut=rut)
+        #except UserDoesNotExist: alert, redirect
+        except User.DoesNotExist:
+            #TODO alert
+            #message user doesnt exist: show login modal with "invalid" text
+            return redirect('index')
+        #try: get user from djUser table
+        try:
+            djUser=DjUser.objects.get(username=user.mail)
+        #except UserDoesNotExist: alert, redirect
+        except DjUser.DoesNotExist:
+            #TODO alert
+            return redirect('index')
+        if djUser is not None and user is not None:
+            login(request, djUser)
+            request.session["uID"]=user.id
+            request.session["uName"]=user.name
+            request.session["uSurname"]=user.surname
+            if user.role.id == 2:
+                request.session["uRole"]="admin"
+                return redirect('adminIndex')
+            else:
+                request.session["uRole"]="client"
+                return redirect('index')
     else:
         #wrong secanswer. stay in recoverPass and give feedback
-        context={"wrongAnswer":True}
+        context={"wrongAnswer":True,"rut":rut}
         return render(request,'core/recoverPass.html',context)
 
 def confirmSaleAction(request):
@@ -281,9 +315,13 @@ def createProduct(request):
 
 def createCategory(request):
     name = request.POST['categoryName']
+    id = request.POST['categoryId']
     if request.POST['update']=="true":
-        category=Category.objects.get(id)
-    Category.objects.create(name=name)
+        category=Category.objects.get(id=id)
+        category.name=name;
+        category.save()
+    else:
+        Category.objects.create(name=name)
     return redirect('adminCategories')
 
 def createAddress(request):
@@ -294,6 +332,7 @@ def createAdministrator(request):
 
 #DB data preparation
 
+"""
 def prepareUsers(request):
     User.objects.create(rut='10.000.000-0',name='William',surname='Hartnell',mail='whart@mail.com',phone='+123456789',
         password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
@@ -328,3 +367,4 @@ def prepareUsers(request):
     djUser.save()
 
     return redirect('index')
+"""

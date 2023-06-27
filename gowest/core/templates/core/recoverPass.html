@@ -23,18 +23,11 @@
 		<div class="row mt-3">
 			<div class="col-sm-3"></div>
 			<div class="col-sm-6">
-				<form action="{% url 'validatePassRecovery' %}" method="POST">
+				<form action="{% url 'validatePassRecovery' %}" method="POST" onsubmit="validatePassRecoveryForm(event)">
 					{% csrf_token %}
 					<div class="form-group">
 						<label for="recoverRut">Ingrese su rut</label>
-						<input class="form-control" id="f_inputRut" name="recoverRut" onchange="loadSecQuestion(this)">
-						{# load user secquestion asyncly #}
-						<!--script>
-							if(params["rut"]){
-								get("f_inputRut").value=params["rut"];
-								loadSecQuestion(get("f_inputRut"))
-							}
-						</script-->
+						<input class="form-control" id="f_inputRut" name="recoverRut" onchange="loadSecQuestion(this)" {% if wrongAnswer%} value={{ rut }} {% endif %}>
 					</div>
 					<div class="form-group">
 						<div>Pregunta de seguridad</div>
@@ -44,7 +37,10 @@
 						<label for="secAnswer">Responda la pregunta de seguridad</label>
 						<input class="form-control" id="f_secAnswer" name="recoverSecAnswer" required>
 						{% if wrongAnswer %}
-							<script> makeInvalid(get("f_secAnswer"),"Respuesta incorrecta") </script>
+							<script>
+								makeInvalid(get("f_secAnswer"),"Respuesta incorrecta");
+								loadSecQuestion();
+							</script>
 						{% endif %}
 					</div>
 					<a href="{% url 'index' %}" class="btn">Cancelar</a>

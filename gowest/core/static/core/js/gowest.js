@@ -64,15 +64,14 @@ async function loadSecQuestion(e){
 		makeInvalid(get("f_inputRut"),"Formato incorrecto (Ingrese con puntos y guión).")
 		return;
 	}
-	var user = (await selectAllWhere("users",(i)=>{return i["rut"]==e.value}))[0]
-	if(user!=null){
-		var secQ = (await selectAllWhere("secQuestions",(i)=>{return i["id"]==user["secQuestionID"]}))[0]
-		get("secQuestionHolder").innerText=secQ["value"];
-		get("f_rut").value=user["rut"];
+	var secQ = (await fetch('/api/getUserSQ/'+get("f_inputRut").value).then(response=>response.json()));
+	if(secQ){
+		get("secQuestionHolder").innerText=secQ;
+		//get("f_rut").value=user["rut"];
 		makeValid(get("f_inputRut"))
 	} else {
 		get("secQuestionHolder").innerText="–";
-		get("f_rut").value="";
+		//get("f_rut").value="";
 		makeInvalid(get("f_inputRut"),"RUT no encontrado");
 	}
 }
