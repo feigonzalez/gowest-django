@@ -81,19 +81,23 @@ async function loadSecQuestion(e){
 	of units specified.
 	If units is undefined, it is assumed to be called from the product page "Add to Cart" button.
 */
-function addToCart(units){
+async function addToCart(uID,pID,units){
 	var cartBtn = get("navbarCartBtn");
 	if(cartBtn==null) return;
 	if(units==null){
 		units = parseInt(get("addToCartUnits").value);
 		if(units<1)return;
 	}
-	var newUnits=parseInt(cartBtn.dataset["units"])+units;
+
+	await fetch("/api/addToCart",{
+		method:'POST',
+		/*header: {'Content-Type': 'application/json'},*/
+		body: JSON.stringify({"uID":1,"pID":1,"amount":1})})
+	var newUnits=(await fetch("/api/getCartItemAmount/"+uID).then(response=>response.json()))
 	var cartBadge=get("navbarCartUnits");
 	cartBadge.classList.remove("hidden");
 	cartBadge.innerText=newUnits;
 	cartBtn.dataset["units"]=newUnits;
-	params["cart"]=newUnits;
 }
 
 //	Returns a <span> badge element that corresponds to the passed sale status, if valid.

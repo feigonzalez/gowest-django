@@ -12,9 +12,12 @@
                             <a class="galleryItemLink" href="{% url 'product' product.id %}">
                                 <img class="galleryItemImage mx-auto d-block" src="{{ product.image.url }}">
                                 <div class='galleryItemLabel'>{{ product.name }}</div>
-                                <div class='galleryItemPrice'>{{ product.price }}</div>
+                                <div class='galleryItemPrice'>${{ product.price }}</div>
                             </a>
-                            <button class='btn btn-success galleryCartBtn' onclick='addToCart(1)'>Añadir al carrito</button></div>
+                            {% if request.session.uID != None %}
+                                <button class='btn btn-success galleryCartBtn' onclick='addToCart({{ request.session.uID }}, {{ product.id }}, 1)'>Añadir al carrito</button>
+                            {% endif %}
+                            </div>
                         </div>
                     {% endfor %}
                     {% if category|length == 0 %}

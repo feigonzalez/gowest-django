@@ -82,3 +82,29 @@ def getUserSQ(request, rut):
         return Response(False)
     else:
         return Response(User.objects.get(rut=rut).secQuestion.question)
+
+@csrf_exempt
+@api_view(['POST'])
+def addToCart(request):
+    data = JSONParser().parse(request)
+    print(data)
+    """user = User.objects.get(id=int(data["uID"]))
+    product = Product.objects.get(id=int(data["pID"]))
+    amount = int(data["amount"])
+    sale = Sale.objects.filter(user=user,status="Carrito").first()
+    try:
+        detail = SaleDetail.objects.get(product=product)
+        detail.units += amount
+        detail.save()
+        #return Response(200)
+    except SaleDetail.DoesNotExist:
+        detail = SaleDetail.objects.create(sale=sale,product=product,units=amount,subtotal=product.price*amount)
+        #return Response(-1)
+    """
+    return Response(status=status.HTTP_201_CREATED)
+
+@csrf_exempt
+@api_view(['GET'])
+def getCartItemAmount(request,uID):
+    user = User.objects.get(id=uID)
+    return Response(SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()).count())

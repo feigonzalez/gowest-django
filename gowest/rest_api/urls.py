@@ -10,4 +10,6 @@ urlpatterns = [
     path('getUserSQ/<str:rut>', getUserSQ, name='getUserSQ'),
     path('getProduct/<int:id>', getProduct, name='getProduct'),
     path('getCategory/<int:id>', getCategory, name='getCategory'),
+    path('addToCart',addToCart,name='addToCart'),
+    path('getCartItemAmount/<int:uID>',getCartItemAmount,name='getCartItemAmount'),
     ]
