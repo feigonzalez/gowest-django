@@ -15,7 +15,7 @@
                                 <div class='galleryItemPrice'>${{ product.price }}</div>
                             </a>
                             {% if request.session.uID != None %}
-                                <button class='btn btn-success galleryCartBtn' onclick='addToCart({{ request.session.uID }}, {{ product.id }}, 1)'>Añadir al carrito</button>
+                                <button class='btn btn-success galleryCartBtn' onclick='addToCart({{ product.id }}, 1)'>Añadir al carrito</button>
                             {% endif %}
                             </div>
                         </div>

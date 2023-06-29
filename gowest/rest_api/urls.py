@@ -11,5 +11,7 @@ urlpatterns = [
     path('getProduct/<int:id>', getProduct, name='getProduct'),
     path('getCategory/<int:id>', getCategory, name='getCategory'),
     path('addToCart',addToCart,name='addToCart'),
-    path('getCartItemAmount/<int:uID>',getCartItemAmount,name='getCartItemAmount'),
+    path('setToCart',setToCart,name='setToCart'),
+    path('getCartItemAmount',getCartItemAmount,name='getCartItemAmount'),
+    path('removeFromCart/<int:dID>',removeFromCart,name='removeFromCart'),
     ]

@@ -84,27 +84,74 @@ def getUserSQ(request, rut):
         return Response(User.objects.get(rut=rut).secQuestion.question)
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['GET'])
 def addToCart(request):
-    data = JSONParser().parse(request)
-    print(data)
-    """user = User.objects.get(id=int(data["uID"]))
-    product = Product.objects.get(id=int(data["pID"]))
-    amount = int(data["amount"])
+    #data = JSONParser.parse(request)
+    user = User.objects.get(id=request.session["uID"])
+    product = Product.objects.get(id=int(request.GET["pID"]))
+    amount = int(request.GET["amount"])
     sale = Sale.objects.filter(user=user,status="Carrito").first()
     try:
         detail = SaleDetail.objects.get(product=product)
         detail.units += amount
+        detail.subtotal += amount*product.price
         detail.save()
+        recalculateCartTotalInternal(request.session["uID"])
         #return Response(200)
     except SaleDetail.DoesNotExist:
         detail = SaleDetail.objects.create(sale=sale,product=product,units=amount,subtotal=product.price*amount)
+        recalculateCartTotalInternal(request.session["uID"])
         #return Response(-1)
-    """
     return Response(status=status.HTTP_201_CREATED)
 
 @csrf_exempt
 @api_view(['GET'])
-def getCartItemAmount(request,uID):
-    user = User.objects.get(id=uID)
-    return Response(SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()).count())
+def setToCart(request):
+    #data = JSONParser.parse(request)
+    user = User.objects.get(id=request.session["uID"])
+    product = Product.objects.get(id=int(request.GET["pID"]))
+    amount = int(request.GET["amount"])
+    sale = Sale.objects.filter(user=user,status="Carrito").first()
+    try:
+        detail = SaleDetail.objects.get(product=product)
+        detail.units = amount
+        detail.subtotal = amount*product.price
+        detail.save()
+        recalculateCartTotalInternal(request.session["uID"])
+        #return Response(200)
+    except SaleDetail.DoesNotExist:
+        detail = SaleDetail.objects.create(sale=sale,product=product,units=amount,subtotal=product.price*amount)
+        recalculateCartTotalInternal(request.session["uID"])
+        #return Response(-1)
+    return Response(status=status.HTTP_201_CREATED)
+
+@csrf_exempt
+@api_view(['GET'])
+def removeFromCart(request,dID):
+    saleDetail=SaleDetail.objects.get(id=int(dID))
+    saleDetail.delete()
+    recalculateCartTotalInternal(request.session["uID"])
+    return Response(status=status.HTTP_200_OK)
+
+@csrf_exempt
+@api_view(['GET'])
+def getCartItemAmount(request):
+    user = User.objects.get(id=request.session["uID"])
+    totalItems=0
+    for saleDetail in SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()):
+        totalItems += saleDetail.units
+    request.session["cartItems"] = totalItems
+    return Response(totalItems)
+
+@csrf_exempt
+@api_view(['GET'])
+def recalculateCartTotal(request):
+    recalculateCartTotalInternal(request.session["uID"])
+
+def recalculateCartTotalInternal(uID):
+    sale=Sale.objects.get(user=User.objects.get(id=uID),status="Carrito")
+    total = 0
+    for saleDetail in SaleDetail.objects.filter(sale=sale):
+        total += saleDetail.subtotal
+    sale.total=total
+    sale.save()

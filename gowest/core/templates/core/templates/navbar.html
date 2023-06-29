@@ -32,7 +32,7 @@
         <li class="nav-item">
 			<a class="btn btn-gowest no-wrap" id="navbarCartBtn" href="{% url 'cart' %}" data-units="0">
 				<span class="icon fa fa-shopping-cart"></span>
-				<span id="navbarCartUnits" class="badge badge-pill badge-danger hidden">0</span>
+				<span id="navbarCartUnits" class="badge badge-pill badge-danger{% if request.session.cartItems == 0 %} hidden {% endif %}">{{ request.session.cartItems }}</span>
 			</a>
         </li>
         <li class="nav-item">

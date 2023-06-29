@@ -33,7 +33,7 @@
 						<span class="icon fa fa-shopping-bag"></span></button>
 				{% endif %}
 				{% if sale.status == "Carrito" %}
-					<a class="btn btn-secondary" onclick="moveTo('cart.html')">
+					<a class="btn btn-secondary" href="{% url 'cart' %}">
 						<span class="icon fa fa-shopping-cart"></span></a>
 				{% endif %}
 				<button class="btn btn-success" data-toggle="modal" data-target="#saleDataModal" onclick="prepareSaleModal(this)" data-id="{{ sale.id }}">

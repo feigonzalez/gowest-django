@@ -5,6 +5,7 @@ from django.contrib.auth.models import User as DjUser
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate,login, logout
 from django.http import JsonResponse
+from datetime import date
 from .models import *
 
 # Create your views here.
@@ -159,6 +160,10 @@ def processLogin(request):
             return redirect('adminIndex')
         else:
             request.session["uRole"]="client"
+            totalItems=0
+            for saleDetail in SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()):
+                totalItems += saleDetail.units
+            request.session["cartItems"] = totalItems
             return redirect('index')
     #return redirect('index')
 
@@ -230,7 +235,15 @@ def processClientAccountChanges(request, type):
     return redirect('clientAccount')
 
 def checkout(request):
-    #TODO
+    doneSale = Sale.objects.filter(user=User.objects.get(id=request.session["uID"]),status="Carrito").first()
+    doneSale.status="Pagada"
+    doneSale.saleDate=date.today()
+    doneSale.address=Address.objects.get(id=int(request.POST["cartAddress"]))
+    doneSale.save()
+    Sale.objects.create(user=User.objects.get(id=request.session["uID"]),
+        address=Address.objects.filter(user=User.objects.get(id=request.session["uID"])).first(),
+        status="Carrito",total=0,saleDate=date.today(),subscribed=0)
+    request.session["cartItems"]=0
     return redirect('index')
 
 def validatePassRecovery(request):

@@ -27,12 +27,12 @@
 					<thead><tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th><th></th></tr></thead>
 					<tbody id="checkoutDetailsTableBody">
 						{% for detail in details %}
-						<tr>
+						<tr data-pid="{{ detail.product.id }}">
 							<td>{{ detail.product.name }}</td>
 							<td>${{ detail.product.price }}</td>
 							<td><input id="f_cartItem{{ detail.id }}"class="form-control cartItemQtty" onchange="updateCartTotals(this)" type="number" value="{{ detail.units }}"></input></td>
 							<td>${{ detail.subtotal }}</td>
-							<td><button class="btn btn-danger"><span class="icon fa fa-trash"></span></button></td>
+							<td><button class="btn btn-danger" data-id="{{ detail.id }}" onclick="removeItemFromCart(this)"><span class="icon fa fa-trash"></span></button></td>
 						</tr>
 						{% endfor %}
 						<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'>${{ cartTotal }}</td><td></td></tr>
@@ -40,7 +40,7 @@
 				</table>
 			</div>
 			<div class="col-lg-6" id="checkoutPayment">
-				<form id="cartCheckoutForm" action="{% url 'checkout' %}" onsubmit="validateCheckout(event)">
+				<form id="cartCheckoutForm" method="POST" action="{% url 'checkout' %}" onsubmit="validateCheckout(event)">
 				{% csrf_token %}
 					<div class="form-group">
 						<label for="cartAddess">Dirección de envío</label>

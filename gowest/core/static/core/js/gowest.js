@@ -81,23 +81,13 @@ async function loadSecQuestion(e){
 	of units specified.
 	If units is undefined, it is assumed to be called from the product page "Add to Cart" button.
 */
-async function addToCart(uID,pID,units){
-	var cartBtn = get("navbarCartBtn");
-	if(cartBtn==null) return;
+async function addToCart(pID,units){
 	if(units==null){
 		units = parseInt(get("addToCartUnits").value);
 		if(units<1)return;
 	}
-
-	await fetch("/api/addToCart",{
-		method:'POST',
-		/*header: {'Content-Type': 'application/json'},*/
-		body: JSON.stringify({"uID":1,"pID":1,"amount":1})})
-	var newUnits=(await fetch("/api/getCartItemAmount/"+uID).then(response=>response.json()))
-	var cartBadge=get("navbarCartUnits");
-	cartBadge.classList.remove("hidden");
-	cartBadge.innerText=newUnits;
-	cartBtn.dataset["units"]=newUnits;
+	await fetch("/api/addToCart?"+ new URLSearchParams({"pID":pID,"amount":units}))
+	updateCartBadge()
 }
 
 //	Returns a <span> badge element that corresponds to the passed sale status, if valid.
@@ -111,7 +101,7 @@ function formatSaleStatus(status){
 	}
 }
 
-function updateCartTotals(e){
+async function updateCartTotals(e){
 	validateCheckoutItemCount(e)
 	var price=parseInt(e.parentElement.parentElement.children[1].innerText.substring(1));
 	var se=e.parentElement.parentElement.children[3];
@@ -122,6 +112,32 @@ function updateCartTotals(e){
 		newTotal+=parseInt(row.children[3].innerText.substring(1));
 	}
 	get("cartTotal").innerText="$"+newTotal;
+	await fetch("/api/setToCart?"+ new URLSearchParams({"pID":e.parentElement.parentElement.dataset["pid"],"amount":e.value}))
+	updateCartBadge()
+}
+
+async function updateCartBadge(){
+	var newUnits=(await fetch("/api/getCartItemAmount").then(response=>response.json()))
+	var cartBadge=get("navbarCartUnits");
+	cartBadge.classList.remove("hidden");
+	cartBadge.innerText=newUnits;
+	var cartBtn = get("navbarCartBtn");
+	if(cartBtn==null) return;
+	cartBtn.dataset["units"]=newUnits;
+}
+
+async function removeItemFromCart(e){
+	list=e.parentElement.parentElement.parentElement;
+	id=e.dataset["id"]
+	await fetch("/api/removeFromCart/"+id);
+	e.parentElement.parentElement.remove();
+	newTotal=0;
+	for(row of list.children){
+		if(row.children[3].id=="cartTotal")break;
+		newTotal+=parseInt(row.children[3].innerText.substring(1));
+	}
+	get("cartTotal").innerText="$"+newTotal;
+	updateCartBadge()
 }
 
 window.addEventListener("load",()=>{
