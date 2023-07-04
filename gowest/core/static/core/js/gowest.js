@@ -14,47 +14,6 @@ function get(id){return document.getElementById(id)}
 */
 
 /*
-	Builds a <div> element containing the category title, and a number of products from that category.
-	The built <div> element is then appended to the element passed as e.
-	If link is set to true, the category title will be a link that redirects to the corresponding
-	category page, and will also show the total number of products from that category.
-*/
-async function loadCategoryGalleryInto(cat="",e,link=false){
-	var cn = (await selectAllWhere("categories",(i)=>{return i["code"]==cat}))[0]["name"]
-	var c = await selectAllWhere("products",(i)=>{return i["category"]==cat});
-    //var c=json["categories"][cat];
-    var cl=c.length //category length
-    r="<div class='row bg-gowest categoryTitle'>"+
-        (link?"<a href='#' onclick='moveTo(\"category.html\",[[\"c\",\""+cat+"\"]])'>":"")+
-        cn+
-        (link?" <span class='productCount'>Ver "+cl+" productos</span></a>":"")+"</div>";
-    var template=
-        "<div class='galleryItem'>"+
-		"<a class='galleryItemLink' href='#' onclick='moveTo(\"product.html\",[[\"p\",\"{ID}\"]])'>"+
-        "<img class='galleryItemImage mx-auto d-block' src='img/products/{ID}.png'>"+
-        "<div class='galleryItemLabel'>{CONTENT}</div>"+
-        "<div class='galleryItemPrice'>{PRICE}</div></a>"+
-		"<button class='btn btn-success galleryCartBtn' onclick='addToCart(1)'>Añadir al carrito</button></div>";
-    for(var i=0;i<(link?1:Math.ceil(cl/4));i++){
-        r+="<div class='row galleryRow'>";
-        for(var j=0;j<4;j++){
-            index=i*4+j;
-            content="";
-            if(index<cl){
-                item=c[index]
-                content=template;
-                content=content.replaceAll("{ID}",item["code"])
-                content=content.replaceAll("{CONTENT}",item["name"])
-                content=content.replaceAll("{PRICE}","$"+item["price"])
-            }
-            r+="<div class='col-sm-3'>"+content+"</div>";
-        }
-        r+="</div>";
-    }
-    e.innerHTML=r;
-}
-
-/*
 	Queries the database to obtain a user's security question, and fills the
 	form in recoverPass.html. The user is determined from the passed element's value.
 */

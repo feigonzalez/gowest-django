@@ -141,25 +141,38 @@ function validateSignup(ev){
 
 function validateCheckoutItemCount(e){
 	makeValid(e);
-	if(e.value<1) makeInvalid(e,"La cantidad de items no puede ser menor a 1");
+	if(e.value<1){
+		makeInvalid(e,"La cantidad de items no puede ser menor a 1");
+		e.value=1;
+	}
 }
 
 function validateAddToCart(e){
 	makeValid(e);
-	if(e.value<1) makeInvalid(e,"La cantidad de items no puede ser menor a 1");
+	if(e.value<1){
+		makeInvalid(e,"La cantidad de items no puede ser menor a 1");
+		e.value=1;
+	}
 }
 
 function validateCheckout(ev){
+	let invalidMessage="";
+	let valid = true;
 	makeValid(get("cartSubmitButton"));
 	let qttyInputs=document.getElementsByClassName("cartItemQtty");
-	let valid = true;
-	for(qttyInput of qttyInputs){
-		if(qttyInput.value<1){
-			valid=false;
+	if(qttyInputs.length==0){
+		valid=false;
+		invalidMessage+="Su carrito está vacío";
+	} else {
+		for(qttyInput of qttyInputs){
+			if(qttyInput.value<1){
+				valid=false;
+				console.log("")
+			}
 		}
 	}
 	if(!valid){
-		makeInvalid(get("cartSubmitButton"),"Su carrito incluye una cantidad inválida de productos.");
+		makeInvalid(get("cartSubmitButton"),invalidMessage);
 		ev.preventDefault();
 	}
 }

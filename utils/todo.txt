@@ -11,5 +11,8 @@
     deleteAlertModal.js has a form, whose input values are changed by modals.js
     depending on which confirmDeleteX() function was called.
     views.py's confirmDeletion() has a sequence of if statements, where the specified item gets deleted
-[ ] modify account data
-[ ] modify account password
+[X] modify account data
+[X] modify account password
+[ ] modify account sec question
+
+[ ] change settings.py's DATABASES's NAME from "xe" to "orcl"

@@ -100,6 +100,8 @@ li.nav-item .btn{width:-moz-available;width:-webkit-fill-available}
 .form-image-input img{width:120px;padding:1em;border:solid 1px #ced4da;margin-right:1em}
 .form-image-input .form-control{width:calc(100% - 120px - 2em);display:inline}
 
+form label{font-style:italic}
+
 #productImageHolder{margin:20px;padding:20px;border:solid 1px #AF8;
 	border-radius:10px;}
 #productImage{width:100%}

@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'gowest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'localhost:1521/orcl',
+        'NAME': 'localhost:1521/xe',
         'USER': 'gowest_admin',
         'PASSWORD': 'gowest',
         'TEST':{

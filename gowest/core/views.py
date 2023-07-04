@@ -149,8 +149,6 @@ def processLogin(request):
         return redirect('index')
     authUser = authenticate(username=mail,password=rawPass)
     if authUser is not None and user is not None:
-        print("logged as "+user.name)
-        print("with role "+str(user.role.name))
         login(request, authUser)
         request.session["uID"]=user.id
         request.session["uName"]=user.name
@@ -199,8 +197,10 @@ def processSignup(request):
         password=password,role=Role.objects.get(id=1),secQuestion=secQuestion,
         secAnswer=secAnswer)
     #insert client's new address into db
-    Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
+    address = Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
         user=user, district=district)
+    #create an empty "cart" sale for the client
+    Sale.objects.create(user=user,address=address,status="Carrito",total=0,saleDate=date.today(),subscribed=0)
     
     djUser = DjUser.objects.create_user(username=mail, email=mail, password=rawPass)
     djUser.is_staff=False
@@ -223,11 +223,33 @@ def processAdminAccountChanges(request, type):
 
 def processClientAccountChanges(request, type):
     #TODO
+    user = User.objects.get(id=request.session["uID"])
+    djuser = DjUser.objects.get(email=user.mail)
     if type == "data":
-        #update the user's name, surname, phone, and mail
-        pass
+        name=request.POST["updateClientName"]
+        surname=request.POST["updateClientSurname"]
+        phone=request.POST["updateClientPhone"]
+        user.name=name
+        user.surname=surname
+        user.phone=phone
+        user.save()
+        request.session["uName"]=name
+        request.session["uSurname"]=surname
     if type == "password":
-        #update the user's password
+        oldPass = request.POST["updateClientOldPassword"]
+        password = request.POST["updateClientPassword"]
+        passwordConfirm = request.POST["updateClientPasswordConfirm"]
+        oldValid = check_password(oldPass, djuser.password)
+        if oldValid:
+            user.password=make_password(password)
+            user.save()
+            djuser.set_password(password)
+            djuser.save()
+            print("password updated")
+        else:
+            #TODO: Alert the user that their oldPass is wrong
+            print("password couldnt be updated")
+            pass
         pass
     if type == "secQuestion":
         #update the user's security question and answer
@@ -342,42 +364,3 @@ def createAddress(request):
 
 def createAdministrator(request):
     return redirect('adminAdministrators')
-
-#DB data preparation
-
-"""
-def prepareUsers(request):
-    User.objects.create(rut='10.000.000-0',name='William',surname='Hartnell',mail='whart@mail.com',phone='+123456789',
-        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
-        secAnswer='13')
-    djUser = DjUser.objects.create_user(username='whart@mail.com', email='whart@mail.com', password='pass')
-    djUser.is_staff=False
-    djUser.save()
-    User.objects.create(rut='11.000.000-0',name='Patrick',surname='Troughton',mail='ptrou@mail.com',phone='+234567891',
-        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
-        secAnswer='12')
-    djUser = DjUser.objects.create_user(username='ptrou@mail.com', email='ptrou@mail.com', password='pass')
-    djUser.is_staff=False
-    djUser.save()
-    User.objects.create(rut='12.000.000-0',name='Jon',surname='Pertwee',mail='jpert@mail.com',phone='+345678912',
-        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
-        secAnswer='11')
-    djUser = DjUser.objects.create_user(username='jpert@mail.com', email='jpert@mail.com', password='pass')
-    djUser.is_staff=False
-    djUser.save()
-    User.objects.create(rut='13.000.000-0',name='Tom',surname='Baker',mail='tbake@mail.com',phone='+456789123',
-        password=make_password('pass'),role=Role.objects.get(id=1),secQuestion=SecQuestion.objects.get(id=4),
-        secAnswer='10')
-    djUser = DjUser.objects.create_user(username='tbake@mail.com', email='tbake@mail.com', password='pass')
-    djUser.is_staff=False
-    djUser.save()
-
-    User.objects.create(rut='20.000.000-0',name='Alvis',surname='Claus',mail='aclau@mail.com',phone='+987654321',
-        password=make_password('pass'),role=Role.objects.get(id=2),secQuestion=SecQuestion.objects.get(id=2),
-        secAnswer='Kermit')
-    djUser = DjUser.objects.create_user(username='aclau@mail.com', email='aclau@mail.com', password='pass')
-    djUser.is_staff=True
-    djUser.save()
-
-    return redirect('index')
-"""
