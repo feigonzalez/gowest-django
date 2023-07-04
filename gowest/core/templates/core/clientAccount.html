@@ -30,10 +30,14 @@
 	<h4>Seguridad</h4>
 	<form action="{% url 'processClientAccountChanges' type='password' %}" method="POST" onsubmit="validateClientPasswordForm(event)">
 	{% csrf_token %}
-		<div class="form-group">
-			<label for="oldPassword">Contraseña actual</label>
-			<input type="password" id="oldPassword" name="updateClientOldPassword" class="form-control">
-		</div>
+		{% if request.session.recoverPass %}
+			<div>Ha ingresado mediante la recuperación de contraseña. Ingrese una nueva contraseña.</div>
+		{% else %}
+			<div class="form-group">
+				<label for="oldPassword">Contraseña actual</label>
+				<input type="password" id="oldPassword" name="updateClientOldPassword" class="form-control">
+			</div>
+		{% endif %}
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="pass">Nueva Contraseña</label>
@@ -58,7 +62,7 @@
 			<input id="clientSaveSecurity" type="submit" value="Guardar Contraseña" class="btn btn-success">
 		</div>
 	</form>
-	<form action="{% url 'processClientAccountChanges' type='secQuestion' " method="POST" onsubmit="validateClientSecQuestionForm(event)">
+	<form action="{% url 'processClientAccountChanges' type='secQuestion' %}" method="POST" onsubmit="validateClientSecQuestionForm(event)">
 	{% csrf_token %}
 		<div class="row form-group">
 			<div class="col-sm-6">

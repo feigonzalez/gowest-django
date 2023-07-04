@@ -76,7 +76,7 @@ def clientAccount(request):
     if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
     user=User.objects.get(id=request.session["uID"])
-    context={"categories":Category.objects.all(),
+    context={"districts":District.objects.all(),
         "secQuestions":SecQuestion.objects.all(),
         "user":user,
         "addresses":Address.objects.filter(user=user)}
@@ -236,11 +236,16 @@ def processClientAccountChanges(request, type):
         request.session["uName"]=name
         request.session["uSurname"]=surname
     if type == "password":
-        oldPass = request.POST["updateClientOldPassword"]
+        valid = False
         password = request.POST["updateClientPassword"]
         passwordConfirm = request.POST["updateClientPasswordConfirm"]
-        oldValid = check_password(oldPass, djuser.password)
-        if oldValid:
+        if request.session["recoverPass"]:
+            valid = True
+            del request.session["recoverPass"]
+        else:
+            oldPass = request.POST["updateClientOldPassword"]
+            valid = check_password(oldPass, djuser.password)
+        if valid:
             user.password=make_password(password)
             user.save()
             djuser.set_password(password)
@@ -250,9 +255,11 @@ def processClientAccountChanges(request, type):
             #TODO: Alert the user that their oldPass is wrong
             print("password couldnt be updated")
             pass
-        pass
     if type == "secQuestion":
         #update the user's security question and answer
+        user.secQuestion = SecQuestion.objects.get(id=request.POST["updateClientSecQuestion"])
+        user.secAnswer = request.POST["updateClientSecAnswer"]
+        user.save()
         pass
     return redirect('clientAccount')
 
@@ -293,12 +300,13 @@ def validatePassRecovery(request):
             request.session["uID"]=user.id
             request.session["uName"]=user.name
             request.session["uSurname"]=user.surname
+            request.session["recoverPass"]=True
             if user.role.id == 2:
                 request.session["uRole"]="admin"
-                return redirect('adminIndex')
+                return redirect('adminAccount')
             else:
                 request.session["uRole"]="client"
-                return redirect('index')
+                return redirect('clientAccount')
     else:
         #wrong secanswer. stay in recoverPass and give feedback
         context={"wrongAnswer":True,"rut":rut}
@@ -359,7 +367,23 @@ def createCategory(request):
         Category.objects.create(name=name)
     return redirect('adminCategories')
 
-def createAddress(request):
+def postAddress(request):
+    streetName=request.POST["addressFormStreet"]
+    streetNumber=request.POST["addressFormNumber"]
+    postalCode=request.POST["addressFormPostalCode"]
+    district=District.objects.get(id=int(request.POST["addressFormDistrict"]))
+    update=request.POST["addressFormUpdate"]
+    if update=="true":  #update an existing address
+        address=Address.objects.get(id=int(request.POST["addressFormId"]))
+        address.streetName=streetName
+        address.streetNumber=streetNumber
+        address.postalCode=postalCode
+        address.district=district
+        address.save()
+    else:
+        Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
+            district=district)
+        pass
     return redirect('clientAccount')
 
 def createAdministrator(request):

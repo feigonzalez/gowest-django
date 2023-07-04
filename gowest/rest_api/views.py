@@ -148,6 +148,42 @@ def getCartItemAmount(request):
 def recalculateCartTotal(request):
     recalculateCartTotalInternal(request.session["uID"])
 
+@csrf_exempt
+@api_view(['GET'])
+def getSaleDetails(request, id):
+    sale = Sale.objects.get(id=id)
+    saleJson = SaleSerializer(sale).data
+    if request.session["uID"]==sale.user.id:
+        del saleJson["user"]
+    elif request.session["uRole"]!="admin":
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    details = SaleDetail.objects.filter(sale=sale)
+    detailsJson = []
+    for d in details:
+        p=Product.objects.get(id=d.product.id)
+        newD={}
+        newD["productName"]=p.name
+        newD["productPrice"]=p.price
+        newD["units"]=d.units
+        newD["subtotal"]=d.subtotal
+        detailsJson.append(newD)
+    response={
+        "sale":saleJson,
+        "address":sale.address.streetName+" "+sale.address.streetNumber+", "+sale.address.district.name,
+        "details":detailsJson
+    }
+    return Response(response)
+
+@csrf_exempt
+@api_view(['GET'])
+def getAddress(request, id):
+    address = Address.objects.get(id=id)
+    addressJson = AddressSerializer(address).data
+    addressJson["districtName"]=address.district.name
+    if request.session["uID"]!=address.user.id and request.session["uRole"]!="admin":
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    return Response(addressJson)
+    
 def recalculateCartTotalInternal(uID):
     sale=Sale.objects.get(user=User.objects.get(id=uID),status="Carrito")
     total = 0

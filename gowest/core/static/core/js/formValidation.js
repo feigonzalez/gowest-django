@@ -192,6 +192,9 @@ function validateAddressModalForm(ev){
 	if(postalCode.value.trim()==""){makeInvalid(postalCode,"Código postal requerido.");valid=false;}
 	else if(postalCode.value.trim().match(/^[a-zA-Z0-9]+$/)==null){makeInvalid(postalCode,"Código postal inválido (Use sólo números y/o letras).");valid=false;}
 
+	let district=get("addressFormDistrict"); makeValid(district);
+	if(district.value.trim()==""){makeInvalid(district,"Comuna requerida.");valid=false;}
+	
 	if(!valid) ev.preventDefault()
 }
 

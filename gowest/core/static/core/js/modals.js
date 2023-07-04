@@ -68,30 +68,22 @@ async function prepareClientModal(e){
 
 /*
 	Prepares the Sales Modal in both the adminSales page and the clientSales page.
-	If userID is set, the modal is assumed to belong to the client view, and the client
-	information is hidden from the form.
 */
 
-async function prepareSaleModal(e,userID){
-	var sale = (await selectAllWhere("sales",(i)=>{return i["id"]==e.dataset["id"] && (userID?i["userID"]==userID:true)}))[0];
-	var details = (await selectAllWhere("saleDetails",(i)=>{return i["saleID"]==sale["id"]}))
-	var user = (await selectAllWhere("users",(i)=>{return i["id"]==sale["userID"]}))[0]
-	var address = (await selectAllWhere("addresses",(i)=>{return i["id"]==sale["addressID"]}))[0]
-	var district = (await selectAllWhere("districts",(i)=>{return i["id"]==address["districtID"]}))[0]
-	if(userID==null){
-		get("saleFormUser").innerText=`${user["name"]} ${user["surname"]} (${sale["userID"]})`;
-	} else {
-		get("saleFormUserRow").classList.add("hidden");
-	}
-	get("saleFormAddress").innerText=`${address["street"]} ${address["number"]}, ${district["name"]}`;
-	get("saleFormSaleDate").innerText=sale["saleDate"];
-	get("saleFormDeliveryDate").innerText=sale["deliveryDate"];
-	get("saleFormStatus").innerHTML=formatSaleStatus(sale["status"]);
-	get("saleFormTotal").innerText=sale["total"];
+async function prepareSaleModal(e){
+	data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
+	console.log(data);
+	saleuser=data["sale"]["user"];
+	if(saleuser!=undefined) get("saleFormUser").innerText=saleuser;
+	else get("saleFormUserRow").classList.add("hidden");
+	get("saleFormAddress").innerText=data["address"];
+	get("saleFormSaleDate").innerText=data["sale"]["saleDate"];
+	get("saleFormDeliveryDate").innerText=data["sale"]["deliveryDate"];
+	get("saleFormStatus").innerHTML=formatSaleStatus(data["sale"]["status"]);
+	get("saleFormTotal").innerHTML="$"+data["sale"]["total"];
 	var newInnerHTML="<table class='table text-center'>\n<tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th></tr>\n";
-	for(d of details){
-		var product = (await selectAllWhere("products",(i)=>{return i["id"]==d["productID"]}))[0]
-		newInnerHTML+=`<tr><td>${product["name"]}</td><td>${product["price"]}</td><td>${d["units"]}</td><td>${d["subtotal"]}</td></tr>\n`;
+	for(d of data["details"]){
+		newInnerHTML+=`<tr><td>${d["productName"]}</td><td>$${d["productPrice"]}</td><td>${d["units"]}</td><td>$${d["subtotal"]}</td></tr>\n`;
 	}
 	newInnerHTML+="</table>";
 	get("saleFormDetailsHolder").innerHTML=newInnerHTML;
@@ -123,7 +115,24 @@ async function prepareAddressModal(e){
 	makeValid(get("addressFormStreet"));
 	makeValid(get("addressFormNumber"));
 	makeValid(get("addressFormPostalCode"));
-	get("addressFormDistrict").innerHTML="";
+	get("addressFormDistrict").value="";
+	if(e==null){
+		get("addressFormStreet").value="";
+		get("addressFormNumber").value="";
+		get("addressFormPostalCode").value="";
+		get("addressFormDistrict").value=0;
+		get("addressFormUpdate").value=false;
+		get("addressFormId").value="";
+	} else {
+		address = (await fetch("/api/getAddress/"+e.dataset["id"]).then(r=>r.json()))
+		get("addressFormStreet").value=address["streetName"];
+		get("addressFormNumber").value=address["streetNumber"];
+		get("addressFormPostalCode").value=address["postalCode"];
+		get("addressFormDistrict").value=address["district"];
+		get("addressFormUpdate").value=true;
+		get("addressFormId").value=address["id"];
+	}
+	/*
 	var districts=await selectAllFrom("districts");
 	for(d of districts){
 		get("addressFormDistrict").innerHTML+=`<option value=${d["id"]}>${d["name"]}</option>`;
@@ -140,6 +149,7 @@ async function prepareAddressModal(e){
 		get("addressFormPostalCode").value=address["postalCode"];
 		get("addressFormDistrict").value=address["districtID"];
 	}
+	*/
 }
 
 /*

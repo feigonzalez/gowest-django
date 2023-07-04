@@ -1,18 +1,23 @@
 [/] not allow duplicate users
     detects if a signing-up user exists already. use MESSAGES to relay this to the user
-[ ] implement cart
+[X] implement cart
 [ ] formValidation.js/validateLogin()
 [X] recover password
 [X] url protection
 [ ] modify product (and other tables)
     the view "edit" button calls modals.js's prepareXModal(), and loads the correct data into the modal.
-    the modal's form then calls view's createX:
+    the modal's form then calls view's postX, which handles creation and updating of elements.
 [ ] delete product (and other tables)
     deleteAlertModal.js has a form, whose input values are changed by modals.js
     depending on which confirmDeleteX() function was called.
     views.py's confirmDeletion() has a sequence of if statements, where the specified item gets deleted
 [X] modify account data
 [X] modify account password
-[ ] modify account sec question
+[X] modify account sec question
+[X] let client see purchases
+[X] let client see addresses
+[X] let client edit addresses
+[ ] let client delete addresses
+[ ] let client create new address
 
 [ ] change settings.py's DATABASES's NAME from "xe" to "orcl"

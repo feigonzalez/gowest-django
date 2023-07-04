@@ -100,4 +100,7 @@ async function removeItemFromCart(e){
 }
 
 window.addEventListener("load",()=>{
+	for(e of document.querySelectorAll(".saleStatus")){
+		e.innerHTML=formatSaleStatus(e.innerText)
+	}
 })
