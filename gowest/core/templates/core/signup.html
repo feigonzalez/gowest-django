@@ -31,8 +31,18 @@
 					<input class="form-control" id="f_surname" name="clientSurname">
 				</div>
 			</div>
-			<div><label for="f_rut">RUT</label><input class="form-control" id="f_rut" name="clientRut"></div>
-			<div><label for="f_user">Correo</label><input type="email" class="form-control" id="f_user" name="clientMail"></div>
+			<div><label for="f_rut">RUT</label><input class="form-control" id="f_rut" name="clientRut" onchange="validateSignupRut(this)"></div>
+			{% if RUT %}
+				<script>
+					makeInvalid(get("f_rut"),"RUT ya se encuentra en uso");
+				</script>
+			{% endif %}
+			<div><label for="f_user">Correo</label><input type="email" class="form-control" id="f_user" name="clientMail" onchange="validateSignupMail(this)"></div>
+			{% if MAIL %}
+				<script>
+					makeInvalid(get("f_user"),"Correo ya se encuentra en uso");
+				</script>
+			{% endif %}
 			<div><label for="f_phone">Teléfono</label><input class="form-control" id="f_phone" name="clientPhone"></div>
 			<div class="row">
 				<div class="col-sm-6">
@@ -90,5 +100,6 @@
 			<button type="submit" class="btn btn-success">Registrarse</button>
 		</form> 
 	</div>
+{% include 'core/templates/noticeBoard.html' %}
 </body>
 </html>

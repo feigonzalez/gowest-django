@@ -1,31 +1,31 @@
 {% load static %}
 <div id="gallery" class="container-fluid">
-    {% for category in galleries %}
-        <div>
-            {% if galleries|length > 1 %}
-                <div class="row bg-gowest categoryTitle"><a href="{% url 'category' category.id %}">{{ category.name }}</a></div>
-            {% endif %}
-            <div class="row galleryRow">
-                    {% for product in category.products %}
-                    <div class="col-sm-3">
-                        <div class="galleryItem">
-                            <a class="galleryItemLink" href="{% url 'product' product.id %}">
-                                <img class="galleryItemImage mx-auto d-block" src="{{ product.image.url }}">
-                                <div class='galleryItemLabel'>{{ product.name }}</div>
-                                <div class='galleryItemPrice'>${{ product.price }}</div>
-                            </a>
-                            {% if request.session.uID != None %}
-                                <button class='btn btn-success galleryCartBtn' onclick='addToCart({{ product.id }}, 1)'>Añadir al carrito</button>
-                            {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                    {% if category|length == 0 %}
-                    <div>Esta categoría está vacía</div>
-                    {% endif %}
-                </div>
-                <div class="col-sm-9"></div>
-            </div>
-        </div>
-    {% endfor %}
+	{% for category in galleries %}
+		<div>
+			{% if galleries|length > 1 %}
+				<div class="row bg-gowest categoryTitle">
+					<a href="{% url 'category' category.id %}">{{ category.name }}</a>
+				</div>
+			{% endif %}
+			<div class="row galleryRow">
+				{% for product in category.products %}
+					<div class="col-sm-3">
+						<div class="galleryItem">
+							<a class="galleryItemLink" href="{% url 'product' product.id %}">
+								<img class="galleryItemImage mx-auto d-block" src="{{ product.image.url }}">
+								<div class='galleryItemLabel'>{{ product.name }}</div>
+								<div class='galleryItemPrice'>${{ product.price }}</div>
+							</a>
+							{% if request.session.uID != None %}
+								<button class='btn btn-success galleryCartBtn' onclick='addToCart({{ product.id }}, 1)'>Añadir al carrito</button>
+							{% endif %}
+						</div>
+					</div>
+				{% endfor %}
+				{% if category|length == 0 %}
+					<div>Esta categoría está vacía</div>
+				{% endif %}
+			</div>
+		</div>
+	{% endfor %}
 </div>

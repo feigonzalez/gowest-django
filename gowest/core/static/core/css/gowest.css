@@ -18,6 +18,8 @@ h1,h2,h3,h4,h5,h6{margin-top:1rem}
 .bg-gowest-dark{background-color:#5A3;color:#fff}
 /*.bg-gowest .btn{background-color:#373;color:#fff}*/
 
+#messagesHolder{position:fixed;right:1em;bottom:1em}
+
 .no-wrap{white-space:nowrap}
 
 .btn-gowest{background-color:#493;color:#fff}

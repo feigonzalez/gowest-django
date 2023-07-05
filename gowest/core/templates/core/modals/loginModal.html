@@ -1,9 +1,9 @@
-<div class="modal fade" id="loginModal">
+<div class='modal {% if loginStatus is None or loginStatus != "FAIL" %}fade{% endif %}' id="loginModal">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form action="{% url 'processLogin' %}" method="POST" onsubmit="validateLogin()">
+				<form action="{% url 'processLogin' %}" method="POST">
 				{% csrf_token %}
 					<div class="form-group">
 						<label for="mail">Correo:</label>
@@ -29,3 +29,12 @@
 		</div>
 	</div>
 </div>
+
+{% if loginStatus is not None and loginStatus == "FAIL" %}
+	<script>
+		get("loginMail").value="{{ loginUser }}";
+		(new bootstrap.Modal(get("loginModal"))).show()
+		makeInvalid(get("loginMail"),"");
+		makeInvalid(get("loginPassword"),"Usuario o contraseña incorrectos");
+	</script>
+{% endif %}

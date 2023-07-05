@@ -31,7 +31,7 @@
 	<form action="{% url 'processClientAccountChanges' type='password' %}" method="POST" onsubmit="validateClientPasswordForm(event)">
 	{% csrf_token %}
 		{% if request.session.recoverPass %}
-			<div>Ha ingresado mediante la recuperación de contraseña. Ingrese una nueva contraseña.</div>
+			<div class="alert alert-danger" role="alert">Ha ingresado mediante la recuperación de contraseña. Ingrese una nueva contraseña.</div>
 		{% else %}
 			<div class="form-group">
 				<label for="oldPassword">Contraseña actual</label>
@@ -91,7 +91,7 @@
 					<tr>
 						<td data-type="string">{{ address.streetName }} {{ address.streetNumber }}, {{ address.district.name }}</td>
 						<td class="text-right"><button class="btn btn-success" data-id="{{ address.id }}" data-toggle="modal" data-target="#addressDataModal" onclick="prepareAddressModal(this)"><span class="icon fa fa-pencil"></span></button>
-						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" onclick="confirmDeleteAddress(this)"><span class="icon fa fa-trash"></span></button></td>
+						<button class="btn btn-danger" data-toggle="modal" data-id="{{ address.id }}" data-target="#deleteAlertModal" onclick="confirmDeleteAddress(this)"><span class="icon fa fa-trash"></span></button></td>
 					</tr>
 				{% endfor %}
 			</tbody>

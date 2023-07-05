@@ -1,0 +1,15 @@
+{% if messages %}
+	<div id="messagesHolder">
+		{% for message in messages %}
+			{% if message.tags and "board" in message.tags %}
+			<div class="alert alert-{{ message.level_tag }} alert-dismissible fade show" role="alert">
+				
+				{{ message }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+{% endif %}

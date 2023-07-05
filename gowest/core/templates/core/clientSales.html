@@ -4,7 +4,6 @@
 	<table class="table table-hover align-middle">
 		<thead>
 			<tr>
-			<th>Código</th>
 			<th>Fecha Venta</th>
 			<th class="d-none d-sm-table-cell">Fecha Entrega</th>
 			<th>Estado</th>
@@ -14,9 +13,14 @@
 		<tbody id="tableSalesBody">
 			{% for sale in sales %}
 				<tr>
-				<td data-type="string">{{ sale.id }}</td>
 				<td data-type="date">{{ sale.saleDate }}</td>
-				<td class="d-none d-sm-table-cell" data-type="date">{{ sale.deliveryDate }}</td>
+				<td class="d-none d-sm-table-cell" data-type="date">
+					{% if sale.deliveryDate %}
+						{{ sale.deliveryDate }}
+					{% else %}
+						<i>No entregada</i>
+					{% endif %}
+				</td>
 				<td class="saleStatus" data-type="string">{{ sale.status }}</td>
 				<td class="text-right">
 				{% if sale.status == "Despachada" %}

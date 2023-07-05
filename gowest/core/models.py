@@ -11,6 +11,7 @@ class District(models.Model):
 class Category(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32)
+    is_active = models.IntegerField(default=1)
 
     def __str__(self) -> str:
         return self.name
@@ -40,6 +41,7 @@ class User(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     secQuestion = models.ForeignKey(SecQuestion, on_delete=models.CASCADE)
     secAnswer = models.CharField(max_length=64)
+    is_active = models.IntegerField(default=1)
 
     def __str__(self) -> str:
         return self.name+" "+self.surname
@@ -51,6 +53,7 @@ class Address(models.Model):
     postalCode = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     district = models.ForeignKey(District,on_delete=models.CASCADE)
+    is_active = models.IntegerField(default=1)
 
     def __str__(self) -> str:
         return self.streetName+" "+self.streetNumber
@@ -73,6 +76,7 @@ class Product(models.Model):
     price = models.IntegerField()
     stock = models.IntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    is_active = models.IntegerField(default=1)
 
     def __str__(self) -> str:
         return self.name

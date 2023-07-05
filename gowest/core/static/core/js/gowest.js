@@ -18,20 +18,18 @@ function get(id){return document.getElementById(id)}
 	form in recoverPass.html. The user is determined from the passed element's value.
 */
 async function loadSecQuestion(e){
-	makeValid(get("f_inputRut"))
-	if(get("f_inputRut").value.trim().match(/^\d{1,3}(\.\d\d\d)*\-[0-9K]$/)==null){
-		makeInvalid(get("f_inputRut"),"Formato incorrecto (Ingrese con puntos y guión).")
+	makeValid(e)
+	if(!isValidEmail(get("f_inputMail").value.trim())){
+		makeInvalid(get("f_inputMail"),"Correo inválido.")
 		return;
 	}
-	var secQ = (await fetch('/api/getUserSQ/'+get("f_inputRut").value).then(response=>response.json()));
+	var secQ = (await fetch('/api/getUserSQ/'+get("f_inputMail").value).then(response=>response.json()));
 	if(secQ){
 		get("secQuestionHolder").innerText=secQ;
-		//get("f_rut").value=user["rut"];
-		makeValid(get("f_inputRut"))
+		makeValid(get("f_inputMail"))
 	} else {
 		get("secQuestionHolder").innerText="–";
-		//get("f_rut").value="";
-		makeInvalid(get("f_inputRut"),"RUT no encontrado");
+		makeInvalid(get("f_inputMail"),"Usuario no encontrado");
 	}
 }
 

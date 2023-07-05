@@ -10,13 +10,18 @@ from .models import *
 
 # Create your views here.
 def index(request):
-    context={"categories":Category.objects.all(),
+    context={"categories":Category.objects.filter(is_active=1),
         "galleries":[]}
+    if "loginStatus" in request.session:
+        context["loginStatus"]="FAIL"
+        context["loginUser"]=request.session["loginUser"]
+        del request.session["loginStatus"]
+        del request.session["loginUser"]
     for category in context["categories"]:
         context["galleries"].append({})
         context["galleries"][-1]["id"]=category.id
         context["galleries"][-1]["name"]=category.name
-        context["galleries"][-1]["products"]=Product.objects.filter(category=category)
+        context["galleries"][-1]["products"]=Product.objects.filter(category=category,is_active=1)
     return render(request, 'core/index.html',context)
 
 def adminIndex(request):
@@ -53,11 +58,8 @@ def adminClients(request):
 def adminSales(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    #if request.GET["adminSalesSearchQuery"]:
-    #    sales=Sale.objects.filter()
-    #else:
+    #TODO: filter sales if search query given
     sales=Sale.objects.all()
-    
     context={"sales":sales}
     return render(request, 'core/adminSales.html',context)
 
@@ -79,20 +81,20 @@ def clientAccount(request):
     context={"districts":District.objects.all(),
         "secQuestions":SecQuestion.objects.all(),
         "user":user,
-        "addresses":Address.objects.filter(user=user)}
+        "addresses":Address.objects.filter(user=user,is_active=1)}
     return render(request, 'core/clientAccount.html',context)
 
 def clientSales(request):
     if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
-    context={"categories":Category.objects.all(),
+    context={"categories":Category.objects.filter(is_active=1),
         "sales":Sale.objects.filter(user=User.objects.get(id=request.session["uID"]))}
     return render(request, 'core/clientSales.html',context)
 
 def clientFoundation(request):
     if 'uRole' not in request.session or request.session["uRole"] != "client":
        return redirect('index')
-    context={"categories":Category.objects.all()}
+    context={"categories":Category.objects.filter(is_active=1)}
     #determine, with an API call, whether the client is already subscribed
     #if so, add its details to the context
     return render(request, 'core/clientFoundation.html',context)
@@ -101,7 +103,7 @@ def cart(request):
     if 'uRole' in request.session and request.session["uRole"] == 'client':
         sale = Sale.objects.get(user=User.objects.get(id=request.session["uID"]), status='Carrito')
         context={"categories":Category.objects.all(),
-            "addresses":Address.objects.filter(user=User.objects.get(id=request.session["uID"])),
+            "addresses":Address.objects.filter(user=User.objects.get(id=request.session["uID"]),is_active=1),
             "details":SaleDetail.objects.filter(sale=sale),
             "cartTotal":sale.total}
         return render(request, 'core/cart.html',context)
@@ -110,12 +112,12 @@ def cart(request):
 
 def category(request, id):
     thisCategory = Category.objects.get(id=id)
-    context={"categories":Category.objects.all(),
-        "galleries":[{"id":id, "name":thisCategory.name, "products":Product.objects.filter(category=thisCategory)}]}
+    context={"categories":Category.objects.filter(is_active=1),
+        "galleries":[{"id":id, "name":thisCategory.name, "products":Product.objects.filter(category=thisCategory,is_active=1)}]}
     return render(request, 'core/category.html',context)
 
 def product(request, id):
-    context={"categories":Category.objects.all(),
+    context={"categories":Category.objects.filter(is_active=1),
         "product":Product.objects.get(id=id)}
     return render(request, 'core/product.html',context)
 
@@ -138,7 +140,9 @@ def processLogin(request):
         return redirect('index')
     valid = check_password(rawPass, djUser.password)
     if not valid:
-        #TODO alert
+        #TODO alert, password is wrong
+        request.session["loginStatus"]="FAIL"
+        request.session["loginUser"]=mail
         return redirect('index')
     try:
         user = User.objects.get(mail=mail)
@@ -146,6 +150,8 @@ def processLogin(request):
     except User.DoesNotExist:
         #TODO alert
         #message user doesnt exist: show login modal with "invalid" text
+        request.session["loginStatus"]="FAIL"
+        request.session["loginUser"]=mail
         return redirect('index')
     authUser = authenticate(username=mail,password=rawPass)
     if authUser is not None and user is not None:
@@ -158,19 +164,20 @@ def processLogin(request):
             return redirect('adminIndex')
         else:
             request.session["uRole"]="client"
+            #get the number of items on the user's cart
             totalItems=0
             for saleDetail in SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()):
                 totalItems += saleDetail.units
             request.session["cartItems"] = totalItems
             return redirect('index')
-    #return redirect('index')
+    #this return should never be reached
+    return redirect('index')
 
 def logOff(request):
     logout(request)
     return redirect('index')
 
 def processSignup(request):
-    context={}
     name = request.POST["clientName"]
     surname = request.POST["clientSurname"]
     rut = request.POST["clientRut"]
@@ -184,14 +191,20 @@ def processSignup(request):
     streetNumber = request.POST["clientAddressNumber"]
     postalCode = request.POST["clientAddressPostalCode"]
     district = District.objects.get(id = request.POST["clientAddressDistrict"])
+    valid = True
+    context={"districts":District.objects.all()}
     if User.objects.filter(rut=rut).count()>0:
-        context["message"]="user with rut exists"
+        #context["message"]="user with rut exists"
         #TODO: change to use messages instead
-        return render(request,'core/signup.html',context)
+        context["RUT"]=True
+        valid = False
     if User.objects.filter(mail=mail).count()>0:
-        context["message"]="user with email exists"
+        #context["message"]="user with email exists"
         #TODO: change to use messages instead
-        return render(request,'core/signup.html',context)
+        context["MAIL"]=True
+        valid = False
+    if not valid:
+        return render(request, 'core/signup.html', context)
     #insert new client-type user into db
     user = User.objects.create(rut=rut,name=name,surname=surname,mail=mail,phone=phone,
         password=password,role=Role.objects.get(id=1),secQuestion=secQuestion,
@@ -205,6 +218,13 @@ def processSignup(request):
     djUser = DjUser.objects.create_user(username=mail, email=mail, password=rawPass)
     djUser.is_staff=False
     djUser.save()
+    
+    login(request, djUser)
+    request.session["uID"]=user.id
+    request.session["uName"]=user.name
+    request.session["uSurname"]=user.surname
+    request.session["uRole"]="client"
+    request.session["cartItems"] = 0
 
     return redirect('index')
 
@@ -222,7 +242,6 @@ def processAdminAccountChanges(request, type):
     return redirect('adminAccount')
 
 def processClientAccountChanges(request, type):
-    #TODO
     user = User.objects.get(id=request.session["uID"])
     djuser = DjUser.objects.get(email=user.mail)
     if type == "data":
@@ -235,6 +254,7 @@ def processClientAccountChanges(request, type):
         user.save()
         request.session["uName"]=name
         request.session["uSurname"]=surname
+        messages.success(request, "Datos actualizados", extra_tags="board")
     if type == "password":
         valid = False
         password = request.POST["updateClientPassword"]
@@ -250,17 +270,15 @@ def processClientAccountChanges(request, type):
             user.save()
             djuser.set_password(password)
             djuser.save()
-            print("password updated")
+            messages.success(request, "Contraseña actualizada", extra_tags="board")
         else:
-            #TODO: Alert the user that their oldPass is wrong
-            print("password couldnt be updated")
-            pass
+            messages.error(request, "Su contraseña actual no es correcta", extra_tags="board")
     if type == "secQuestion":
         #update the user's security question and answer
         user.secQuestion = SecQuestion.objects.get(id=request.POST["updateClientSecQuestion"])
         user.secAnswer = request.POST["updateClientSecAnswer"]
         user.save()
-        pass
+        messages.success(request, "Datos de recuperación actualizados", extra_tags="board")
     return redirect('clientAccount')
 
 def checkout(request):
@@ -277,17 +295,16 @@ def checkout(request):
 
 def validatePassRecovery(request):
     #TODO
-    rut = request.POST["recoverRut"]
+    mail = request.POST["recoverMail"]
     secAnswer = request.POST["recoverSecAnswer"]
-    if User.objects.get(rut = rut).secAnswer == secAnswer:
+    try:
+        user = User.objects.get(mail = mail)
+    except User.DoesNotExist:
+        #message user doesnt exist: show login modal with "invalid" text
+        return redirect('index')
+        pass
+    if user.secAnswer == secAnswer:
         #TODO
-        try:
-            user = User.objects.get(rut=rut)
-        #except UserDoesNotExist: alert, redirect
-        except User.DoesNotExist:
-            #TODO alert
-            #message user doesnt exist: show login modal with "invalid" text
-            return redirect('index')
         #try: get user from djUser table
         try:
             djUser=DjUser.objects.get(username=user.mail)
@@ -309,25 +326,32 @@ def validatePassRecovery(request):
                 return redirect('clientAccount')
     else:
         #wrong secanswer. stay in recoverPass and give feedback
-        context={"wrongAnswer":True,"rut":rut}
+        context={"wrongAnswer":True,"mail":mail}
         return render(request,'core/recoverPass.html',context)
 
 def confirmSaleAction(request):
     #TODO
     action=request.POST["action"]
     target=request.POST["target"]
-    #if SESSION["user"].role == 2: #if admin
-    #   return redirect('adminSales')
-    #else:
-    return redirect('clientSales')
+    if request.session["uRole"] == 2: #if admin
+       return redirect('adminSales')
+    else:
+        return redirect('clientSales')
 
 def confirmDeletion(request):
     #TODO
     target=request.POST["target"]
     origin=request.POST["origin"]
     if origin == "adminCategories":
-        item = Category.objects.get(id=int(target))
-        item.delete()
+            item = Category.objects.get(id=int(target))
+            item.is_active=0
+            item.save()
+            messages.success(request,"Categoría desactivada", extra_tags="board")
+    elif origin == "clientAccount":
+            item = Address.objects.get(id=int(target))
+            item.is_active=0
+            item.save()
+            messages.success(request,"Dirección eliminada", extra_tags="board")
     return redirect(origin)
 
 def subscribeToFoundation(request):
@@ -380,10 +404,11 @@ def postAddress(request):
         address.postalCode=postalCode
         address.district=district
         address.save()
+        messages.success(request,"Dirección actualizada", extra_tags="board")
     else:
-        Address.objects.create(streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
+        Address.objects.create(user=User.objects.get(id=request.session["uID"]),streetName=streetName, streetNumber=streetNumber, postalCode=postalCode,
             district=district)
-        pass
+        messages.success(request,"Dirección añadida", extra_tags="board")
     return redirect('clientAccount')
 
 def createAdministrator(request):

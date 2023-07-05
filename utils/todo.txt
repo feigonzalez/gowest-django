@@ -1,7 +1,8 @@
-[/] not allow duplicate users
+[X] not allow duplicate users
     detects if a signing-up user exists already. use MESSAGES to relay this to the user
 [X] implement cart
-[ ] formValidation.js/validateLogin()
+[X] formValidation.js/validateLogin()
+[X] change recoverPass to use email instead of rut
 [X] recover password
 [X] url protection
 [ ] modify product (and other tables)
@@ -17,7 +18,9 @@
 [X] let client see purchases
 [X] let client see addresses
 [X] let client edit addresses
-[ ] let client delete addresses
-[ ] let client create new address
+[X] let client delete addresses
+	does not delete. instead, it is set to "not active" in the db.
+	this allows to keep the data related to the sales made with that address
+[X] let client create new address
 
 [ ] change settings.py's DATABASES's NAME from "xe" to "orcl"

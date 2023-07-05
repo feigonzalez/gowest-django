@@ -72,7 +72,6 @@ async function prepareClientModal(e){
 
 async function prepareSaleModal(e){
 	data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
-	console.log(data);
 	saleuser=data["sale"]["user"];
 	if(saleuser!=undefined) get("saleFormUser").innerText=saleuser;
 	else get("saleFormUserRow").classList.add("hidden");
@@ -132,24 +131,6 @@ async function prepareAddressModal(e){
 		get("addressFormUpdate").value=true;
 		get("addressFormId").value=address["id"];
 	}
-	/*
-	var districts=await selectAllFrom("districts");
-	for(d of districts){
-		get("addressFormDistrict").innerHTML+=`<option value=${d["id"]}>${d["name"]}</option>`;
-	}
-	if(e==null){
-		get("addressFormStreet").value="";
-		get("addressFormNumber").value="";
-		get("addressFormPostalCode").value="";
-		get("addressFormDistrict").value=0;
-	} else {
-		var address=(await selectAllWhere("addresses",(i)=>{return i["id"]==e.dataset["id"]}))[0]
-		get("addressFormStreet").value=address["street"];
-		get("addressFormNumber").value=address["number"];
-		get("addressFormPostalCode").value=address["postalCode"];
-		get("addressFormDistrict").value=address["districtID"];
-	}
-	*/
 }
 
 /*
@@ -192,7 +173,6 @@ function confirmDeleteAddress(e){
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="clientAccount";
 	get("deleteAlertMessage").innerText=`¿Eliminar dirección ${name}?`;
-	get("deleteAlertConfirm").setAttribute("onclick","moveTo('account.html',[['t','account']])");
 }
 
 //	Prepares the confirmSale confirm modal from the clientSales page.

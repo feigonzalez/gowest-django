@@ -77,11 +77,11 @@ def getUser(request, id):
 
 @csrf_exempt
 @api_view(['GET'])
-def getUserSQ(request, rut):
-    if User.objects.filter(rut=rut).count()==0:
+def getUserSQ(request, mail):
+    if User.objects.filter(mail=mail).count()==0:
         return Response(False)
     else:
-        return Response(User.objects.get(rut=rut).secQuestion.question)
+        return Response(User.objects.get(mail=mail).secQuestion.question)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -183,7 +183,17 @@ def getAddress(request, id):
     if request.session["uID"]!=address.user.id and request.session["uRole"]!="admin":
         return Response(status=status.HTTP_403_FORBIDDEN)
     return Response(addressJson)
-    
+
+@csrf_exempt
+@api_view(['GET'])
+def isRutAvailable(request, rut):
+    return Response(User.objects.filter(rut=rut).count() == 0)
+
+@csrf_exempt
+@api_view(['GET'])
+def isMailAvailable(request, mail):
+    return Response(User.objects.filter(mail=mail).count() == 0)
+
 def recalculateCartTotalInternal(uID):
     sale=Sale.objects.get(user=User.objects.get(id=uID),status="Carrito")
     total = 0

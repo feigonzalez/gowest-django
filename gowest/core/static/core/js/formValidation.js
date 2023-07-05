@@ -100,12 +100,18 @@ function validateSignup(ev){
 	if(surname.value.trim()==""){makeInvalid(surname,"Apellido requerido."); valid=false;}
 	else if(!isValidName(surname.value)){makeInvalid(surname,"Apellido inválido (Use letras y caracteres latinos).");valid=false;}
 	
-	let rut=get("f_rut"); makeValid(rut)
+	let rut=get("f_rut");
+	if(!isValid(rut) && getInvalidMessage(rut).trim()=="RUT ya se encuentra en uso."){
+		valid=false;
+	}
 	if(rut.value.trim()==""){makeInvalid(rut,"RUT requerido."); valid=false;}
 	else if(!isValidRutFormat(rut.value)){makeInvalid(rut,"Formato incorrecto (Ingrese con puntos y guión)."); valid=false;}
 	else if(!isValidRutDigit(rut.value)){makeInvalid(rut,"RUT inválido.");valid=false;}
 
-	let user=get("f_user"); makeValid(user)
+	let user=get("f_user");
+	if(!isValid(user) && getInvalidMessage(user).trim()=="Correo ya se encuentra en uso."){
+		valid=false;
+	}
 	if(user.value.trim()==""){makeInvalid(user,"Correo requerido."); valid=false;}
 	else if(!isValidEmail(user.value)){makeInvalid(user,"Correo inválido."); valid=false;}
 
@@ -137,6 +143,18 @@ function validateSignup(ev){
 	if(answer.value.trim()==""){makeInvalid(answer,"Responda la pregunta de seguridad.");valid=false;}
 
 	if(!valid) ev.preventDefault();
+}
+
+async function validateSignupRut(e){
+	av=(await fetch("/api/isRutAvailable/"+e.value.trim()).then(r=>r.json()))
+	if(av) makeValid(e)
+	else makeInvalid(e,"RUT ya se encuentra en uso.")
+}
+
+async function validateSignupMail(e){
+	av=(await fetch("/api/isMailAvailable/"+e.value.trim()).then(r=>r.json()))
+	if(av) makeValid(e)
+	else makeInvalid(e,"Correo ya se encuentra en uso.")
 }
 
 function validateCheckoutItemCount(e){
@@ -369,24 +387,14 @@ function validateCategoryForm(ev){
 function validatePassRecoveryForm(ev){
 	let valid = true;
 
-	let inputRut = get("f_inputRut");
-	if(!isValid(inputRut) && getInvalidMessage(inputRut).trim()=="RUT no encontrado"){
+	let inputRut = get("f_inputMail");
+	if(!isValid(inputRut) && getInvalidMessage(inputRut).trim()=="Correo no encontrado"){
 		valid=false;
 	}
-	if(inputRut.value.trim()==""){makeInvalid(inputRut,"RUT requerido.");valid=false;}
+	if(inputRut.value.trim()==""){makeInvalid(inputRut,"Correo requerido.");valid=false;}
 
 	let secAnswer = get("f_secAnswer"); makeValid(secAnswer);
 	if(secAnswer.value.trim()==""){makeInvalid(secAnswer,"Respuesta de Seguridad requerida.");valid=false}
 
 	if (!valid) ev.preventDefault();
-}
-
-function validateLogin(ev){
-	let valid = true;
-	//get user from provided mail
-	//compare provided pass with db pass
-	//if they dont match{
-	//	makeInvalid("","Usuario y/o contraseña incorrectos.")
-	//	valid=false;}
-	if(!valid) ev.preventDefault();
 }
