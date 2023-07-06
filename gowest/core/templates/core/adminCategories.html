@@ -14,18 +14,25 @@
 		<thead>
 			<tr>
 			<th>Nombre</th>
+			<th>Estado</th>
 			<th></th>
 			</tr>
 		</thead>
 		<tbody id="tableCategoriesBody">
 			{% for category in categories %}
-				<tr>
+				<tr {% if not category.is_active %} class="table-secondary text-muted"{% endif %}>
 					<td data-type="string">{{ category.name }}</td>
+					<td class="d-none d-sm-table-cell">{% if category.is_active %} Activa {% else %} Desactivada {% endif %}</td>
 					<td class="text-right">
 						<button class="btn btn-success" data-toggle="modal" data-target="#categoryDataModal" data-id="{{ category.id }}" data-name="{{ category.name }}" onclick="prepareCategoryModal(this)">
 							<span class="icon fa fa-pencil"></span></button>
+					{% if category.is_active %}
 						<button class="btn btn-danger" data-toggle="modal" data-target="#deleteAlertModal" data-id="{{ category.id }}" data-name="{{ category.name }}" onclick="confirmDeleteCategory(this)">
-							<span class="icon fa fa-trash"></span></button>
+							<span class="icon fa fa-ban"></span></button>
+					{% else %}
+						<button class="btn btn-info" data-toggle="modal" data-target="#activateAlertModal" data-id="{{ category.id }}" data-name="{{ category.name }}" onclick="confirmActivateCategory(this)">
+							<span class="icon fa fa-check"></span></button>
+					{% endif %}
 					</td>
 				</tr>
 			{% endfor %}
@@ -37,4 +44,5 @@
 </div>
 {% include 'core/modals/categoryDataModal.html' %}
 {% include 'core/modals/deleteAlertModal.html' %}
+{% include 'core/modals/activateAlertModal.html' %}
 {% endblock 'adminContent' %}

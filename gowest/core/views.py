@@ -8,8 +8,13 @@ from django.http import JsonResponse
 from datetime import date
 from .models import *
 
+#used to give DANGER-level messages the "alert-danger" bootstrap class
+MESSAGE_DANGER=80
+
 # Create your views here.
 def index(request):
+    if 'uRole' in request.session and request.session["uRole"] == 'admin':
+        return redirect('adminIndex')
     context={"categories":Category.objects.filter(is_active=1),
         "galleries":[]}
     if "loginStatus" in request.session:
@@ -39,14 +44,22 @@ def adminAccount(request):
 def adminProducts(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    context={"products":Product.objects.all(),
+    if "adminProductsSearchQuery" in request.GET:
+        products = Product.objects.filter(name__icontains=request.GET["adminProductsSearchQuery"])
+    else:
+        products = Product.objects.all()
+    context={"products":products,
         "categories":Category.objects.all()}
     return render(request, 'core/adminProducts.html',context)
 
 def adminCategories(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    context={"categories":Category.objects.all()}
+    if "adminCategoriesSearchQuery" in request.GET:
+        categories = Category.objects.filter(name__icontains=request.GET["adminCategoriesSearchQuery"])
+    else:
+        categories = Category.objects.all()
+    context={"categories":categories}
     return render(request, 'core/adminCategories.html',context)
 
 def adminClients(request):
@@ -230,14 +243,47 @@ def processSignup(request):
 
 def processAdminAccountChanges(request, type):
     #TODO
+    user = User.objects.get(id=request.session["uID"])
+    djuser = DjUser.objects.get(email=user.mail)
     if type == "data":
         #update the user's name, surname, phone, and mail
-        pass
+        name=request.POST["adminName"]
+        surname=request.POST["adminSurname"]
+        phone=request.POST["adminPhone"]
+        user.name=name
+        user.surname=surname
+        user.phone=phone
+        user.save()
+        request.session["uName"]=name
+        request.session["uSurname"]=surname
+        messages.success(request, "Datos actualizados", extra_tags="board")
     if type == "password":
-        #update the user's password
+        valid = False
+        password = request.POST["adminPassword"]
+        passwordConfirm = request.POST["adminPasswordConfirm"]
+        if request.session["recoverPass"]:
+            valid = True
+            del request.session["recoverPass"]
+        else:
+            oldPass = request.POST["adminOldPassword"]
+            valid = check_password(oldPass, djuser.password)
+        if valid:
+            user.password=make_password(password)
+            user.save()
+            djuser.set_password(password)
+            djuser.save()
+            messages.success(request, "Contraseña actualizada", extra_tags="board")
+        else:
+            messages.error(request, "Su contraseña actual no es correcta", extra_tags="board")
         pass
     if type == "secQuestion":
-        #update the user's security question and answer
+        if user.secAnswer != request.POST["adminOldSecAnswer"]:
+            messages.add_message(request, MESSAGE_DANGER, "Respuesta de seguridad incorrecta", extra_tags="board")
+            return redirect('adminAccount')
+        user.secQuestion = SecQuestion.objects.get(id=request.POST["adminSecQuestion"])
+        user.secAnswer = request.POST["adminSecAnswer"]
+        user.save()
+        messages.success(request, "Datos de recuperación actualizados", extra_tags="board")
         pass
     return redirect('adminAccount')
 
@@ -275,6 +321,9 @@ def processClientAccountChanges(request, type):
             messages.error(request, "Su contraseña actual no es correcta", extra_tags="board")
     if type == "secQuestion":
         #update the user's security question and answer
+        if user.secAnswer != request.POST["updateClientOldSecAnswer"]:
+            messages.add_message(request, MESSAGE_DANGER, "Respuesta de seguridad incorrecta", extra_tags="board")
+            return redirect('clientAccount')
         user.secQuestion = SecQuestion.objects.get(id=request.POST["updateClientSecQuestion"])
         user.secAnswer = request.POST["updateClientSecAnswer"]
         user.save()
@@ -338,20 +387,56 @@ def confirmSaleAction(request):
     else:
         return redirect('clientSales')
 
+def confirmActivation(request):
+    target=request.POST["target"]
+    origin=request.POST["origin"]
+    pass
+
 def confirmDeletion(request):
     #TODO
     target=request.POST["target"]
     origin=request.POST["origin"]
     if origin == "adminCategories":
-            item = Category.objects.get(id=int(target))
-            item.is_active=0
-            item.save()
-            messages.success(request,"Categoría desactivada", extra_tags="board")
+        item = Category.objects.get(id=int(target))
+        item.is_active=0
+        item.save()
+        messages.success(request,"Categoría desactivada", extra_tags="board")
     elif origin == "clientAccount":
-            item = Address.objects.get(id=int(target))
-            item.is_active=0
-            item.save()
-            messages.success(request,"Dirección eliminada", extra_tags="board")
+        item = Address.objects.get(id=int(target))
+        item.is_active=0
+        item.save()
+        messages.success(request,"Dirección eliminada", extra_tags="board")
+    elif origin == "adminProducts":
+        item = Product.objects.get(id=int(target))
+        item.is_active=0
+        item.save()
+        messages.success(request,"Producto desactivado", extra_tags="board")
+    elif origin == "adminCategories":
+        item = Category.objects.get(id=int(target))
+        item.is_active=0
+        item.save()
+        messages.success(request,"Categoría desactivada", extra_tags="board")
+    return redirect(origin)
+
+def confirmActivation(request):
+    #TODO
+    target=request.POST["target"]
+    origin=request.POST["origin"]
+    if origin == "adminCategories":
+        item = Category.objects.get(id=int(target))
+        item.is_active=1
+        item.save()
+        messages.success(request,"Categoría activada", extra_tags="board")
+    elif origin == "adminProducts":
+        item = Product.objects.get(id=int(target))
+        item.is_active=1
+        item.save()
+        messages.success(request,"Producto activado", extra_tags="board")
+    elif origin == "adminCategories":
+        item = Category.objects.get(id=int(target))
+        item.is_active=1
+        item.save()
+        messages.success(request,"Categoría activada", extra_tags="board")
     return redirect(origin)
 
 def subscribeToFoundation(request):
@@ -370,14 +455,32 @@ def getProductData(request, id):
     return JsonResponse({"id":p.id,"name":p.name,"image":p.image.url,"description":p.description,
         "stock":p.stock,"price":p.price,"category":p.category.id})
 
-def createProduct(request):
+def postProduct(request):
     name = request.POST["productName"]
     description = request.POST["productDescription"]
     price = request.POST["productPrice"]
     stock = request.POST["productStock"]
-    image = request.FILES["productImage"]
-    category = Category.objects.get(id = request.POST["productCategory"])
-    Product.objects.create(name=name, description=description, price=price, stock=stock, image=image, category=category)
+    category = Category.objects.get(id = int(request.POST["productCategory"]))
+    #The form validation checks for the existence of an image preview in the form.
+    #It can be empty and pass validation if the product already has an image assigned,
+    #but it was not updated.
+    image=None
+    if "productImage" in request.FILES:
+        image = request.FILES["productImage"]
+    update=request.POST["update"]
+    if update=="true":
+        product = Product.objects.get(id=int(request.POST["pID"]))
+        product.name=name
+        product.description=description
+        product.price=price
+        product.stock=stock
+        product.category=category
+        if image is not None:
+            product.image=image
+        product.save()
+        messages.success(request,"Producto actualizado", extra_tags="board")
+    else:
+        Product.objects.create(name=name, description=description, price=price, stock=stock, image=image, category=category)
     return redirect('adminProducts')
 
 def createCategory(request):

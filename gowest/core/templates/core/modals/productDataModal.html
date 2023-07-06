@@ -3,13 +3,13 @@
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form action="{% url 'createProduct' %}" method="POST" onsubmit="validateProductModal(event)" enctype="multipart/form-data">
+				<form action="{% url 'postProduct' %}" method="POST" onsubmit="validateProductModal(event)" enctype="multipart/form-data">
 					{% csrf_token %}
 					<div class="form-group">
 						<label for="productImage">Imagen</label>
 						<div class="form-image-input">
-							<img id="productFormImagePreview">
-							<input type="file" name="productImage" class="form-control" id="productFormImage">
+							<div id="productFormImagePreviewHolder" class="image-holder"><img id="productFormImagePreview"></div>
+							<input type="file" name="productImage" class="form-control" id="productFormImage" onchange="previewUploadProductImage()">
 						</div>
 					</div>
 					<div class="form-group">
@@ -41,6 +41,7 @@
 						<button type="submit" class="btn btn-success">Ingresar</button>
 					</div>
 					<input type="hidden" name="update" value="false" id="productFormUpdate">
+					<input type="hidden" name="pID" id="productFormId">
 				</form>
 			</div>
 		</div>

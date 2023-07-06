@@ -16,13 +16,14 @@ async function prepareProductModal(e){
 	makeValid(get("productFormDescription"));
 	if(e){
 		//var product = null;
-		var parent=e.parentElement.parentElement;
-		get("productFormImagePreview").setAttribute("src",parent.children[0].children[0].getAttribute("src"));
-		get("productFormName").value=parent.children[1].innerText;
-		get("productFormPrice").value=parent.children[2].innerText;
-		get("productFormStock").value=parent.children[3].innerText;
-		get("productFormCategory").value=parent.children[4].innerText;
-		get("productFormDescription").value=parent.children[5].innerHTML;
+		var product = (await fetch("/api/getProduct/"+e.dataset["id"]).then(r=>r.json()))
+		get("productFormImagePreview").setAttribute("src",product["image"]);
+		get("productFormName").value=product["name"]
+		get("productFormPrice").value=product["price"]
+		get("productFormStock").value=product["stock"]
+		get("productFormCategory").value=product["category"]
+		get("productFormDescription").value=product["description"]
+		get("productFormId").value=product.id;
 		get("productFormUpdate").value=true;
 	} else {
 		get("productFormImagePreview").setAttribute("src","");
@@ -73,6 +74,8 @@ async function prepareClientModal(e){
 async function prepareSaleModal(e){
 	data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
 	saleuser=data["sale"]["user"];
+	//hides the client if the session user is an admin.
+	//this happens when an admin sees a client's purchase
 	if(saleuser!=undefined) get("saleFormUser").innerText=saleuser;
 	else get("saleFormUserRow").classList.add("hidden");
 	get("saleFormAddress").innerText=data["address"];
@@ -109,7 +112,7 @@ async function prepareAdministratorModal(e){
 		get("adminFormNew").classList.remove("hidden");
 	}
 }
-//	Prepares the Address Modal in the clientAccounr page.
+//	Prepares the Address Modal in the clientAccount page.
 async function prepareAddressModal(e){
 	makeValid(get("addressFormStreet"));
 	makeValid(get("addressFormNumber"));
@@ -146,25 +149,40 @@ function confirmDeleteAdministrator(e){
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="adminAdministrators";
 	get("deleteAlertMessage").innerText=`¿Eliminar administrador ${name}?`;
-	get("deleteAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','admins']])");
 }
 
 //	Prepares the deleteProduct delete modal from the adminProducts page.
 function confirmDeleteProduct(e){
-	var name=e.parentElement.parentElement.children[1].innerText;
+	var name=e.dataset["name"];
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="adminProducts";
-	get("deleteAlertMessage").innerText=`¿Eliminar producto ${name}?`;
-	get("deleteAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','products']])");
+	get("deleteAlertConfirm").value="Desactivar";
+	get("deleteAlertMessage").innerText=`¿Desactivar producto ${name}?`;
+}
+//	Prepares the activateProduct activation modal from the adminProducts page.
+function confirmActivateProduct(e){
+	var name=e.dataset["name"];
+	get("activateAlertTarget").value=e.dataset["id"];
+	get("activateAlertOrigin").value="adminProducts";
+	get("activateAlertMessage").innerText=`¿Activar producto ${name}?`;
 }
 
 //	Prepares the deleteCategory delete modal from the adminCategories page.
 function confirmDeleteCategory(e){
-	var name=e.dataset["name"];//e.parentElement.parentElement.children[0].innerText;
+	var name=e.dataset["name"];
 	get("deleteAlertTarget").value=e.dataset["id"];
+	get("deleteAlertConfirm").value="Desactivar";
 	get("deleteAlertOrigin").value="adminCategories";
-	get("deleteAlertMessage").innerText=`¿Eliminar categoría ${name} y todos los productos relacionados?`;
-	//get("deleteAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','categories']])");
+	get("deleteAlertMessage").innerHTML=`¿Desactivar categoría ${name}?<br>`+
+	"<div class='alert alert-warning'>Los productos de esta categoría seguirán "+
+	"activos, pero los clientes no podrán verlos.</div>";
+}
+
+function confirmActivateCategory(e){
+	var name=e.dataset["name"];
+	get("activateAlertTarget").value=e.dataset["id"];
+	get("activateAlertOrigin").value="adminCategories";
+	get("activateAlertMessage").innerText=`¿Activar categoría ${name}?`;
 }
 
 //	Prepares the deleteAddress delete modal from the clientAccount page.
@@ -172,6 +190,7 @@ function confirmDeleteAddress(e){
 	var name=e.parentElement.parentElement.children[0].innerText;
 	get("deleteAlertTarget").value=e.dataset["id"];
 	get("deleteAlertOrigin").value="clientAccount";
+	get("deleteAlertConfirm").value="Eliminar";
 	get("deleteAlertMessage").innerText=`¿Eliminar dirección ${name}?`;
 }
 
@@ -181,7 +200,6 @@ function confirmSaleReception(e){
 	get("saleAlertAction").value="reception";
 	get("saleAlertTarget").value=e.dataset["id"];
 	get("saleAlertMessage").innerText=`¿Confirmar que la compra de código ${id} fue entregada?`;
-	get("saleAlertConfirm").setAttribute("onclick","moveTo('account.html',[['t','sales']])");
 }
 
 //	Prepares the confirmShipment confirm modal from the adminSales page.
@@ -190,5 +208,4 @@ function confirmSaleShipment(e){
 	get("saleAlertAction").value="shipment";
 	get("saleAlertTarget").value=e.dataset["id"];
 	get("saleAlertMessage").innerText=`¿Confirmar que la compra de código ${id} fue enviada?`;
-	get("saleAlertConfirm").setAttribute("onclick","moveTo('adminIndex.html',[['t','sales']])");
 }

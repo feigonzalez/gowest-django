@@ -138,3 +138,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+MESSAGE_TAGS={
+    80: "danger"    #MESSAGE_DANGER defined as 80 in core's views.py
+}

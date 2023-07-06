@@ -64,6 +64,11 @@
 	</form>
 	<form action="{% url 'processClientAccountChanges' type='secQuestion' %}" method="POST" onsubmit="validateClientSecQuestionForm(event)">
 	{% csrf_token %}
+		<div class="form-group">
+			<label for="oldSecAnswer">Ingrese su respuesta de seguridad actual: </label>
+			<span>{{ user.secQuestion.question }}</span>
+			<input id="oldSecAnswer" name="updateClientOldSecAnswer" class="form-control">
+		</div>
 		<div class="row form-group">
 			<div class="col-sm-6">
 				<label for="secQuestion">Cambiar Pregunta de Seguridad</label>

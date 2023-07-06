@@ -99,8 +99,11 @@ li.nav-item .btn{width:-moz-available;width:-webkit-fill-available}
 .tableImage{width:3em}
 
 /*.form-image-input{display:flex;align-items:center}*/
-.form-image-input img{width:120px;padding:1em;border:solid 1px #ced4da;margin-right:1em}
-.form-image-input .form-control{width:calc(100% - 120px - 2em);display:inline}
+.form-image-input{display:flex;align-items:center}
+.form-image-input img{max-height:120px;max-width:120px}
+.form-image-input .image-holder{width:calc(122px + 1em);padding:0.5em;
+	border:solid 1px #ced4da;margin-right:1em;display:inline-block;
+	border-radius:0.25rem;text-align:center}
 
 form label{font-style:italic}
 

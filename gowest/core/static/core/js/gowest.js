@@ -97,6 +97,23 @@ async function removeItemFromCart(e){
 	updateCartBadge()
 }
 
+//original provided by Cedric Ipkiss, in https://stackoverflow.com/questions/5802580/html-input-type-file-get-the-image-before-submitting-the-form
+function previewUploadProductImage() {
+	var preview = get("productFormImagePreview");
+	var file = get("productFormImage").files[0];
+	var reader = new FileReader();
+
+	reader.onloadend = function () {
+		preview.src = reader.result;
+	}
+
+	if (file) {
+		reader.readAsDataURL(file);
+	} else {
+		preview.src = "";
+	}
+}
+
 window.addEventListener("load",()=>{
 	for(e of document.querySelectorAll(".saleStatus")){
 		e.innerHTML=formatSaleStatus(e.innerText)

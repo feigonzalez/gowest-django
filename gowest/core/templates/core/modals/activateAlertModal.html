@@ -1,0 +1,17 @@
+<div class="modal fade" id="activateAlertModal">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<button type="button" class="form-close" data-dismiss="modal"></button>
+			<div class="modal-body text-center">
+				<div id="activateAlertMessage"></div>
+				<form action="{% url 'confirmActivation' %}" method="POST">
+					{% csrf_token %}
+					<input type="hidden" id="activateAlertTarget" name="target">
+					<input type="hidden" id="activateAlertOrigin" name="origin">
+					<button id="activateAlertCancel" type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
+					<input type="submit" id="activateAlertConfirm" class="btn btn-info" value="Activar">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
