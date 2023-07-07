@@ -274,12 +274,18 @@ function validateAdminDataForm(ev){
 	if(surname.value.trim()==""){makeInvalid(surname,"Apellido requerido.");valid=false;}
 	else if(!isValidName(surname.value)){makeInvalid(surname,"Apellido inválido (Use letras y caracteres latinos).");valid=false;}
 
-	let rut = get("adminFormNewRUT"); makeValid(rut);
+	let rut = get("adminFormNewRUT");
+	if(!isValid(rut) && getInvalidMessage(rut).trim()=="RUT ya se encuentra en uso."){
+		valid=false;
+	}
 	if(rut.value.trim()==""){makeInvalid(rut,"RUT requerido."); valid=false;}
 	else if(!isValidRutFormat(rut.value)){makeInvalid(rut,"Formato incorrecto (Ingrese con puntos y guión)."); valid=false;}
 	else if(!isValidRutDigit(rut.value)){makeInvalid(rut,"RUT inválido.");valid=false;}
 
-	let mail = get("adminFormNewMail"); makeValid(mail);
+	let mail = get("adminFormNewMail");
+	if(!isValid(mail) && getInvalidMessage(rut).trim()=="Correo ya se encuentra en uso."){
+		valid=false;
+	}
 	if(mail.value.trim()==""){makeInvalid(mail,"Correo requerido."); valid=false;}
 	else if(!isValidEmail(mail.value)){makeInvalid(mail,"Correo inválido."); valid=false;}
 	

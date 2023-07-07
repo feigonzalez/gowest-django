@@ -73,7 +73,7 @@ def adminClients(request):
     if "adminClientsSearchQuery" in request.GET:
         q=request.GET["adminClientsSearchQuery"]
         clients = User.objects.annotate(fullname=Concat("name",V(" "),
-            "surname")).filter(Q(role=1) & Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q))
+            "surname")).filter(Q(role=1) & (Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q)))
     else:
         clients = User.objects.filter(role=1)
     subsJson=requests.get("http://dintdt.c1.biz/aup/getAllSubs.php").json()
@@ -93,15 +93,28 @@ def adminClients(request):
 def adminSales(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    #TODO: filter sales if search query given
-    sales=Sale.objects.all()
+    if "adminSalesSearchQuery" in request.GET:
+        q=request.GET["adminSalesSearchQuery"]
+        users=User.objects.annotate(fullname=Concat("name",V(" "),"surname")).filter(Q(role=1) & Q(fullname__icontains=q))
+        sales=Sale.objects.none()
+        for user in users:
+            sales|=Sale.objects.filter(Q(user=user))
+        sales|=Sale.objects.filter(Q(status__icontains=q))
+    else:
+        sales=Sale.objects.all()
     context={"sales":sales}
     return render(request, 'core/adminSales.html',context)
 
 def adminAdministrators(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    context={"admins":User.objects.filter(role=Role.objects.get(id=2))}
+    if "adminAdministratorsSearchQuery" in request.GET:
+        q=request.GET["adminAdministratorsSearchQuery"]
+        admins = User.objects.annotate(fullname=Concat("name",V(" "),
+            "surname")).filter(Q(role=2) & (Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q)))
+    else:
+        admins = User.objects.filter(role=2)
+    context={"admins":admins}
     return render(request, 'core/adminAdministrators.html',context)
 
 def signup(request):
@@ -191,7 +204,6 @@ def processLogin(request):
     #except UserDoesNotExist: alert, redirect
     except User.DoesNotExist:
         #TODO alert
-        #message user doesnt exist: show login modal with "invalid" text
         request.session["loginStatus"]="FAIL"
         request.session["loginUser"]=mail
         return redirect('index')
@@ -236,13 +248,9 @@ def processSignup(request):
     valid = True
     context={"districts":District.objects.all()}
     if User.objects.filter(rut=rut).count()>0:
-        #context["message"]="user with rut exists"
-        #TODO: change to use messages instead
         context["RUT"]=True
         valid = False
     if User.objects.filter(mail=mail).count()>0:
-        #context["message"]="user with email exists"
-        #TODO: change to use messages instead
         context["MAIL"]=True
         valid = False
     if not valid:
@@ -415,7 +423,15 @@ def confirmSaleAction(request):
     #TODO
     action=request.POST["action"]
     target=request.POST["target"]
-    if request.session["uRole"] == 2: #if admin
+    sale=Sale.objects.get(id=int(target))
+    if action=="shipment":
+        sale.status="Despachada"
+        sale.save()
+    elif action=="reception":
+        sale.status="Completada"
+        sale.deliveryDate=date.today()
+        sale.save()
+    if request.session["uRole"] == "admin": #if admin
        return redirect('adminSales')
     else:
         return redirect('clientSales')
@@ -430,25 +446,46 @@ def confirmDeletion(request):
     target=request.POST["target"]
     origin=request.POST["origin"]
     if origin == "adminCategories":
-        item = Category.objects.get(id=int(target))
-        item.is_active=0
-        item.save()
-        messages.success(request,"Categoría desactivada", extra_tags="board")
+        try:
+            item = Category.objects.get(id=int(target))
+            item.is_active=0
+            item.save()
+            messages.success(request,"Categoría desactivada", extra_tags="board")
+        except Category.DoesNotExist:
+            messages.add_message(request,MESSAGE_DANGER,"ERROR: Categoría indicada no existe", extra_tags="board")
     elif origin == "clientAccount":
-        item = Address.objects.get(id=int(target))
-        item.is_active=0
-        item.save()
-        messages.success(request,"Dirección eliminada", extra_tags="board")
+        try:
+            item = Address.objects.get(id=int(target))
+            item.is_active=0
+            item.save()
+            messages.success(request,"Dirección eliminada", extra_tags="board")
+        except Address.DoesNotExist:
+            messages.add_message(request,MESSAGE_DANGER,"ERROR: Dirección indicada no existe", extra_tags="board")
     elif origin == "adminProducts":
-        item = Product.objects.get(id=int(target))
-        item.is_active=0
-        item.save()
-        messages.success(request,"Producto desactivado", extra_tags="board")
-    elif origin == "adminCategories":
-        item = Category.objects.get(id=int(target))
-        item.is_active=0
-        item.save()
-        messages.success(request,"Categoría desactivada", extra_tags="board")
+        try:
+            item = Product.objects.get(id=int(target))
+            item.is_active=0
+            item.save()
+            messages.success(request,"Producto desactivado", extra_tags="board")
+        except Product.DoesNotExist:
+            messages.add_message(request,MESSAGE_DANGER,"ERROR: Producto indicado no existe", extra_tags="board")
+    elif origin == "adminAdministrators":
+        valid=True
+        try:
+            item = User.objects.get(id=int(target))
+            if item.role.id != 2:
+                messages.add_message(request,MESSAGE_DANGER,"Usuario indicado no es administrador", extra_tags="board")
+                valid = False
+            if item.id == int(request.session["uID"]):
+                messages.add_message(request,MESSAGE_DANGER,"No puede eliminarse a sí mismo/a", extra_tags="board")
+                valid = False
+            if valid:
+                item.delete()
+                djUser=DjUser.objects.get(email=item.mail)
+                djUser.delete()
+                messages.success(request,"Administrador eliminado", extra_tags="board")
+        except Category.DoesNotExist:
+            messages.add_message(request,MESSAGE_DANGER,"ERROR: Administrador indicado no existe", extra_tags="board")
     return redirect(origin)
 
 def confirmActivation(request):
@@ -550,6 +587,37 @@ def postAddress(request):
     return redirect('clientAccount')
 
 def createAdministrator(request):
+    mail=request.POST["adminFormNewMail"]
+    rut=request.POST["adminFormNewRUT"]
+    valid=True
+    if User.objects.filter(rut=rut).count()>0:
+        messages.add_message(request,MESSAGE_DANGER,"Administrador no creado: Usuario con RUT ingresado ya existe.",extra_tags="board")
+        valid=False
+    if User.objects.filter(mail=mail).count()>0:
+        messages.add_message(request,MESSAGE_DANGER,"Administrador no creado: Usuario con correo ingresado ya existe.",extra_tags="board")
+        valid=False
+    if not valid:
+        return redirect('adminAdministrators')
+    name=request.POST["adminFormNewName"]
+    surname=request.POST["adminFormNewSurname"]
+    phone=request.POST["adminFormNewPhone"]
+    
+    rawPass = name+surname+"!"+rut
+    password=make_password(rawPass)
+    
+    secQuestion = SecQuestion.objects.get(id=1)
+    secAnswer = "0"
+    
+    #insert new admin-type user into db
+    user = User.objects.create(rut=rut,name=name,surname=surname,mail=mail,phone=phone,
+        password=password,role=Role.objects.get(id=2),secQuestion=secQuestion,
+        secAnswer=secAnswer)
+    
+    djUser = DjUser.objects.create_user(username=mail, email=mail, password=rawPass)
+    djUser.is_staff=True
+    djUser.save()
+    
+    messages.success(request,"Administrador creado (contraseña: \""+rawPass+"\")",extra_tags="board")
     return redirect('adminAdministrators')
 
 def getSubscription(request):

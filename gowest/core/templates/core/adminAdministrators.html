@@ -29,10 +29,10 @@
 				<td class="d-none d-sm-table-cell" data-type="string">{{ admin.phone }}</td>
 				<td class="text-right"><button class="btn btn-success"
 					data-toggle="modal" data-target="#administratorDataModal"
-					onclick="prepareAdministratorModal(this)" data-id="{{ user.rut }}">
+					onclick="prepareAdministratorModal(this)" data-id="{{ admin.id }}">
 					<span class="icon fa fa-search"></span></button>
-					<button class="btn btn-danger" data-toggle="modal"
-					data-target="#deleteAlertModal" onclick="confirmDeleteAdministrator(this)">
+					<button class="btn btn-danger {% if admin.id == request.session.uID %}disabled{% endif %}" {% if admin.id == request.session.uID %} disabled {% endif %} data-toggle="modal"
+					data-id="{{ admin.id }}" data-target="#deleteAlertModal" onclick="confirmDeleteAdministrator(this)">
 					<span class="icon fa fa-trash"></span></button></td>
 			</tr>
 			{% endfor %}

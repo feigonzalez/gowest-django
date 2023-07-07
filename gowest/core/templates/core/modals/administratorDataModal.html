@@ -3,7 +3,7 @@
 		<div class="modal-content">
 			<button type="button" class="form-close" data-dismiss="modal"></button>
 			<div class="modal-body">
-				<form id="adminFormShow" action="adminIndex.html">
+				<form id="adminFormShow" action="{% url 'adminAdministrators' %}">
 				{% csrf_token %}
 					<div class="row">
 						<div class="col-4"><label class="f-b">Nombre</label></div>
@@ -29,40 +29,35 @@
 						<button type="button" class="btn btn-success" class="close" data-dismiss="modal">Cerrar</button>
 					</div>
 				</form>
-				<form id="adminFormNew" action="adminIndex.html" onsubmit="validateAdminDataForm(event)">
+				<form id="adminFormNew" action="{% url 'createAdministrator' %}" method="POST" onsubmit="validateAdminDataForm(event)">
 				{% csrf_token %}
 					<div class="form-group">
 						<label for="name">Nombre</label>
-						<input type="text" name="name" class="form-control" id="adminFormNewName">
+						<input type="text" name="adminFormNewName" class="form-control" id="adminFormNewName">
 					</div>
 					<div class="form-group">
 						<label for="surname">Apellido</label>
-						<input type="text" name="surname" class="form-control" id="adminFormNewSurname">
+						<input type="text" name="adminFormNewSurname" class="form-control" id="adminFormNewSurname">
 					</div>
 					<div class="form-group">
 						<label for="rut">RUT</label>
-						<input type="text" name="rut" class="form-control" id="adminFormNewRUT">
+						<input type="text" name="adminFormNewRUT" class="form-control" id="adminFormNewRUT" onchange="validateSignupRut(this)">
 					</div>
 					<div class="form-group">
 						<label for="mail">Correo</label>
-						<input type="email" name="mail" class="form-control" id="adminFormNewMail">
+						<input type="email" name="adminFormNewMail" class="form-control" id="adminFormNewMail" onchange="validateSignupMail(this)">
 					</div>
 					<div class="form-group">
 						<label for="phone">Teléfono</label>
-						<input type="text" name="phone" class="form-control" id="adminFormNewPhone">
+						<input type="text" name="adminFormNewPhone" class="form-control" id="adminFormNewPhone">
 					</div>
 					<div class="form-group float-right">
 						<button type="button" class="btn" class="close" data-dismiss="modal">Cancelar</button>
 						<button type="submit" class="btn btn-success">Ingresar</button>
 					</div>
-					<input type="hidden" name="update" value="false" id="productFormUpdate">
-					<input type="hidden" name="t" value="admins">
 					<input id="adminSecFormUser" type="hidden" name="u">
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
-<script>
-	get("adminSecFormUser").value=params["u"];
-</script>

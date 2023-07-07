@@ -11,19 +11,20 @@
 [X] modify category
 [X] show client data
 [X] show if client is subscribed (use external API)
-[ ] show sale data
+[X] show sale data
 [ ] modify admin
 [X] delete product (and other tables)
     deleteAlertModal.js has a form, whose input values are changed by modals.js
     depending on which confirmDeleteX() function was called.
     views.py's confirmDeletion() has a sequence of if statements, where the specified item gets deleted
 [X] delete category
-[ ] delete admin
+[X] delete admin
 [X] search query product
 [X] search query category
 [X] search query client
-[ ] search query sales
-[ ] search query admin
+[X] search query sales
+[X] search query admin
+[X] let admin confirm sale shipment
 [X] modify account data
 [X] modify account password
 [X] modify account sec question
@@ -35,6 +36,7 @@
 	this allows to keep the data related to the sales made with that address
 [X] let client create new address
 [X] let client subscribe to foundation (use external API)
+[X] let client confirm purchase reception
 
 [ ] change settings.py's DATABASES's NAME from "xe" to "orcl"
 [ ] make readme

@@ -101,7 +101,8 @@ async function prepareAdministratorModal(e){
 	if(e){
 		get("adminFormShow").classList.remove("hidden");
 		get("adminFormNew").classList.add("hidden");
-		var user = (await selectAllWhere("users",(i)=>{return i["rut"]==e.dataset["id"]}))[0];
+		//var user = (await selectAllWhere("users",(i)=>{return i["rut"]==e.dataset["id"]}))[0];
+		var user = (await fetch("/api/getUser/"+e.dataset["id"]).then(r=>r.json()))
 		get("adminFormShowName").innerText=user["name"];
 		get("adminFormShowSurname").innerText=user["surname"];
 		get("adminFormShowRUT").innerText=user["rut"];

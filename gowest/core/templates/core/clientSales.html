@@ -13,10 +13,10 @@
 		<tbody id="tableSalesBody">
 			{% for sale in sales %}
 				<tr>
-				<td data-type="date">{{ sale.saleDate }}</td>
+				<td data-type="date">{{ sale.saleDate|date:"Y-m-d" }}</td>
 				<td class="d-none d-sm-table-cell" data-type="date">
 					{% if sale.deliveryDate %}
-						{{ sale.deliveryDate }}
+						{{ sale.deliveryDate|date:"Y-m-d" }}
 					{% else %}
 						<i>No entregada</i>
 					{% endif %}
