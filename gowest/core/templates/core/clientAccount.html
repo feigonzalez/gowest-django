@@ -74,7 +74,7 @@
 				<label for="secQuestion">Cambiar Pregunta de Seguridad</label>
 				<select id="clientSecQuestion" name="updateClientSecQuestion" class="form-control" value="{# SESSION['user'].secQuestion.id #}">
 					{% for secQuestion in secQuestions %}
-						<option value="{{ secQuestion.id }}" {% if secQuestion.id == user.secQuestion.id %}selected{% endif %}>{{ secQuestion.question }}</option>
+						<option value="{{ secQuestion.id }}">{{ secQuestion.question }}</option>
 					{% endfor %}
 				</select>
 			</div>

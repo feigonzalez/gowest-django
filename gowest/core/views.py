@@ -622,4 +622,7 @@ def createAdministrator(request):
 
 def getSubscription(request):
     return requests.get("http://dintdt.c1.biz/aup/getSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
-    
+
+def closeSession(request):
+    logout(request)
+    return redirect('index')
