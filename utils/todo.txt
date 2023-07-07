@@ -9,6 +9,9 @@
     the view "edit" button calls modals.js's prepareXModal(), and loads the correct data into the modal.
     the modal's form then calls view's postX, which handles creation and updating of elements.
 [X] modify category
+[X] show client data
+[X] show if client is subscribed (use external API)
+[ ] show sale data
 [ ] modify admin
 [X] delete product (and other tables)
     deleteAlertModal.js has a form, whose input values are changed by modals.js
@@ -18,7 +21,7 @@
 [ ] delete admin
 [X] search query product
 [X] search query category
-[ ] search query client
+[X] search query client
 [ ] search query sales
 [ ] search query admin
 [X] modify account data
@@ -31,5 +34,8 @@
 	does not delete. instead, it is set to "not active" in the db.
 	this allows to keep the data related to the sales made with that address
 [X] let client create new address
+[X] let client subscribe to foundation (use external API)
 
 [ ] change settings.py's DATABASES's NAME from "xe" to "orcl"
+[ ] make readme
+	note: installed "requests" using "pip install requests"

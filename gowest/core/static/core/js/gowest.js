@@ -66,7 +66,12 @@ async function updateCartTotals(e){
 	var newTotal=0;
 	for(row of e.parentElement.parentElement.parentElement.children){
 		if(row.children[3].id=="cartTotal")break;
+		if(row.children[3].id=="foundationDiscountTotal")break;
 		newTotal+=parseInt(row.children[3].innerText.substring(1));
+	}
+	updateFoundationDiscount(newTotal)
+	if(get("foundationDiscountTotal")!=null){
+		newTotal=Math.floor(newTotal*0.9)
 	}
 	get("cartTotal").innerText="$"+newTotal;
 	await fetch("/api/setToCart?"+ new URLSearchParams({"pID":e.parentElement.parentElement.dataset["pid"],"amount":e.value}))
@@ -83,18 +88,21 @@ async function updateCartBadge(){
 	cartBtn.dataset["units"]=newUnits;
 }
 
+function updateFoundationDiscount(total){
+	dCell=get("foundationDiscountTotal")
+	if(dCell == null)
+		return
+	dCell.innerText="$"+Math.floor(total*-0.1)
+}
+
 async function removeItemFromCart(e){
 	list=e.parentElement.parentElement.parentElement;
 	id=e.dataset["id"]
-	await fetch("/api/removeFromCart/"+id);
+	newTotal=(await fetch("/api/removeFromCart/"+id).then(r=>r.json()));
 	e.parentElement.parentElement.remove();
-	newTotal=0;
-	for(row of list.children){
-		if(row.children[3].id=="cartTotal")break;
-		newTotal+=parseInt(row.children[3].innerText.substring(1));
-	}
 	get("cartTotal").innerText="$"+newTotal;
 	updateCartBadge()
+	updateFoundationDiscount(newTotal)
 }
 
 //original provided by Cedric Ipkiss, in https://stackoverflow.com/questions/5802580/html-input-type-file-get-the-image-before-submitting-the-form

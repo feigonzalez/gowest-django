@@ -5,8 +5,13 @@ from django.contrib.auth.models import User as DjUser
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate,login, logout
 from django.http import JsonResponse
-from datetime import date
+from django.db.models import Q, Value as V
+from django.db.models.functions import Concat
 from .models import *
+
+from datetime import date, datetime
+from math import floor
+import requests
 
 #used to give DANGER-level messages the "alert-danger" bootstrap class
 MESSAGE_DANGER=80
@@ -65,7 +70,24 @@ def adminCategories(request):
 def adminClients(request):
     if 'uRole' not in request.session or request.session["uRole"] != 'admin':
        return redirect('index')
-    context={"clients":User.objects.filter(role=1)}
+    if "adminClientsSearchQuery" in request.GET:
+        q=request.GET["adminClientsSearchQuery"]
+        clients = User.objects.annotate(fullname=Concat("name",V(" "),
+            "surname")).filter(Q(role=1) & Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q))
+    else:
+        clients = User.objects.filter(role=1)
+    subsJson=requests.get("http://dintdt.c1.biz/aup/getAllSubs.php").json()
+    subs={}
+    for sub in subsJson:
+        rut=subsJson[sub]["client_rut"]
+        subs[rut]={"start_date":subsJson[sub]["start_date"],"end_date":subsJson[sub]["end_date"]}
+    for client in clients:
+        #if client exists in subs database, and their subscription is still valid
+        if client.rut in subs and datetime.strptime(subs[client.rut]["end_date"],"%Y-%m-%d").date()>=date.today():
+            client.subscribed=True
+        else:
+            client.subscribed=False
+    context={"clients":clients}
     return render(request, 'core/adminclients.html',context)
 
 def adminSales(request):
@@ -110,15 +132,22 @@ def clientFoundation(request):
     context={"categories":Category.objects.filter(is_active=1)}
     #determine, with an API call, whether the client is already subscribed
     #if so, add its details to the context
+    sub=getSubscription(request)
+    if sub["subscribed"]:
+        context["subEndDate"]=sub["end_date"]
     return render(request, 'core/clientFoundation.html',context)
 
 def cart(request):
     if 'uRole' in request.session and request.session["uRole"] == 'client':
-        sale = Sale.objects.get(user=User.objects.get(id=request.session["uID"]), status='Carrito')
-        context={"categories":Category.objects.all(),
-            "addresses":Address.objects.filter(user=User.objects.get(id=request.session["uID"]),is_active=1),
+        user=User.objects.get(id=request.session["uID"])
+        sale = Sale.objects.get(user=user, status='Carrito')
+        context={"categories":Category.objects.filter(is_active=1),
+            "addresses":Address.objects.filter(user=user,is_active=1),
             "details":SaleDetail.objects.filter(sale=sale),
             "cartTotal":sale.total}
+        if getSubscription(request)["subscribed"]:
+            context["discount"]=-floor(context["cartTotal"]*0.1)
+            context["cartTotal"]+=context["discount"]
         return render(request, 'core/cart.html',context)
     else:
         return render(request, 'core/cart.html')
@@ -336,9 +365,13 @@ def checkout(request):
     doneSale.saleDate=date.today()
     doneSale.address=Address.objects.get(id=int(request.POST["cartAddress"]))
     doneSale.save()
+    if getSubscription(request)["subscribed"]:
+        subscribed=1
+    else:
+        subscribed=0
     Sale.objects.create(user=User.objects.get(id=request.session["uID"]),
         address=Address.objects.filter(user=User.objects.get(id=request.session["uID"])).first(),
-        status="Carrito",total=0,saleDate=date.today(),subscribed=0)
+        status="Carrito",total=0,saleDate=date.today(),subscribed=subscribed)
     request.session["cartItems"]=0
     return redirect('index')
 
@@ -440,7 +473,9 @@ def confirmActivation(request):
     return redirect(origin)
 
 def subscribeToFoundation(request):
-    #TODO
+    post=requests.post("http://dintdt.c1.biz/aup/postSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
+    if post["status"]=="GOOD":
+        request.session["subscribed"]=True
     return redirect('clientFoundation')
 
 #User-side searches
@@ -516,3 +551,7 @@ def postAddress(request):
 
 def createAdministrator(request):
     return redirect('adminAdministrators')
+
+def getSubscription(request):
+    return requests.get("http://dintdt.c1.biz/aup/getSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
+    

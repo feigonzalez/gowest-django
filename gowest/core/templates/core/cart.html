@@ -35,6 +35,15 @@
 							<td><button class="btn btn-danger" data-id="{{ detail.id }}" onclick="removeItemFromCart(this)"><span class="icon fa fa-trash"></span></button></td>
 						</tr>
 						{% endfor %}
+						{% if request.session.subscribed %}
+							<tr>
+								<td>Dcto. Fundación "Ayuda a un Peludo"</td>
+								<td>10%</td>
+								<td></td>
+								<td id="foundationDiscountTotal">${{ discount }}</td>
+								<td></td>
+							</tr>
+						{% endif %}
 						<tr class='bg-gowest-dark'><td></td><td></td><th>Total</th><td id='cartTotal'>${{ cartTotal }}</td><td></td></tr>
 					</tbody>
 				</table>

@@ -28,10 +28,10 @@
 				<td class="d-none d-sm-table-cell" data-type="string">{{ client.rut }}</td>
 				<td data-type="string">{{ client.mail }}</td>
 				<td class="d-none d-sm-table-cell" data-type="string">{{ client.phone }}</td>
-				<td class="d-none d-sm-table-cell" data-type="string">No</td>
+				<td class="d-none d-sm-table-cell" data-type="string">{% if client.subscribed %}Sí{% else %}No{% endif %}</td>
 				<td class="text-right"><button class="btn btn-success"
 					data-toggle="modal" data-target="#clientDataModal"
-					onclick="prepareClientModal(this)" data-id="{{ user.rut }}">
+					onclick="prepareClientModal(this)" data-id="{{ client.id }}">
 					<span class="icon fa fa-search"></span></button>
 			</tr>
 			{% endfor %}

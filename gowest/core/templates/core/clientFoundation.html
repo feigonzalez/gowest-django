@@ -15,18 +15,16 @@
 	<div class="row justify-content-center">
 		<a class="btn btn-gowest" href="https://feigonzalez.github.io/test20230309/index.html">Página de la fundación</a>
 	</div>
-	{% if subscribed %}
-	<div class="row">
-		<p>Actualmente, usted está suscrito. ¡Muchas gracias!</p>
-		<p>Su suscripción caduca en {{ suscription.endDate }}</p>
-	</div>
-	<div class="row justify-content-center">
-		<a class="btn btn-gowest" href="{% url 'subscribeToFoundation' %}">Renovar suscripción</a>
-	</div>
+	{% if request.session.subscribed %}
+		<div class="row"><p>Actualmente, usted está suscrito. ¡Muchas gracias!</p></div>
+		<div class="row"><p>Su suscripción caduca en {{ subEndDate }}</p></div>
+		<div class="row justify-content-center">
+			<a class="btn btn-gowest" href="{% url 'subscribeToFoundation' %}">Renovar suscripción</a>
+		</div>
 	{% else %}
-	<div class="row justify-content-center pt-3">
-		<a class="btn btn-gowest" href="{% url 'subscribeToFoundation' %}">Suscribirse</a>
-	</div>
+		<div class="row justify-content-center pt-3">
+			<a class="btn btn-gowest" href="{% url 'subscribeToFoundation' %}">Suscribirse</a>
+		</div>
+	{% endif %}
 </div>
-{% endif %}
 {% endblock 'clientContent' %}

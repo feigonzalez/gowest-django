@@ -6,6 +6,7 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from core.models import *
 from .serializers import *
+from math import floor
 
 #get-all-from-table methods
 
@@ -35,9 +36,9 @@ def getProducts(request):
 @csrf_exempt
 @api_view(['GET'])
 def getSaleDetails(request, id):
-    if "uID" not in request.session or "uRole" not in request.session or request.session["uRole"]!="admin":
-        return Response(status=status.HTTP_403_FORBIDDEN)
     sale = Sale.objects.get(id=id)
+    if "uID" not in request.session or "uRole" not in request.session or (request.session["uRole"]!="admin" and int(request.session["uID"])!= sale.user.id):
+        return Response(status=status.HTTP_403_FORBIDDEN)
     saleJson = SaleSerializer(sale).data
     if request.session["uID"]==sale.user.id:
         del saleJson["user"]
@@ -61,14 +62,32 @@ def getSaleDetails(request, id):
 @csrf_exempt
 @api_view(['GET'])
 def getAddress(request, id):
-    if "uID" not in request.session or "uRole" not in request.session or request.session["uRole"]!="admin":
+    try:
+        address = Address.objects.get(id=id)
+    except Address.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if "uID" not in request.session or "uRole" not in request.session or (request.session["uRole"]!="admin" and int(request.session["uID"])!= address.user.id):
         return Response(status=status.HTTP_403_FORBIDDEN)
-    address = Address.objects.get(id=id)
     addressJson = AddressSerializer(address).data
     addressJson["districtName"]=address.district.name
-    if request.session["uID"]!=address.user.id and request.session["uRole"]!="admin":
-        return Response(status=status.HTTP_403_FORBIDDEN)
     return Response(addressJson)
+
+@csrf_exempt
+@api_view(['GET'])
+def getAddressesByUser(request, id):
+    if "uID" not in request.session or "uRole" not in request.session or request.session["uRole"]!="admin":
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    try:
+        user = User.objects.get(id=int(id))
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    addresses = Address.objects.filter(user=user)
+    addressesJson = []
+    for address in addresses:
+        addressJson=AddressSerializer(address).data
+        addressJson["districtName"]=address.district.name
+        addressesJson.append(addressJson)
+    return Response(addressesJson)
 
 #get-by-id-from-table methods
 @csrf_exempt
@@ -83,8 +102,23 @@ def getCategory(request, id):
 
 @csrf_exempt
 @api_view(['GET'])
+def getUserUnsafe(request, id):
+    if "uID" not in request.session or request.session["uID"]!=id:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    try:
+        user = User.objects.get(id=int(id))
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(UserSerializer(user).data)
+
+@csrf_exempt
+@api_view(['GET'])
 def getUser(request, id):
-    return Response(UserSerializer(User.objects.get(id=id)).data)
+    try:
+        user = User.objects.get(id=int(id))
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response({"id":user.id,"name":user.name,"surname":user.surname,"rut":user.rut,"mail":user.mail,"phone":user.phone})
 
 #client-related methods
 @csrf_exempt
@@ -107,11 +141,11 @@ def addToCart(request):
         detail.units += amount
         detail.subtotal += amount*product.price
         detail.save()
-        recalculateCartTotalInternal(request.session["uID"])
+        recalculateCartTotalInternal(request)
         #return Response(200)
     except SaleDetail.DoesNotExist:
         detail = SaleDetail.objects.create(sale=sale,product=product,units=amount,subtotal=product.price*amount)
-        recalculateCartTotalInternal(request.session["uID"])
+        recalculateCartTotalInternal(request)
         #return Response(-1)
     return Response(status=status.HTTP_201_CREATED)
 
@@ -129,11 +163,11 @@ def setToCart(request):
         detail.units = amount
         detail.subtotal = amount*product.price
         detail.save()
-        recalculateCartTotalInternal(request.session["uID"])
+        recalculateCartTotalInternal(request)
         #return Response(200)
     except SaleDetail.DoesNotExist:
         detail = SaleDetail.objects.create(sale=sale,product=product,units=amount,subtotal=product.price*amount)
-        recalculateCartTotalInternal(request.session["uID"])
+        recalculateCartTotalInternal(request)
         #return Response(-1)
     return Response(status=status.HTTP_201_CREATED)
 
@@ -142,11 +176,10 @@ def setToCart(request):
 def removeFromCart(request,dID):
     if "uID" not in request.session:
         return Response(status=status.HTTP_403_FORBIDDEN)
-    return Response(UserSerializer(User.objects.all(), many=True).data)
     saleDetail=SaleDetail.objects.get(id=int(dID))
     saleDetail.delete()
-    recalculateCartTotalInternal(request.session["uID"])
-    return Response(status=status.HTTP_200_OK)
+    newTotal=recalculateCartTotalInternal(request)
+    return Response(newTotal,status=status.HTTP_200_OK)
 
 @csrf_exempt
 @api_view(['GET'])
@@ -165,15 +198,20 @@ def getCartItemAmount(request):
 def recalculateCartTotal(request):
     if "uID" not in request.session:
         return Response(status=status.HTTP_403_FORBIDDEN)
-    recalculateCartTotalInternal(request.session["uID"])
+    recalculateCartTotalInternal(request)
 
-def recalculateCartTotalInternal(uID):
-    sale=Sale.objects.get(user=User.objects.get(id=uID),status="Carrito")
+def recalculateCartTotalInternal(request):
+    sale=Sale.objects.get(user=User.objects.get(id=int(request.session["uID"])),status="Carrito")
     total = 0
     for saleDetail in SaleDetail.objects.filter(sale=sale):
         total += saleDetail.subtotal
     sale.total=total
+    if request.session["subscribed"]:
+        sale.subscribed=1
+    else:
+        sale.subscribed=0
     sale.save()
+    return sale.total
 
 #login-related methods
 @csrf_exempt

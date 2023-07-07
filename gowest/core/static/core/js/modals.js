@@ -53,8 +53,8 @@ async function prepareCategoryModal(e){
 
 //	Prepares the Client Modal in the adminClients page.
 async function prepareClientModal(e){
-	var user = (await selectAllWhere("users",(i)=>{return i["rut"]==e.dataset["id"]}))[0]
-	var addresses = (await selectAllWhere("addresses",(i)=>{return i["userID"]==user["id"]}))
+	var user = (await fetch("/api/getUser/"+e.dataset["id"]).then(r=>r.json()))
+	var addresses = (await fetch("/api/getAddressesByUser/"+e.dataset["id"]).then(r=>r.json()))
 	get("clientFormName").innerText=user["name"];
 	get("clientFormSurname").innerText=user["surname"];
 	get("clientFormRUT").innerText=user["rut"];
@@ -62,8 +62,7 @@ async function prepareClientModal(e){
 	get("clientFormPhone").innerText=user["phone"];
 	get("clientFormAddressesHolder").innerHTML="";
 	for(a of addresses){
-		var district = (await selectAllWhere("districts",(i)=>{return i["id"]==a["districtID"]}))[0]
-		get("clientFormAddressesHolder").innerHTML+=`<div>${a["street"]} ${a["number"]}, ${district["name"]}</div>`;
+		get("clientFormAddressesHolder").innerHTML+=`<li>${a["streetName"]} ${a["streetNumber"]}, ${a["districtName"]}</li>`;
 	}
 }
 
@@ -82,7 +81,8 @@ async function prepareSaleModal(e){
 	get("saleFormSaleDate").innerText=data["sale"]["saleDate"];
 	get("saleFormDeliveryDate").innerText=data["sale"]["deliveryDate"];
 	get("saleFormStatus").innerHTML=formatSaleStatus(data["sale"]["status"]);
-	get("saleFormTotal").innerHTML="$"+data["sale"]["total"];
+	get("saleFormDiscount").innerHTML=(data["sale"]["subscribed"]==1?"Sí":"No");
+	get("saleFormTotal").innerHTML="$"+Math.floor(parseInt(data["sale"]["total"])*(data["sale"]["subscribed"]==1?0.9:1));
 	var newInnerHTML="<table class='table text-center'>\n<tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th></tr>\n";
 	for(d of data["details"]){
 		newInnerHTML+=`<tr><td>${d["productName"]}</td><td>$${d["productPrice"]}</td><td>${d["units"]}</td><td>$${d["subtotal"]}</td></tr>\n`;
