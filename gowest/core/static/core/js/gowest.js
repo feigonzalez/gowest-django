@@ -43,8 +43,8 @@ async function addToCart(pID,units){
 		units = parseInt(get("addToCartUnits").value);
 		if(units<1)return;
 	}
-	await fetch("/api/addToCart?"+ new URLSearchParams({"pID":pID,"amount":units}))
-	updateCartBadge()
+	if(await fetch("/api/addToCart?"+ new URLSearchParams({"pID":pID,"amount":units})).then(r=>r.json()))
+		updateCartBadge()
 }
 
 //	Returns a <span> badge element that corresponds to the passed sale status, if valid.
@@ -74,12 +74,13 @@ async function updateCartTotals(e){
 		newTotal=Math.floor(newTotal*0.9)
 	}
 	get("cartTotal").innerText="$"+newTotal;
-	await fetch("/api/setToCart?"+ new URLSearchParams({"pID":e.parentElement.parentElement.dataset["pid"],"amount":e.value}))
-	updateCartBadge()
+	if(await fetch("/api/setToCart?"+ new URLSearchParams({"pID":e.parentElement.parentElement.dataset["pid"],"amount":e.value})).then(r=>r.json()))
+		updateCartBadge()
 }
 
 async function updateCartBadge(){
-	var newUnits=(await fetch("/api/getCartItemAmount").then(response=>response.json()))
+	var newUnits=(await fetch("/api/getCartItemAmount").then(r=>r.json()))
+	if(newUnits==-1) return; //error on API
 	var cartBadge=get("navbarCartUnits");
 	cartBadge.classList.remove("hidden");
 	cartBadge.innerText=newUnits;
@@ -99,6 +100,7 @@ async function removeItemFromCart(e){
 	list=e.parentElement.parentElement.parentElement;
 	id=e.dataset["id"]
 	newTotal=(await fetch("/api/removeFromCart/"+id).then(r=>r.json()));
+	if(newTotal==-1) return; //error on API
 	e.parentElement.parentElement.remove();
 	get("cartTotal").innerText="$"+newTotal;
 	updateCartBadge()

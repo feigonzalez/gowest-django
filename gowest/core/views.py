@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.db.models import Q, Value as V
 from django.db.models.functions import Concat
 from .models import *
+from requests import JSONDecodeError
 
 from datetime import date, datetime
 from math import floor
@@ -90,17 +91,22 @@ def adminClients(request):
             "surname")).filter(Q(role=1) & (Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q)))
     else:
         clients = User.objects.filter(role=1)
-    subsJson=requests.get("http://dintdt.c1.biz/aup/getAllSubs.php").json()
-    subs={}
-    for sub in subsJson:
-        rut=subsJson[sub]["client_rut"]
-        subs[rut]={"start_date":subsJson[sub]["start_date"],"end_date":subsJson[sub]["end_date"]}
-    for client in clients:
-        #if client exists in subs database, and their subscription is still valid
-        if client.rut in subs and datetime.strptime(subs[client.rut]["end_date"],"%Y-%m-%d").date()>=date.today():
-            client.subscribed=True
-            client.subExpiry=subs[client.rut]["end_date"]
-        else:
+    try:
+        subsJson=requests.get("http://dintdt.c1.biz/aup/getAllSubs.php").json()
+        subs={}
+        for sub in subsJson:
+            rut=subsJson[sub]["client_rut"]
+            subs[rut]={"start_date":subsJson[sub]["start_date"],"end_date":subsJson[sub]["end_date"]}
+        for client in clients:
+            #if client exists in subs database, and their subscription is still valid
+            if client.rut in subs and datetime.strptime(subs[client.rut]["end_date"],"%Y-%m-%d").date()>=date.today():
+                client.subscribed=True
+                client.subExpiry=subs[client.rut]["end_date"]
+            else:
+                client.subscribed=False
+    except JSONDecodeError: #error in request
+        messages.add_message(request,MESSAGE_DANGER,"Error de conexión. No se pudo obtener los datos de suscripciones.",extra_tags="board")
+        for client in clients:
             client.subscribed=False
     context={"clients":clients,
             "categories":Category.objects.filter(is_active=1)}
@@ -166,7 +172,9 @@ def clientFoundation(request):
     #determine, with an API call, whether the client is already subscribed
     #if so, add its details to the context
     sub=getSubscription(request)
-    if sub["subscribed"]:
+    if sub is None:
+        messages.add_message(request,MESSAGE_DANGER,"Error de conexión. No se pudo obtener datos de suscripción.",extra_tags="board")
+    elif sub["subscribed"]:
         context["subEndDate"]=sub["end_date"]
     return render(request, 'core/clientFoundation.html',context)
 
@@ -555,9 +563,14 @@ def subscribeToFoundation(request):
     if not loggedIn(request,role="client"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para suscribirse.", extra_tags="board")
         return redirect('index')
-    post=requests.post("http://dintdt.c1.biz/aup/postSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
-    if post["status"]=="GOOD":
-        request.session["subscribed"]=True
+    try:
+        post=requests.post("http://dintdt.c1.biz/aup/postSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
+        if post["status"]=="GOOD":
+            request.session["subscribed"]=True
+        else:
+            messages.add_message(request,MESSAGE_DANGER,"No se pudo realizar la suscripción.",extra_tags="board")
+    except JSONDecodeError:
+        messages.add_message(request,MESSAGE_DANGER,"Error de conexión. No se pudo realizar la suscripción.",extra_tags="board")
     return redirect('clientFoundation')
 
 #database manipulation
@@ -684,7 +697,11 @@ def editCategory(request,id):
     return redirect('adminCategories')
 
 def getSubscription(request):
-    return requests.get("http://dintdt.c1.biz/aup/getSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
+    try:
+        result = requests.get("http://dintdt.c1.biz/aup/getSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
+        return result
+    except JSONDecodeError:
+        return None
 
 def closeSession(request):
     logout(request)

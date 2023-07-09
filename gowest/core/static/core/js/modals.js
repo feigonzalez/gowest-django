@@ -17,6 +17,7 @@ async function prepareProductModal(e){
 	if(e){
 		//var product = null;
 		var product = (await fetch("/api/getProduct/"+e.dataset["id"]).then(r=>r.json()))
+		if(product === false) return;	//error on API
 		get("productFormImagePreview").setAttribute("src",product["image"]);
 		get("productFormName").value=product["name"]
 		get("productFormPrice").value=product["price"]
@@ -41,6 +42,7 @@ async function prepareCategoryModal(e){
 	makeValid(get("categoryFormName"));
 	if(e){
 		var category = (await fetch("/api/getCategory/"+e.dataset["id"]).then(r=>r.json()))
+		if(category === false) return;	//error on API
 		get("categoryFormName").value=category.name;
 		get("categoryFormId").value=e.dataset["id"];
 		get("categoryFormUpdate").value="true";
@@ -55,6 +57,7 @@ async function prepareCategoryModal(e){
 async function prepareClientModal(e){
 	var user = (await fetch("/api/getUser/"+e.dataset["id"]).then(r=>r.json()))
 	var addresses = (await fetch("/api/getAddressesByUser/"+e.dataset["id"]).then(r=>r.json()))
+	if(user === false || addresses === false ) return;	//error on API
 	get("clientFormName").innerText=user["name"];
 	get("clientFormSurname").innerText=user["surname"];
 	get("clientFormRUT").innerText=user["rut"];
@@ -72,6 +75,7 @@ async function prepareClientModal(e){
 
 async function prepareSaleModal(e){
 	data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
+	if(data === false) return;	//error on API
 	saleuser=data["sale"]["user"];
 	//hides the client if the session user is an admin.
 	//this happens when an admin sees a client's purchase
@@ -101,8 +105,8 @@ async function prepareAdministratorModal(e){
 	if(e){
 		get("adminFormShow").classList.remove("hidden");
 		get("adminFormNew").classList.add("hidden");
-		//var user = (await selectAllWhere("users",(i)=>{return i["rut"]==e.dataset["id"]}))[0];
 		var user = (await fetch("/api/getUser/"+e.dataset["id"]).then(r=>r.json()))
+		if(user === false) return;	//error on API
 		get("adminFormShowName").innerText=user["name"];
 		get("adminFormShowSurname").innerText=user["surname"];
 		get("adminFormShowRUT").innerText=user["rut"];
@@ -128,6 +132,7 @@ async function prepareAddressModal(e){
 		get("addressFormId").value="";
 	} else {
 		address = (await fetch("/api/getAddress/"+e.dataset["id"]).then(r=>r.json()))
+		if(address === false) return;	//error on API
 		get("addressFormStreet").value=address["streetName"];
 		get("addressFormNumber").value=address["streetNumber"];
 		get("addressFormPostalCode").value=address["postalCode"];
