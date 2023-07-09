@@ -87,8 +87,8 @@ li.nav-item .btn{width:-moz-available;width:-webkit-fill-available}
 .galleryItemPrice{color:#111;font-size:1.5em}
 .galleryRow{padding-left:30px;padding-right:40px}
 
-.categoryTitle{color:#fff;font-size:20px;
-	padding:20px;margin-bottom:20px}
+.categoryTitle{color:#fff;font-size:20px;padding:20px;margin-bottom:20px;
+	align-items:center}
 .categoryTitle a{color:#fff}
 
 .productCount{font-size:0.7em;font-style:italic;margin-left:1em}
@@ -106,6 +106,8 @@ li.nav-item .btn{width:-moz-available;width:-webkit-fill-available}
 	border-radius:0.25rem;text-align:center}
 
 form label{font-style:italic}
+
+#productControls{margin:1em 0}
 
 #productImageHolder{margin:20px;padding:20px;border:solid 1px #AF8;
 	border-radius:10px;}

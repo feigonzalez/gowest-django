@@ -12,7 +12,6 @@
 [X] show client data
 [X] show if client is subscribed (use external API)
 [X] show sale data
-[ ] modify admin
 [X] delete product (and other tables)
     deleteAlertModal.js has a form, whose input values are changed by modals.js
     depending on which confirmDeleteX() function was called.
@@ -37,7 +36,18 @@
 [X] let client create new address
 [X] let client subscribe to foundation (use external API)
 [X] let client confirm purchase reception
+[X] prevent user from deleting their last address
 
-[ ] change settings.py's DATABASES's NAME from "xe" to "orcl"
-[ ] make readme
-	note: installed "requests" using "pip install requests"
+[X] add admin-view edit button on product view. open adminProduct with corresponding edit modal open
+[X] add admin-view edit button on gallery for category. open adminCategory with corresponding edit modal open
+
+[X] change settings.py's DATABASES's NAME from "xe" to "orcl" (for assignment)
+[ ] change settings.py's DATABASES's NAME from "orcl" to "xe" (during development on home PC)
+	
+[ ] make upload file
+	[X] add sql script
+	[X] installation instructions txt (include install django, pillow, etc)
+	[X] DB model
+	[ ] django app source code
+	[X] ERS documentation (?)
+	[X] Gantt chart

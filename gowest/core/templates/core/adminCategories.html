@@ -19,7 +19,7 @@
 			</tr>
 		</thead>
 		<tbody id="tableCategoriesBody">
-			{% for category in categories %}
+			{% for category in adminCategories %}
 				<tr {% if not category.is_active %} class="table-secondary text-muted"{% endif %}>
 					<td data-type="string">{{ category.name }}</td>
 					<td class="d-none d-sm-table-cell">{% if category.is_active %} Activa {% else %} Desactivada {% endif %}</td>

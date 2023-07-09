@@ -38,13 +38,16 @@
 					<div id="productName">{{ product.name }}</div>
 					<div id="productPrice">${{ product.price }}</div>
 					<div id="productDescription">{{ product.description }}</div>
-					{% if request.session.uID != None %}
-					<div id="saleControls" class="row">
+					<div id="productControls" class="row">
+					{% if request.session.uRole == "client" %}
 						<input id="addToCartUnits" name="units" class="form-control mr-2 col-3" type="number" value=1 onchange="validateAddToCart(this)">
 						<input id="addToCartProductReturn" type="hidden" name="p">
 						<button class="btn btn-success" id="addToCartBtn" onclick="addToCart({{ product.id }})">Añadir al Carrito</button>
-					</div>
 					{% endif %}
+					{% if request.session.uRole == "admin" %}
+						<a class="btn btn-success" id="productEditBtn" href="{% url 'editProduct' id=product.id %}">Editar Producto</a>
+					{% endif %}
+					</div>
 				</div>
 			</div>
 		</div>

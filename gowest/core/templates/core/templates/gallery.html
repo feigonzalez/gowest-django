@@ -2,11 +2,12 @@
 <div id="gallery" class="container-fluid">
 	{% for category in galleries %}
 		<div>
-			{% if galleries|length > 1 %}
-				<div class="row bg-gowest categoryTitle">
-					<a href="{% url 'category' category.id %}">{{ category.name }}</a>
-				</div>
-			{% endif %}
+			<div class="row bg-gowest categoryTitle">
+				<a href="{% url 'category' category.id %}">{{ category.name }}</a>
+				{% if request.session.uRole is not None and request.session.uRole == "admin" %}
+					<a class="btn btn-gowest ml-auto" id="categoryEditBtn_{{ category.id }}" href="{% url 'editCategory' id=category.id %}">Editar Categoría</a>
+				{% endif %}
+			</div>
 			<div class="row galleryRow">
 				{% for product in category.products %}
 					<div class="col-sm-3">
@@ -16,7 +17,7 @@
 								<div class='galleryItemLabel'>{{ product.name }}</div>
 								<div class='galleryItemPrice'>${{ product.price }}</div>
 							</a>
-							{% if request.session.uID != None %}
+							{% if request.session.uRole == 'client' %}
 								<button class='btn btn-success galleryCartBtn' onclick='addToCart({{ product.id }}, 1)'>Añadir al carrito</button>
 							{% endif %}
 						</div>

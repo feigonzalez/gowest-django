@@ -20,3 +20,11 @@
 		</div>
 	</div>
 </div>
+{% if editElement is not None and editElement %}
+	<script>
+		window.addEventListener("load",()=>{
+			(new bootstrap.Modal(get("categoryDataModal"))).show()
+			prepareCategoryModal({"dataset":{"id":{{ editTarget }}}})
+		})
+	</script>
+{% endif %}

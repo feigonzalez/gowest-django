@@ -35,7 +35,8 @@ urlpatterns = [
     path('confirmDeletion/', confirmDeletion, name='confirmDeletion'),
     path('confirmActivation/', confirmActivation, name='confirmActivation'),
     path('confirmSaleAction/', confirmSaleAction, name='confirmSaleAction'),
-    path('searchClientSales/', searchClientSales, name='searchClientSales'),
     path('subscribeToFoundation/', subscribeToFoundation, name='subscribeToFoundation'),
     path('closeSession/', closeSession, name='closeSession'),
+    path('editProduct/<int:id>', editProduct, name='editProduct'),
+    path('editCatgory/<int:id>', editCategory, name='editCategory'),
 ]

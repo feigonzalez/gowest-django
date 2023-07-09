@@ -27,7 +27,7 @@
 					<div class="form-group">
 						<label for="producrCategory">Categoría</label>
 						<select name="productCategory" class="form-control" id="productFormCategory">
-							{% for category in categories %}
+							{% for category in adminCategories %}
 								<option value="{{ category.id }}">{{ category.name }}</option>
 							{% endfor %}
 						</select>
@@ -47,3 +47,12 @@
 		</div>
 	</div>
 </div>
+
+{% if editElement is not None and editElement %}
+	<script>
+		window.addEventListener("load",()=>{
+			(new bootstrap.Modal(get("productDataModal"))).show()
+			prepareProductModal({"dataset":{"id":{{ editTarget }}}})
+		})
+	</script>
+{% endif %}

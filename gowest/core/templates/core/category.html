@@ -19,14 +19,7 @@
     </head>
 <body>
 	{% include 'core/templates/navbar.html' %}
-    <div id="category" class="container-fluid categoryGallery">
-        {% include 'core/templates/gallery.html' %}
-        <!-- script>
-			clearParamsKeep(["u","c","cart"])
-            if(!params["c"])get("err_noCat").classList.remove("hidden")
-            loadCategoryGalleryInto(params["c"],get("category"))
-        </script -->
-    </div>
+	{% include 'core/templates/gallery.html' %}
 {% include 'core/templates/noticeBoard.html' %}
 </body>
 

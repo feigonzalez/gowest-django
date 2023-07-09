@@ -36,7 +36,7 @@
 			</a>
         </li>
         <li class="nav-item">
-          <a id="navLinkAccount" class="btn btn-gowest" href="{% url 'clientAccount' %}">Cuenta</a>
+          <a id="navLinkAccount" class="btn btn-gowest" href="{% url 'clientAccount' %}"><span class="icon fa fa-user"></span></a>
         </li>
         <li class="nav-item">
           <a class="btn btn-gowest" href="{% url 'logOff' %}" type="button"><span class="icon fa fa-power-off"></span></a>
@@ -44,7 +44,7 @@
     </ul>
 	{% endif %}
 	{% if request.session.uRole == "admin" %}
-    <a id="navbar-brand" class="navbar-brand" href="{% url 'adminIndex' %}">
+    <a id="navbar-brand" class="navbar-brand" href="{% url 'index' %}">
 		<img class="navbar-brand-image" src="{% static 'core/img/logo.png' %}">
 		<span class="navbar-brand-name d-none d-sm-inline">GoWest</span>
 	</a>
@@ -52,6 +52,9 @@
 		<li class="nav-item">
 			<span class="userWelcome text-right">{{ request.session.uName }} {{ request.session.uSurname }}</span>
 		</li>
+        <li class="nav-item">
+          <a id="navAdminMenu" class="btn btn-gowest" href="{% url 'adminIndex' %}"><span class="icon fa fa-gear"></span></a>
+        </li>
 		<li class="nav-item">
 			<a class="btn btn-gowest" href="{% url 'logOff' %}" type="button">
 				<span class="icon fa fa-power-off"></span>
@@ -60,7 +63,6 @@
 	</ul>
 	{% endif %}
 </nav>
-{% if request.session.uRole != "admin" %}
 <ul id="categoryTabsList" class="nav bg-gowest-dark">
 	{% for category in categories %}
 	<li id="catTab_{{ category.id }}" class="nav-item bg-gowest-dark">
@@ -69,5 +71,4 @@
 	</li>
 	{% endfor %}
 </ul>
-{% endif %}
 {% include 'core/modals/loginModal.html' %}

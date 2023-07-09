@@ -13,11 +13,11 @@
 	<table class="table table-hover align-middle">
 		<thead>
 			<tr>
-			<th>Nombre</th>
-			<th class="d-none d-sm-table-cell">RUT</th>
-			<th>Correo</th>
-			<th class="d-none d-sm-table-cell">Teléfono</th>
-			<th class="d-none d-sm-table-cell">Suscrito Fundación</th>
+			<th class="align-middle">Nombre</th>
+			<th class="align-middle d-none d-sm-table-cell">RUT</th>
+			<th class="align-middle">Correo</th>
+			<th class="align-middle d-none d-sm-table-cell">Teléfono</th>
+			<th class="align-middle d-none d-sm-table-cell">Vigencia<br>Suscripción</th>
 			<th></th>
 			</tr>
 		</thead>
@@ -28,7 +28,7 @@
 				<td class="d-none d-sm-table-cell" data-type="string">{{ client.rut }}</td>
 				<td data-type="string">{{ client.mail }}</td>
 				<td class="d-none d-sm-table-cell" data-type="string">{{ client.phone }}</td>
-				<td class="d-none d-sm-table-cell" data-type="string">{% if client.subscribed %}Sí{% else %}No{% endif %}</td>
+				<td class="d-none d-sm-table-cell" data-type="string">{% if client.subscribed %}{{ client.subExpiry }}{% else %}<i>No suscrito</i>{% endif %}</td>
 				<td class="text-right"><button class="btn btn-success"
 					data-toggle="modal" data-target="#clientDataModal"
 					onclick="prepareClientModal(this)" data-id="{{ client.id }}">

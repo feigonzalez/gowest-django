@@ -40,13 +40,13 @@ async function prepareProductModal(e){
 async function prepareCategoryModal(e){
 	makeValid(get("categoryFormName"));
 	if(e){
-		var parent=e.parentElement.parentElement;
-		get("categoryFormName").value=e.dataset["name"];
+		var category = (await fetch("/api/getCategory/"+e.dataset["id"]).then(r=>r.json()))
+		get("categoryFormName").value=category.name;
 		get("categoryFormId").value=e.dataset["id"];
 		get("categoryFormUpdate").value="true";
 	} else {
-		get("categoryFormId").value="";
 		get("categoryFormName").value="";
+		get("categoryFormId").value="";
 		get("categoryFormUpdate").value="false";
 	}
 }

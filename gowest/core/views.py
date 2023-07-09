@@ -18,8 +18,6 @@ MESSAGE_DANGER=80
 
 # Create your views here.
 def index(request):
-    if 'uRole' in request.session and request.session["uRole"] == 'admin':
-        return redirect('adminIndex')
     context={"categories":Category.objects.filter(is_active=1),
         "galleries":[]}
     if "loginStatus" in request.session:
@@ -35,40 +33,56 @@ def index(request):
     return render(request, 'core/index.html',context)
 
 def adminIndex(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
-       return redirect('index')
-    return render(request, 'core/adminWelcome.html')
+    if not loggedIn(request,role="admin"):
+        return redirect('index')
+    context={"categories":Category.objects.filter(is_active=1)}
+    return render(request, 'core/adminWelcome.html',context)
 
 def adminAccount(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     context={"user":User.objects.get(id=request.session["uID"]),
-        "secQuestions":SecQuestion.objects.all()}
+        "secQuestions":SecQuestion.objects.all(),
+        "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminAccount.html',context)
 
 def adminProducts(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     if "adminProductsSearchQuery" in request.GET:
         products = Product.objects.filter(name__icontains=request.GET["adminProductsSearchQuery"])
     else:
         products = Product.objects.all()
     context={"products":products,
-        "categories":Category.objects.all()}
+        "categories":Category.objects.filter(is_active=1),
+        "adminCategories":Category.objects.all()}
+    # session's "editElement" is a boolean that indicates whether the page should show
+    # a specific element to be edited. the element is identified by "editTarget"
+    if "editElement" in request.session and "editTarget" in request.session:
+        context["editElement"]=True
+        context["editTarget"]=request.session["editTarget"]
+        del request.session["editElement"]
+        del request.session["editTarget"]
     return render(request, 'core/adminProducts.html',context)
 
 def adminCategories(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     if "adminCategoriesSearchQuery" in request.GET:
-        categories = Category.objects.filter(name__icontains=request.GET["adminCategoriesSearchQuery"])
+        adminCategories = Category.objects.filter(name__icontains=request.GET["adminCategoriesSearchQuery"])
     else:
-        categories = Category.objects.all()
-    context={"categories":categories}
+        adminCategories = Category.objects.all()
+    context={"categories":Category.objects.filter(is_active=1),
+            "adminCategories":adminCategories}
+    if "editElement" in request.session and "editTarget" in request.session:
+        context["editElement"]=True
+        context["editTarget"]=request.session["editTarget"]
+        del request.session["editElement"]
+        del request.session["editTarget"]
     return render(request, 'core/adminCategories.html',context)
 
 def adminClients(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     if "adminClientsSearchQuery" in request.GET:
         q=request.GET["adminClientsSearchQuery"]
@@ -85,13 +99,15 @@ def adminClients(request):
         #if client exists in subs database, and their subscription is still valid
         if client.rut in subs and datetime.strptime(subs[client.rut]["end_date"],"%Y-%m-%d").date()>=date.today():
             client.subscribed=True
+            client.subExpiry=subs[client.rut]["end_date"]
         else:
             client.subscribed=False
-    context={"clients":clients}
+    context={"clients":clients,
+            "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminclients.html',context)
 
 def adminSales(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     if "adminSalesSearchQuery" in request.GET:
         q=request.GET["adminSalesSearchQuery"]
@@ -102,11 +118,12 @@ def adminSales(request):
         sales|=Sale.objects.filter(Q(status__icontains=q))
     else:
         sales=Sale.objects.all()
-    context={"sales":sales}
+    context={"sales":sales,
+            "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminSales.html',context)
 
 def adminAdministrators(request):
-    if 'uRole' not in request.session or request.session["uRole"] != 'admin':
+    if not loggedIn(request,role="admin"):
        return redirect('index')
     if "adminAdministratorsSearchQuery" in request.GET:
         q=request.GET["adminAdministratorsSearchQuery"]
@@ -114,33 +131,36 @@ def adminAdministrators(request):
             "surname")).filter(Q(role=2) & (Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q)))
     else:
         admins = User.objects.filter(role=2)
-    context={"admins":admins}
+    context={"admins":admins,
+            "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminAdministrators.html',context)
 
 def signup(request):
     context={"districts":District.objects.all(),
-        "secQuestions":SecQuestion.objects.all()}
+        "secQuestions":SecQuestion.objects.all(),
+        "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/signup.html', context)
 
 def clientAccount(request):
-    if 'uRole' not in request.session or request.session["uRole"] != "client":
+    if not loggedIn(request,role="client"):
        return redirect('index')
     user=User.objects.get(id=request.session["uID"])
     context={"districts":District.objects.all(),
         "secQuestions":SecQuestion.objects.all(),
         "user":user,
-        "addresses":Address.objects.filter(user=user,is_active=1)}
+        "addresses":Address.objects.filter(user=user,is_active=1),
+        "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/clientAccount.html',context)
 
 def clientSales(request):
-    if 'uRole' not in request.session or request.session["uRole"] != "client":
+    if not loggedIn(request,role="client"):
        return redirect('index')
     context={"categories":Category.objects.filter(is_active=1),
         "sales":Sale.objects.filter(user=User.objects.get(id=request.session["uID"]))}
     return render(request, 'core/clientSales.html',context)
 
 def clientFoundation(request):
-    if 'uRole' not in request.session or request.session["uRole"] != "client":
+    if not loggedIn(request,role="client"):
        return redirect('index')
     context={"categories":Category.objects.filter(is_active=1)}
     #determine, with an API call, whether the client is already subscribed
@@ -151,7 +171,9 @@ def clientFoundation(request):
     return render(request, 'core/clientFoundation.html',context)
 
 def cart(request):
-    if 'uRole' in request.session and request.session["uRole"] == 'client':
+    if loggedIn(request,role="admin"):
+       return redirect('index')
+    elif loggedIn(request,role="client"):
         user=User.objects.get(id=request.session["uID"])
         sale = Sale.objects.get(user=user, status='Carrito')
         context={"categories":Category.objects.filter(is_active=1),
@@ -177,7 +199,8 @@ def product(request, id):
     return render(request, 'core/product.html',context)
 
 def recoverPass(request):
-    return render(request, 'core/recoverPass.html')
+    context={"categories":Category.objects.filter(is_active=1)}
+    return render(request, 'core/recoverPass.html',context)
 
 #Input and user actions processing
 
@@ -215,7 +238,6 @@ def processLogin(request):
         request.session["uSurname"]=user.surname
         if user.role.name == "administrator":
             request.session["uRole"]="admin"
-            return redirect('adminIndex')
         else:
             request.session["uRole"]="client"
             #get the number of items on the user's cart
@@ -223,8 +245,6 @@ def processLogin(request):
             for saleDetail in SaleDetail.objects.filter(sale=Sale.objects.filter(user=user,status="Carrito").first()):
                 totalItems += saleDetail.units
             request.session["cartItems"] = totalItems
-            return redirect('index')
-    #this return should never be reached
     return redirect('index')
 
 def logOff(request):
@@ -279,6 +299,9 @@ def processSignup(request):
     return redirect('index')
 
 def processAdminAccountChanges(request, type):
+    if not loggedIn(request,role="admin"):
+        messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como administrador para cambiar sus datos.", extra_tags="board")
+        return redirect('index')
     #TODO
     user = User.objects.get(id=request.session["uID"])
     djuser = DjUser.objects.get(email=user.mail)
@@ -325,6 +348,9 @@ def processAdminAccountChanges(request, type):
     return redirect('adminAccount')
 
 def processClientAccountChanges(request, type):
+    if not loggedIn(request,role="client"):
+        messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para cambiar sus datos.", extra_tags="board")
+        return redirect('index')
     user = User.objects.get(id=request.session["uID"])
     djuser = DjUser.objects.get(email=user.mail)
     if type == "data":
@@ -368,6 +394,9 @@ def processClientAccountChanges(request, type):
     return redirect('clientAccount')
 
 def checkout(request):
+    if not loggedIn(request,role="client"):
+        messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para pagar una compra.", extra_tags="board")
+        return redirect('index')
     doneSale = Sale.objects.filter(user=User.objects.get(id=request.session["uID"]),status="Carrito").first()
     doneSale.status="Pagada"
     doneSale.saleDate=date.today()
@@ -425,9 +454,15 @@ def confirmSaleAction(request):
     target=request.POST["target"]
     sale=Sale.objects.get(id=int(target))
     if action=="shipment":
+        if not loggedIn(request,role="admin"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para marcar esta venta como Despachada.", extra_tags="board")
+            return redirect('index')
         sale.status="Despachada"
         sale.save()
     elif action=="reception":
+        if not loggedIn(request,role="client"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para marcar esta compra como Completada.", extra_tags="board")
+            return redirect('index')
         sale.status="Completada"
         sale.deliveryDate=date.today()
         sale.save()
@@ -436,16 +471,14 @@ def confirmSaleAction(request):
     else:
         return redirect('clientSales')
 
-def confirmActivation(request):
-    target=request.POST["target"]
-    origin=request.POST["origin"]
-    pass
-
 def confirmDeletion(request):
     #TODO
     target=request.POST["target"]
     origin=request.POST["origin"]
     if origin == "adminCategories":
+        if not loggedIn(request,role="admin"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para desactivar una categoría.", extra_tags="board")
+            return redirect('index')
         try:
             item = Category.objects.get(id=int(target))
             item.is_active=0
@@ -454,14 +487,23 @@ def confirmDeletion(request):
         except Category.DoesNotExist:
             messages.add_message(request,MESSAGE_DANGER,"ERROR: Categoría indicada no existe", extra_tags="board")
     elif origin == "clientAccount":
+        if not loggedIn(request,role="client"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para eliminar la dirección de un cliente.", extra_tags="board")
+            return redirect('index')
         try:
-            item = Address.objects.get(id=int(target))
-            item.is_active=0
-            item.save()
-            messages.success(request,"Dirección eliminada", extra_tags="board")
+            if Address.objects.filter(user=User.objects.get(id=int(request.session["uID"]))).count()==1:
+                messages.add_message(request,MESSAGE_DANGER,"No puede eliminar su única dirección.", extra_tags="board")
+            else:
+                item = Address.objects.get(id=int(target))
+                item.is_active=0
+                item.save()
+                messages.success(request,"Dirección eliminada", extra_tags="board")
         except Address.DoesNotExist:
             messages.add_message(request,MESSAGE_DANGER,"ERROR: Dirección indicada no existe", extra_tags="board")
     elif origin == "adminProducts":
+        if not loggedIn(request,role="admin"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para desactivar un producto.", extra_tags="board")
+            return redirect('index')
         try:
             item = Product.objects.get(id=int(target))
             item.is_active=0
@@ -470,6 +512,9 @@ def confirmDeletion(request):
         except Product.DoesNotExist:
             messages.add_message(request,MESSAGE_DANGER,"ERROR: Producto indicado no existe", extra_tags="board")
     elif origin == "adminAdministrators":
+        if not loggedIn(request,role="admin"):
+            messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para eliminar un administrador.", extra_tags="board")
+            return redirect('index')
         valid=True
         try:
             item = User.objects.get(id=int(target))
@@ -489,7 +534,9 @@ def confirmDeletion(request):
     return redirect(origin)
 
 def confirmActivation(request):
-    #TODO
+    if not loggedIn(request,role="admin"):
+        messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para activar elementos.", extra_tags="board")
+        return redirect('index')
     target=request.POST["target"]
     origin=request.POST["origin"]
     if origin == "adminCategories":
@@ -502,23 +549,16 @@ def confirmActivation(request):
         item.is_active=1
         item.save()
         messages.success(request,"Producto activado", extra_tags="board")
-    elif origin == "adminCategories":
-        item = Category.objects.get(id=int(target))
-        item.is_active=1
-        item.save()
-        messages.success(request,"Categoría activada", extra_tags="board")
     return redirect(origin)
 
 def subscribeToFoundation(request):
+    if not loggedIn(request,role="client"):
+        messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para suscribirse.", extra_tags="board")
+        return redirect('index')
     post=requests.post("http://dintdt.c1.biz/aup/postSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
     if post["status"]=="GOOD":
         request.session["subscribed"]=True
     return redirect('clientFoundation')
-
-#User-side searches
-
-def searchClientSales(request):
-    return render('clientSales')
 
 #database manipulation
 
@@ -528,6 +568,9 @@ def getProductData(request, id):
         "stock":p.stock,"price":p.price,"category":p.category.id})
 
 def postProduct(request):
+    if not loggedIn(request,role="admin"):
+        messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para crear un producto.", extra_tags="board")
+        return redirect('index')
     name = request.POST["productName"]
     description = request.POST["productDescription"]
     price = request.POST["productPrice"]
@@ -556,6 +599,9 @@ def postProduct(request):
     return redirect('adminProducts')
 
 def createCategory(request):
+    if not loggedIn(request,role="admin"):
+        messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para crear una categoría.", extra_tags="board")
+        return redirect('index')
     name = request.POST['categoryName']
     id = request.POST['categoryId']
     if request.POST['update']=="true":
@@ -567,6 +613,9 @@ def createCategory(request):
     return redirect('adminCategories')
 
 def postAddress(request):
+    if not loggedIn(request,role="client"):
+        messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para registrar una dirección.", extra_tags="board")
+        return redirect('index')
     streetName=request.POST["addressFormStreet"]
     streetNumber=request.POST["addressFormNumber"]
     postalCode=request.POST["addressFormPostalCode"]
@@ -620,9 +669,32 @@ def createAdministrator(request):
     messages.success(request,"Administrador creado (contraseña: \""+rawPass+"\")",extra_tags="board")
     return redirect('adminAdministrators')
 
+def editProduct(request,id):
+    if not loggedIn(request,role="admin"):
+        return redirect('index')
+    request.session["editElement"]=True
+    request.session["editTarget"]=id
+    return redirect('adminProducts')
+
+def editCategory(request,id):
+    if not loggedIn(request,role="admin"):
+        return redirect('index')
+    request.session["editElement"]=True
+    request.session["editTarget"]=id
+    return redirect('adminCategories')
+
 def getSubscription(request):
     return requests.get("http://dintdt.c1.biz/aup/getSub.php",{"rut":User.objects.get(id=int(request.session["uID"])).rut}).json()
 
 def closeSession(request):
     logout(request)
     return redirect('index')
+
+def loggedIn(request,id=None,role=None):
+    if "uID" not in request.session:
+        return False
+    if id is not None and int(request.session["uID"])!=int(id):
+        return False
+    if role is not None and ("uRole" not in request.session or request.session["uRole"]!=role):
+        return False
+    return True
