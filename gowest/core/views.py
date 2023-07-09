@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User as DjUser
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login, logout
 from django.http import JsonResponse
 from django.db.models import Q, Value as V
@@ -33,12 +34,14 @@ def index(request):
         context["galleries"][-1]["products"]=Product.objects.filter(category=category,is_active=1)
     return render(request, 'core/index.html',context)
 
+@login_required
 def adminIndex(request):
     if not loggedIn(request,role="admin"):
         return redirect('index')
     context={"categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminWelcome.html',context)
 
+@login_required
 def adminAccount(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -47,6 +50,7 @@ def adminAccount(request):
         "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminAccount.html',context)
 
+@login_required
 def adminProducts(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -66,6 +70,7 @@ def adminProducts(request):
         del request.session["editTarget"]
     return render(request, 'core/adminProducts.html',context)
 
+@login_required
 def adminCategories(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -82,6 +87,7 @@ def adminCategories(request):
         del request.session["editTarget"]
     return render(request, 'core/adminCategories.html',context)
 
+@login_required
 def adminClients(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -112,6 +118,7 @@ def adminClients(request):
             "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminclients.html',context)
 
+@login_required
 def adminSales(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -128,6 +135,7 @@ def adminSales(request):
             "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminSales.html',context)
 
+@login_required
 def adminAdministrators(request):
     if not loggedIn(request,role="admin"):
        return redirect('index')
@@ -147,6 +155,7 @@ def signup(request):
         "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/signup.html', context)
 
+@login_required
 def clientAccount(request):
     if not loggedIn(request,role="client"):
        return redirect('index')
@@ -158,6 +167,7 @@ def clientAccount(request):
         "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/clientAccount.html',context)
 
+@login_required
 def clientSales(request):
     if not loggedIn(request,role="client"):
        return redirect('index')
@@ -165,6 +175,7 @@ def clientSales(request):
         "sales":Sale.objects.filter(user=User.objects.get(id=request.session["uID"]))}
     return render(request, 'core/clientSales.html',context)
 
+@login_required
 def clientFoundation(request):
     if not loggedIn(request,role="client"):
        return redirect('index')
@@ -306,6 +317,7 @@ def processSignup(request):
 
     return redirect('index')
 
+@login_required
 def processAdminAccountChanges(request, type):
     if not loggedIn(request,role="admin"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como administrador para cambiar sus datos.", extra_tags="board")
@@ -355,6 +367,7 @@ def processAdminAccountChanges(request, type):
         pass
     return redirect('adminAccount')
 
+@login_required
 def processClientAccountChanges(request, type):
     if not loggedIn(request,role="client"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para cambiar sus datos.", extra_tags="board")
@@ -401,6 +414,7 @@ def processClientAccountChanges(request, type):
         messages.success(request, "Datos de recuperación actualizados", extra_tags="board")
     return redirect('clientAccount')
 
+@login_required
 def checkout(request):
     if not loggedIn(request,role="client"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para pagar una compra.", extra_tags="board")
@@ -456,6 +470,7 @@ def validatePassRecovery(request):
         context={"wrongAnswer":True,"mail":mail}
         return render(request,'core/recoverPass.html',context)
 
+@login_required
 def confirmSaleAction(request):
     #TODO
     action=request.POST["action"]
@@ -479,6 +494,7 @@ def confirmSaleAction(request):
     else:
         return redirect('clientSales')
 
+@login_required
 def confirmDeletion(request):
     #TODO
     target=request.POST["target"]
@@ -541,6 +557,7 @@ def confirmDeletion(request):
             messages.add_message(request,MESSAGE_DANGER,"ERROR: Administrador indicado no existe", extra_tags="board")
     return redirect(origin)
 
+@login_required
 def confirmActivation(request):
     if not loggedIn(request,role="admin"):
         messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para activar elementos.", extra_tags="board")
@@ -559,6 +576,7 @@ def confirmActivation(request):
         messages.success(request,"Producto activado", extra_tags="board")
     return redirect(origin)
 
+@login_required
 def subscribeToFoundation(request):
     if not loggedIn(request,role="client"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para suscribirse.", extra_tags="board")
@@ -580,6 +598,7 @@ def getProductData(request, id):
     return JsonResponse({"id":p.id,"name":p.name,"image":p.image.url,"description":p.description,
         "stock":p.stock,"price":p.price,"category":p.category.id})
 
+@login_required
 def postProduct(request):
     if not loggedIn(request,role="admin"):
         messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para crear un producto.", extra_tags="board")
@@ -611,6 +630,7 @@ def postProduct(request):
         Product.objects.create(name=name, description=description, price=price, stock=stock, image=image, category=category)
     return redirect('adminProducts')
 
+@login_required
 def createCategory(request):
     if not loggedIn(request,role="admin"):
         messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para crear una categoría.", extra_tags="board")
@@ -625,6 +645,7 @@ def createCategory(request):
         Category.objects.create(name=name)
     return redirect('adminCategories')
 
+@login_required
 def postAddress(request):
     if not loggedIn(request,role="client"):
         messages.add_message(request,MESSAGE_DANGER,"Debe ingresar como cliente para registrar una dirección.", extra_tags="board")
@@ -648,7 +669,11 @@ def postAddress(request):
         messages.success(request,"Dirección añadida", extra_tags="board")
     return redirect('clientAccount')
 
+@login_required
 def createAdministrator(request):
+    if not loggedIn(request,role="admin"):
+        messages.add_message(request,MESSAGE_DANGER,"No tiene permisos para crear un administrador.", extra_tags="board")
+        return redirect('index')
     mail=request.POST["adminFormNewMail"]
     rut=request.POST["adminFormNewRUT"]
     valid=True
@@ -682,6 +707,7 @@ def createAdministrator(request):
     messages.success(request,"Administrador creado (contraseña: \""+rawPass+"\")",extra_tags="board")
     return redirect('adminAdministrators')
 
+@login_required
 def editProduct(request,id):
     if not loggedIn(request,role="admin"):
         return redirect('index')
@@ -689,6 +715,7 @@ def editProduct(request,id):
     request.session["editTarget"]=id
     return redirect('adminProducts')
 
+@login_required
 def editCategory(request,id):
     if not loggedIn(request,role="admin"):
         return redirect('index')
