@@ -11,9 +11,15 @@ from django.db.models.functions import Concat
 from .models import *
 from requests import JSONDecodeError
 
+from inspect import currentframe, getframeinfo
+
 from datetime import date, datetime
 from math import floor
 import requests
+
+def debug(m):
+    f=getframeinfo(currentframe().f_back)
+    print(">["+f.function+"@"+str(f.lineno)+"] "+m)
 
 #used to give DANGER-level messages the "alert-danger" bootstrap class
 MESSAGE_DANGER=80
@@ -224,6 +230,7 @@ def recoverPass(request):
 #Input and user actions processing
 
 def processLogin(request):
+    debug("Logging in...")
     #TODO
     #get data from user, depending on provided mail
     mail=request.POST["mail"]
@@ -234,10 +241,12 @@ def processLogin(request):
     #except UserDoesNotExist: alert, redirect
     except DjUser.DoesNotExist:
         #TODO alert
+        debug("Django user does not exist")
         return redirect('index')
     valid = check_password(rawPass, djUser.password)
     if not valid:
         #TODO alert, password is wrong
+        debug("Wrong login password")
         request.session["loginStatus"]="FAIL"
         request.session["loginUser"]=mail
         return redirect('index')
@@ -246,12 +255,14 @@ def processLogin(request):
     #except UserDoesNotExist: alert, redirect
     except User.DoesNotExist:
         #TODO alert
+        debug("Database user does not exist")
         request.session["loginStatus"]="FAIL"
         request.session["loginUser"]=mail
         return redirect('index')
     authUser = authenticate(username=mail,password=rawPass)
     if authUser is not None and user is not None:
         login(request, authUser)
+        debug("User ["+mail+"] logged in")
         request.session["uID"]=user.id
         request.session["uName"]=user.name
         request.session["uSurname"]=user.surname
@@ -267,6 +278,7 @@ def processLogin(request):
     return redirect('index')
 
 def logOff(request):
+    debug("Logging off...")
     logout(request)
     return redirect('index')
 
