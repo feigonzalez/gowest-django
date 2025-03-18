@@ -36,7 +36,7 @@ urlpatterns = [
     path('confirmActivation/', confirmActivation, name='confirmActivation'),
     path('confirmSaleAction/', confirmSaleAction, name='confirmSaleAction'),
     path('subscribeToFoundation/', subscribeToFoundation, name='subscribeToFoundation'),
-    path('closeSession/', closeSession, name='closeSession'),
+#    path('closeSession/', closeSession, name='closeSession'),
     path('editProduct/<int:id>', editProduct, name='editProduct'),
     path('editCatgory/<int:id>', editCategory, name='editCategory'),
 ]

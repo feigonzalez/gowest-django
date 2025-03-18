@@ -17,6 +17,7 @@ from datetime import date, datetime
 from math import floor
 import requests
 
+#prints in console the function and source line number where the function is called
 def debug(m):
     f=getframeinfo(currentframe().f_back)
     print(">["+f.function+"@"+str(f.lineno)+"] "+m)
@@ -742,9 +743,9 @@ def getSubscription(request):
     except JSONDecodeError:
         return None
 
-def closeSession(request):
-    logout(request)
-    return redirect('index')
+#def closeSession(request):
+#    logout(request)
+#    return redirect('index')
 
 def loggedIn(request,id=None,role=None):
     if "uID" not in request.session:
