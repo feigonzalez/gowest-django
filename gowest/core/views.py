@@ -104,7 +104,7 @@ def adminClients(request):
             "surname")).filter(Q(role=1) & (Q(fullname__icontains=q) | Q(mail__icontains=q) | Q(rut__icontains=q) | Q(phone__icontains=q)))
     else:
         clients = User.objects.filter(role=1)
-    try:
+    """try:
         subsJson=requests.get("http://dintdt.c1.biz/aup/getAllSubs.php").json()
         subs={}
         for sub in subsJson:
@@ -120,7 +120,7 @@ def adminClients(request):
     except JSONDecodeError: #error in request
         messages.add_message(request,MESSAGE_DANGER,"Error de conexión. No se pudo obtener los datos de suscripciones.",extra_tags="board")
         for client in clients:
-            client.subscribed=False
+            client.subscribed=False"""
     context={"clients":clients,
             "categories":Category.objects.filter(is_active=1)}
     return render(request, 'core/adminclients.html',context)
@@ -189,11 +189,11 @@ def clientFoundation(request):
     context={"categories":Category.objects.filter(is_active=1)}
     #determine, with an API call, whether the client is already subscribed
     #if so, add its details to the context
-    sub=getSubscription(request)
+    """sub=getSubscription(request)
     if sub is None:
         messages.add_message(request,MESSAGE_DANGER,"Error de conexión. No se pudo obtener datos de suscripción.",extra_tags="board")
     elif sub["subscribed"]:
-        context["subEndDate"]=sub["end_date"]
+        context["subEndDate"]=sub["end_date"]"""
     return render(request, 'core/clientFoundation.html',context)
 
 def cart(request):
@@ -206,9 +206,9 @@ def cart(request):
             "addresses":Address.objects.filter(user=user,is_active=1),
             "details":SaleDetail.objects.filter(sale=sale),
             "cartTotal":sale.total}
-        if getSubscription(request)["subscribed"]:
+        """if getSubscription(request)["subscribed"]:
             context["discount"]=-floor(context["cartTotal"]*0.1)
-            context["cartTotal"]+=context["discount"]
+            context["cartTotal"]+=context["discount"]"""
         return render(request, 'core/cart.html',context)
     else:
         return render(request, 'core/cart.html')
@@ -437,10 +437,11 @@ def checkout(request):
     doneSale.saleDate=date.today()
     doneSale.address=Address.objects.get(id=int(request.POST["cartAddress"]))
     doneSale.save()
-    if getSubscription(request)["subscribed"]:
+    """if getSubscription(request)["subscribed"]:
         subscribed=1
     else:
-        subscribed=0
+        subscribed=0"""
+    subscribed=0
     Sale.objects.create(user=User.objects.get(id=request.session["uID"]),
         address=Address.objects.filter(user=User.objects.get(id=request.session["uID"])).first(),
         status="Carrito",total=0,saleDate=date.today(),subscribed=subscribed)

@@ -229,10 +229,11 @@ def recalculateCartTotalInternal(request):
     for saleDetail in SaleDetail.objects.filter(sale=sale):
         total += saleDetail.subtotal
     sale.total=total
-    if request.session["subscribed"]:
+    """if request.session["subscribed"]:
         sale.subscribed=1
     else:
-        sale.subscribed=0
+        sale.subscribed=0"""
+    sale.subscribed=0
     sale.save()
     return sale.total
 
