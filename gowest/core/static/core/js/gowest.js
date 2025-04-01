@@ -129,7 +129,3 @@ window.addEventListener("load",()=>{
 		e.innerHTML=formatSaleStatus(e.innerText)
 	}
 })
-
-window.addEventListener("beforeunload",()=>{
-	fetch("/closeSession")
-})
