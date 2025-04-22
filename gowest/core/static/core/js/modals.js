@@ -64,7 +64,7 @@ async function prepareClientModal(e){
 	get("clientFormMail").innerText=user["mail"];
 	get("clientFormPhone").innerText=user["phone"];
 	get("clientFormAddressesHolder").innerHTML="";
-	for(a of addresses){
+	for(let a of addresses){
 		get("clientFormAddressesHolder").innerHTML+=`<li>${a["streetName"]} ${a["streetNumber"]}, ${a["districtName"]}</li>`;
 	}
 }
@@ -74,9 +74,9 @@ async function prepareClientModal(e){
 */
 
 async function prepareSaleModal(e){
-	data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
+	let data = (await fetch("/api/getSaleDetails/"+e.dataset["id"]).then(r=>r.json()));
 	if(data === false) return;	//error on API
-	saleuser=data["sale"]["user"];
+	let saleuser=data["sale"]["user"];
 	//hides the client if the session user is an admin.
 	//this happens when an admin sees a client's purchase
 	if(saleuser!=undefined) get("saleFormUser").innerText=saleuser;
@@ -87,8 +87,8 @@ async function prepareSaleModal(e){
 	get("saleFormStatus").innerHTML=formatSaleStatus(data["sale"]["status"]);
 	get("saleFormDiscount").innerHTML=(data["sale"]["subscribed"]==1?"Sí":"No");
 	get("saleFormTotal").innerHTML="$"+Math.floor(parseInt(data["sale"]["total"])*(data["sale"]["subscribed"]==1?0.9:1));
-	var newInnerHTML="<table class='table text-center'>\n<tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th></tr>\n";
-	for(d of data["details"]){
+	let newInnerHTML="<table class='table text-center'>\n<tr><th>Producto</th><th>Precio</th><th>Unidades</th><th>Subtotal</th></tr>\n";
+	for(let d of data["details"]){
 		newInnerHTML+=`<tr><td>${d["productName"]}</td><td>$${d["productPrice"]}</td><td>${d["units"]}</td><td>$${d["subtotal"]}</td></tr>\n`;
 	}
 	newInnerHTML+="</table>";
@@ -131,7 +131,7 @@ async function prepareAddressModal(e){
 		get("addressFormUpdate").value=false;
 		get("addressFormId").value="";
 	} else {
-		address = (await fetch("/api/getAddress/"+e.dataset["id"]).then(r=>r.json()))
+		let address = (await fetch("/api/getAddress/"+e.dataset["id"]).then(r=>r.json()))
 		if(address === false) return;	//error on API
 		get("addressFormStreet").value=address["streetName"];
 		get("addressFormNumber").value=address["streetNumber"];

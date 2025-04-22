@@ -64,7 +64,7 @@ async function updateCartTotals(e){
 	var se=e.parentElement.parentElement.children[3];
 	se.innerText="$"+price*e.value;
 	var newTotal=0;
-	for(row of e.parentElement.parentElement.parentElement.children){
+	for(let row of e.parentElement.parentElement.parentElement.children){
 		if(row.children[3].id=="cartTotal")break;
 		if(row.children[3].id=="foundationDiscountTotal")break;
 		newTotal+=parseInt(row.children[3].innerText.substring(1));
@@ -90,16 +90,15 @@ async function updateCartBadge(){
 }
 
 function updateFoundationDiscount(total){
-	dCell=get("foundationDiscountTotal")
+	let dCell=get("foundationDiscountTotal")
 	if(dCell == null)
 		return
 	dCell.innerText="$"+Math.floor(total*-0.1)
 }
 
 async function removeItemFromCart(e){
-	list=e.parentElement.parentElement.parentElement;
-	id=e.dataset["id"]
-	newTotal=(await fetch("/api/removeFromCart/"+id).then(r=>r.json()));
+	let id=e.dataset["id"]
+	let newTotal=(await fetch("/api/removeFromCart/"+id).then(r=>r.json()));
 	if(newTotal==-1) return; //error on API
 	e.parentElement.parentElement.remove();
 	get("cartTotal").innerText="$"+newTotal;
@@ -125,7 +124,7 @@ function previewUploadProductImage() {
 }
 
 window.addEventListener("load",()=>{
-	for(e of document.querySelectorAll(".saleStatus")){
+	for(let e of document.querySelectorAll(".saleStatus")){
 		e.innerHTML=formatSaleStatus(e.innerText)
 	}
 })

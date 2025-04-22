@@ -7,14 +7,14 @@
 */
 
 //Valid image file extensions, used for validation on image uploading.
-var imageExt=["png","jpg","jpeg","bmp"];
+const imageExt=["png","jpg","jpeg","bmp"];
 
 //Field validation functions.
 
-//Returns true if the given RUT follows the correcto format (a number with "."
+//Returns true if the given RUT follows the correct format (a number with "."
 //as thousand-separators, followed by "-", then a single digit or "K", )
 function isValidRutFormat(str){
-	return str.trim().match(/^[0-9]{1,3}(\.[0-9]{3})*\-[0-9K]$/)!=null;
+	return str.trim().match(/^\d{1,3}(\.\d{3})*-[0-9K]$/)!=null;
 }
 
 //Returns true if the given RUT has the correct validator digit.
@@ -22,11 +22,13 @@ function isValidRutFormat(str){
 function isValidRutDigit(str){
 	str=str.trim();
 	let sum=0
-	let digits=str.split("-")[0].match(/[0-9]/g);
+	let digits=str.split("-")[0].match(/\d/g);
 	let vDigit=str.split("-")[1];
-	for(var i=0;digits.length>0;i=(i+1)%6){
-		currDigit=digits.pop();
+	let i=0;
+	while(digits.length>0){
+		let currDigit=digits.pop();
 		sum+=currDigit*(i+2);
+		i=(i+1)%6)
 	}
 	let aux = 11*Math.floor(sum/11);
 	let calcDigit = 11-(sum-aux);

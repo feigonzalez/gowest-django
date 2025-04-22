@@ -1,0 +1,6 @@
+projectKey=Gowest
+serverUrl=http://localhost:9000
+serverVersion=25.4.0.105899
+dashboardUrl=http://localhost:9000/dashboard?id=Gowest
+ceTaskId=29adc2b4-89e8-4452-8b5b-3bb98b71e41e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=29adc2b4-89e8-4452-8b5b-3bb98b71e41e
